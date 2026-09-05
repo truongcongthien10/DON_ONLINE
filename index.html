@@ -102,12 +102,11 @@
                     <option value="2">2. Cải tạo</option>
                     <option value="3">3. Nâng dời hạ</option>
                     <option value="4">4. Dò tìm</option>
-                    <option value="5">5. Phụ lục</option>
-                    <option value="6">6. Kiểm định ĐH</option>
-                    <option value="7">7. Tạm ngừng</option>
-                    <option value="8">8. Cắt hủy</option>
-                    <option value="9">9. Mở nước</option>
-                    <option value="10">10. Kiểm tra ĐH</option>
+                    <option value="5">5. Kiểm định ĐH</option>
+                    <option value="6">6. Tạm ngừng</option>
+                    <option value="7">7. Cắt hủy</option>
+                    <option value="8">8. Mở nước</option>
+                    <option value="9">9. Kiểm tra ĐH</option>
                 </select>
             </div>
             <div>
@@ -143,7 +142,7 @@
 
     <script>
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
-        const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Phụ lục", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
+        const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
         function padZero(num) { return num < 10 ? '0' + num : num; }
 
@@ -442,8 +441,10 @@
                         let parsed = JSON.parse(weekData);
                         parsed.forEach((r, rIdx) => {
                             r.categories.forEach((cat, cIdx) => {
-                                aggregated[rIdx].categories[cIdx].tot += parseFloat(cat.tot) || 0;
-                                aggregated[rIdx].categories[cIdx].on += parseFloat(cat.on) || 0;
+                                if (aggregated[rIdx].categories[cIdx]) {
+                                    aggregated[rIdx].categories[cIdx].tot += parseFloat(cat.tot) || 0;
+                                    aggregated[rIdx].categories[cIdx].on += parseFloat(cat.on) || 0;
+                                }
                             });
                         });
                     }
