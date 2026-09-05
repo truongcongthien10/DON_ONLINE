@@ -33,10 +33,16 @@
             vertical-align: middle;
         }
 
-        /* GIÃN RỘNG 2 DÒNG TIÊU ĐỀ THOÁNG HƠN */
-        .excel-table th {
-            height: auto;
+        /* GIÃN RỘNG CHIỀU CAO CHO 2 DÒNG TIÊU ĐỀ */
+        .excel-table th.header-row-top {
+            height: 48px !important;
             line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .excel-table th.header-row-sub {
+            height: 36px !important;
+            line-height: 1.3;
         }
 
         /* CHIỀU CAO CÁC DÒNG NỘI DUNG NHẬP LIỆU */
@@ -154,10 +160,8 @@
 
         function padZero(num) { return num < 10 ? '0' + num : num; }
 
-        // Hàm kiểm tra chỉ cho phép gõ số nguyên
         function isIntegerKey(evt) {
             const charCode = (evt.which) ? evt.which : evt.keyCode;
-            // Cho phép: Backspace, Delete, Tab, Escape, Enter, các phím mũi tên
             if ([8, 9, 27, 13, 46, 37, 38, 39, 40].indexOf(charCode) !== -1 ||
                 (charCode >= 48 && charCode <= 57) || (charCode >= 96 && charCode <= 105)) {
                 return true;
@@ -166,7 +170,6 @@
             return false;
         }
 
-        // Hàm làm sạch dữ liệu loại bỏ thập phân & chữ khi dán (paste)
         function cleanIntegerInput(input) {
             input.value = input.value.replace(/[^0-9]/g, '');
         }
@@ -263,22 +266,22 @@
         function renderTableHeader(filter) {
             const thead = document.getElementById('tableHead');
             
-            /* Tăng chiều cao padding cho 2 dòng tiêu đề */
+            /* Tăng độ rộng dòng tiêu đề trên (header-row-top) và dòng tiêu đề dưới (header-row-sub) */
             let h1 = `<tr class="bg-excel-header">
-                <th rowspan="2" class="py-3 px-2 bg-slate-900 w-10 text-center">STT</th>
-                <th rowspan="2" class="py-3 px-2 bg-slate-900 w-32 text-center">KHU VỰC</th>
-                <th colspan="3" class="py-3 px-2 bg-amber-600 text-yellow-100 tracking-wider">TỔNG HỢP</th>`;
+                <th rowspan="2" class="header-row-top py-4 px-2 bg-slate-900 w-10 text-center">STT</th>
+                <th rowspan="2" class="header-row-top py-4 px-2 bg-slate-900 w-32 text-center">KHU VỰC</th>
+                <th colspan="3" class="header-row-top py-4 px-2 bg-amber-600 text-yellow-100 tracking-wider">TỔNG HỢP</th>`;
             
             let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                <th class="py-2 px-1 bg-amber-700 w-12">TỔNG</th>
-                <th class="py-2 px-1 bg-amber-700 w-12">ONLINE</th>
-                <th class="py-2 px-1 bg-amber-700 w-10">%</th>`;
+                <th class="header-row-sub py-2.5 px-1 bg-amber-700 w-12">TỔNG</th>
+                <th class="header-row-sub py-2.5 px-1 bg-amber-700 w-12">ONLINE</th>
+                <th class="header-row-sub py-2.5 px-1 bg-amber-700 w-10">%</th>`;
 
             categories.forEach((catName, idx) => {
                 let catId = idx + 1;
                 if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" class="py-3 px-2 bg-blue-800 tracking-wider">${catName}</th>`;
-                    h2 += `<th class="py-2 px-1 bg-slate-800">TỔNG</th><th class="py-2 px-1 bg-slate-800">ONLINE</th><th class="py-2 px-1 bg-slate-800 text-yellow-400">%</th>`;
+                    h1 += `<th colspan="3" class="header-row-top py-4 px-2 bg-blue-800 tracking-wider">${catName}</th>`;
+                    h2 += `<th class="header-row-sub py-2.5 px-1 bg-slate-800">TỔNG</th><th class="header-row-sub py-2.5 px-1 bg-slate-800">ONLINE</th><th class="header-row-sub py-2.5 px-1 bg-slate-800 text-yellow-400">%</th>`;
                 }
             });
 
