@@ -15,17 +15,42 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* Khóa kích thước bảng & Triệt tiêu khe hở giữa các cột */
+        /* KHUNG CHỨA BẢNG VÀ LỚP NỀN BAO TRẮNG CHE CHẮN (VIỀN ĐỎ TRONG HÌNH) */
+        .table-container {
+            position: relative;
+            overflow-x: auto;
+            max-height: 65vh;
+        }
+
+        /* NỀN BAO TRẮNG NẰM DƯỚI 3 CỘT CỐ ĐỊNH TẠO TẤM MÀN CHE DỮ LIỆU CUỘN */
+        .table-container::before {
+            content: "";
+            position: sticky;
+            left: 0;
+            top: 0;
+            display: block;
+            width: 325px; /* Tổng chiều rộng đúng bằng khối cố định (45+120+55+55+50) */
+            height: 100%;
+            background-color: #ffffff !important; /* Nền trắng che hoàn toàn vệt cuộn */
+            z-index: 5; /* Cao hơn dữ liệu cuộn (z-index: 1), thấp hơn cột cố định (z-index: 10+) */
+            pointer-events: none;
+            float: left;
+            margin-right: -325px;
+        }
+
+        /* Bảng cố định kích thước chuẩn */
         .table-fixed-layout {
             table-layout: fixed;
             width: max-content;
             border-collapse: collapse !important;
+            position: relative;
+            z-index: 1;
         }
 
         .table-fixed-layout th, 
         .table-fixed-layout td {
             box-sizing: border-box;
-            border: 1px solid #334155; /* Đường viền xám đậm khép kín */
+            border: 1px solid #334155;
         }
 
         .table-input input { 
@@ -43,14 +68,14 @@
             font-weight: bold;
         }
 
-        /* Dòng Header trên cùng luôn cố định khi cuộn dọc */
+        /* Tiêu đề cố định khi cuộn dọc */
         thead th {
             position: sticky;
             top: 0;
             z-index: 20;
         }
 
-        /* TỌA ĐỘ CỐ ĐỊNH CHUẨN Nối Tiếp Từng Cột */
+        /* TỌA ĐỘ VÀ CỐ ĐỊNH NỐI TIẾP CHO KHỐI CỘT BÊN TRÁI (VIỀN XANH TRONG HÌNH) */
         .col-fix-stt {
             position: sticky;
             left: 0px;
@@ -80,18 +105,16 @@
             left: 275px;
             width: 50px; min-width: 50px; max-width: 50px;
             z-index: 10;
-            /* Tạo bóng đổ dứt điểm giữa khối cố định và khối dữ liệu cuộn */
-            box-shadow: 4px 0px 6px -1px rgba(0, 0, 0, 0.35);
+            box-shadow: 4px 0px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
-        /* CỐ ĐỊNH DÒNG TỔNG HỢP Ở ĐÁY BẢNG (TFOOT) */
+        /* CỐ ĐỊNH DÒNG TỔNG NẰM Ở ĐÁY */
         tfoot td {
             position: sticky;
             bottom: 0;
             z-index: 30 !important;
         }
         
-        /* Đảm bảo giao điểm Cột Cố Định + Dòng Tổng Đáy có Z-Index cao nhất */
         tfoot td.col-fix-stt,
         tfoot td.col-fix-cma,
         tfoot td.col-fix-tot-tot,
@@ -100,7 +123,6 @@
             z-index: 50 !important;
         }
 
-        /* Ưu tiên Z-Index cao cho phần Tiêu đề Header */
         thead th.col-fix-stt, 
         thead th.col-fix-cma, 
         thead th.col-fix-tot-tot, 
@@ -110,10 +132,10 @@
             z-index: 40 !important;
         }
 
-        /* LỚP MÀU NỀN ĐỤC KHẮC PHỤC HOÀN TOÀN VỆT CHỮ */
+        /* MÀU NỀN CHO CÁC Ô CỐ ĐỊNH */
         tbody td.col-fix-stt,
         tbody td.col-fix-cma {
-            background-color: #0f172a !important; /* Xanh đen đục */
+            background-color: #0f172a !important;
             color: #ffffff;
         }
         tbody tr:hover td.col-fix-stt,
@@ -123,10 +145,10 @@
 
         tbody td.col-fix-tot-tot,
         tbody td.col-fix-tot-on {
-            background-color: #fef3c7 !important; /* Vàng nhạt */
+            background-color: #fef3c7 !important;
         }
         tbody td.col-fix-tot-pct {
-            background-color: #fde68a !important; /* Vàng đục */
+            background-color: #fde68a !important;
         }
 
         tfoot td.col-fix-stt,
@@ -200,7 +222,8 @@
                 </span>
             </div>
             
-            <div class="overflow-x-auto max-h-[65vh]">
+            <!-- THÊM LỚP TABLE-CONTAINER TẠO KHUNG NỀN BAO BÊN DƯỚI -->
+            <div class="table-container">
                 <table class="table-fixed-layout text-xs text-left text-slate-700">
                     <colgroup>
                         <col style="width: 45px;">  <!-- STT -->
