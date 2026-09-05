@@ -33,11 +33,10 @@
             vertical-align: middle;
         }
 
-        /* GIÃN RỘNG DÒNG TIÊU ĐỀ THOÁNG HƠN */
+        /* GIÃN RỘNG 2 DÒNG TIÊU ĐỀ THOÁNG HƠN */
         .excel-table th {
             height: auto;
-            padding: 7px 4px !important;
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         /* CHIỀU CAO CÁC DÒNG NỘI DUNG NHẬP LIỆU */
@@ -155,6 +154,23 @@
 
         function padZero(num) { return num < 10 ? '0' + num : num; }
 
+        // Hàm kiểm tra chỉ cho phép gõ số nguyên
+        function isIntegerKey(evt) {
+            const charCode = (evt.which) ? evt.which : evt.keyCode;
+            // Cho phép: Backspace, Delete, Tab, Escape, Enter, các phím mũi tên
+            if ([8, 9, 27, 13, 46, 37, 38, 39, 40].indexOf(charCode) !== -1 ||
+                (charCode >= 48 && charCode <= 57) || (charCode >= 96 && charCode <= 105)) {
+                return true;
+            }
+            evt.preventDefault();
+            return false;
+        }
+
+        // Hàm làm sạch dữ liệu loại bỏ thập phân & chữ khi dán (paste)
+        function cleanIntegerInput(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+        }
+
         const weekNames = {
             "W1": "Tuần 1", "W2": "Tuần 2", "W3": "Tuần 3", "W4": "Tuần 4", "W5": "Tuần 5"
         };
@@ -246,21 +262,23 @@
 
         function renderTableHeader(filter) {
             const thead = document.getElementById('tableHead');
+            
+            /* Tăng chiều cao padding cho 2 dòng tiêu đề */
             let h1 = `<tr class="bg-excel-header">
-                <th rowspan="2" class="py-2.5 px-1.5 bg-slate-900 w-10 text-center">STT</th>
-                <th rowspan="2" class="py-2.5 px-1.5 bg-slate-900 w-32 text-center">KHU VỰC</th>
-                <th colspan="3" class="py-2.5 px-1.5 bg-amber-600 text-yellow-100 tracking-wider">TỔNG HỢP</th>`;
+                <th rowspan="2" class="py-3 px-2 bg-slate-900 w-10 text-center">STT</th>
+                <th rowspan="2" class="py-3 px-2 bg-slate-900 w-32 text-center">KHU VỰC</th>
+                <th colspan="3" class="py-3 px-2 bg-amber-600 text-yellow-100 tracking-wider">TỔNG HỢP</th>`;
             
             let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                <th class="py-1.5 px-1 bg-amber-700 w-12">TỔNG</th>
-                <th class="py-1.5 px-1 bg-amber-700 w-12">ONLINE</th>
-                <th class="py-1.5 px-1 bg-amber-700 w-10">%</th>`;
+                <th class="py-2 px-1 bg-amber-700 w-12">TỔNG</th>
+                <th class="py-2 px-1 bg-amber-700 w-12">ONLINE</th>
+                <th class="py-2 px-1 bg-amber-700 w-10">%</th>`;
 
             categories.forEach((catName, idx) => {
                 let catId = idx + 1;
                 if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" class="py-2.5 px-1.5 bg-blue-800 tracking-wider">${catName}</th>`;
-                    h2 += `<th class="py-1.5 px-1 bg-slate-800">TỔNG</th><th class="py-1.5 px-1 bg-slate-800">ONLINE</th><th class="py-1.5 px-1 bg-slate-800 text-yellow-400">%</th>`;
+                    h1 += `<th colspan="3" class="py-3 px-2 bg-blue-800 tracking-wider">${catName}</th>`;
+                    h2 += `<th class="py-2 px-1 bg-slate-800">TỔNG</th><th class="py-2 px-1 bg-slate-800">ONLINE</th><th class="py-2 px-1 bg-slate-800 text-yellow-400">%</th>`;
                 }
             });
 
@@ -298,8 +316,8 @@
                             `;
                         } else {
                             html += `
-                                <td><input type="number" min="0" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
-                                <td><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
                                 <td class="font-bold text-blue-700 pct-${c}">0%</td>
                             `;
                         }
@@ -348,8 +366,8 @@
                 let onElem = row.querySelector(`.on-${c}`);
                 let pctElem = row.querySelector(`.pct-${c}`);
 
-                let tot = totElem ? (parseFloat(totElem.value) || 0) : 0;
-                let on = onElem ? (parseFloat(onElem.value) || 0) : 0;
+                let tot = totElem ? (parseInt(totElem.value, 10) || 0) : 0;
+                let on = onElem ? (parseInt(onElem.value, 10) || 0) : 0;
 
                 if (pctElem) {
                     pctElem.textContent = tot > 0 ? Math.round((on / tot) * 100) + '%' : '0%';
@@ -378,18 +396,18 @@
             let isReadOnly = period === 'MONTH' || period.startsWith('Q') || period === 'YEAR';
 
             rows.forEach(row => {
-                footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
-                footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
+                footTotAll += parseInt(row.querySelector('.row-total-all').textContent, 10) || 0;
+                footOnAll += parseInt(row.querySelector('.row-online-all').textContent, 10) || 0;
 
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     if (filter === "ALL" || filter == c) {
                         let tot = isReadOnly 
-                            ? (parseFloat(row.querySelector(`.cat-tot-${c}`)?.textContent) || 0)
-                            : (parseFloat(row.querySelector(`.tot-${c}`)?.value) || 0);
+                            ? (parseInt(row.querySelector(`.cat-tot-${c}`)?.textContent, 10) || 0)
+                            : (parseInt(row.querySelector(`.tot-${c}`)?.value, 10) || 0);
                         let on = isReadOnly
-                            ? (parseFloat(row.querySelector(`.cat-on-${c}`)?.textContent) || 0)
-                            : (parseFloat(row.querySelector(`.on-${c}`)?.value) || 0);
+                            ? (parseInt(row.querySelector(`.cat-on-${c}`)?.textContent, 10) || 0)
+                            : (parseInt(row.querySelector(`.on-${c}`)?.value, 10) || 0);
 
                         catTotals[c] += tot;
                         catOnlines[c] += on;
@@ -495,8 +513,8 @@
                             parsed.forEach((r, rIdx) => {
                                 r.categories.forEach((cat, cIdx) => {
                                     if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                        aggregated[rIdx].categories[cIdx].tot += parseFloat(cat.tot) || 0;
-                                        aggregated[rIdx].categories[cIdx].on += parseFloat(cat.on) || 0;
+                                        aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
+                                        aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
                                     }
                                 });
                             });
