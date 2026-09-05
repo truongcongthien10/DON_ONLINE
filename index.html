@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chương Trình Báo Cáo & Tổng Hợp Đơn Online</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .table-input input { width: 100%; text-align: right; border: 1px solid #cbd5e1; border-radius: 4px; padding: 2px 4px; }
+        .table-input input:focus { outline: 2px solid #2563eb; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <header class="bg-blue-800 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">BÁO CÁO TỔNG HỢP ĐƠN ONLINE (CMA)</h1>
+            <span class="text-sm bg-blue-700 px-3 py-1 rounded">GitHub Pages Ready</span>
+        </div>
+    </header>
+
+    <div class="container mx-auto p-4 space-y-6">
+
+        <div class="bg-white p-4 rounded-lg shadow border border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Chọn Năm:</label>
+                <select id="selectYear" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
+                    </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Chọn Kỳ Báo Cáo:</label>
+                <select id="selectPeriod" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
+                    <option value="T1">Tháng 1</option><option value="T2">Tháng 2</option><option value="T3">Tháng 3</option>
+                    <option value="T4">Tháng 4</option><option value="T5">Tháng 5</option><option value="T6">Tháng 6</option>
+                    <option value="T7">Tháng 7</option><option value="T8">Tháng 8</option><option value="T9">Tháng 9</option>
+                    <option value="T10">Tháng 10</option><option value="T11">Tháng 11</option><option value="T12">Tháng 12</option>
+                    <option value="Q1">Quý 1 (Tổng hợp)</option><option value="Q2">Quý 2 (Tổng hợp)</option>
+                    <option value="Q3">Quý 3 (Tổng hợp)</option><option value="Q4">Quý 4 (Tổng hợp)</option>
+                    <option value="NAM">Cả Năm (Tổng hợp)</option>
+                </select>
+            </div>
+            <div>
+                <button onclick="loadData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-medium shadow">
+                    Xem / Tra Cứu Dữ Liệu
+                </button>
+            </div>
+            <div>
+                <button onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded font-medium shadow">
+                    Lưu Số Liệu Vào Hệ Thống
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-lg shadow border border-slate-200 overflow-x-auto">
+            <h2 id="tableTitle" class="text-lg font-semibold text-slate-800 mb-3">
+                Số Liệu Báo Cáo CMA & So Sánh Kế Hoạch
+            </h2>
+            
+            <table class="w-full text-sm text-left text-slate-600 border-collapse border border-slate-300">
+                <thead class="bg-slate-200 text-slate-700 text-xs uppercase font-bold text-center">
+                    <tr>
+                        <th rowspan="2" class="border border-slate-300 p-2 min-w-[120px]">Tên CMA</th>
+                        <th colspan="3" class="border border-slate-300 p-2">Lắp Đặt</th>
+                        <th colspan="3" class="border border-slate-300 p-2">Cải Tạo</th>
+                        <th colspan="3" class="border border-slate-300 p-2">Nâng Dời Hạ</th>
+                        <th colspan="3" class="border border-slate-300 p-2">Dò Tìm Rò Rỉ</th>
+                    </tr>
+                    <tr class="bg-slate-100">
+                        <th class="border border-slate-300 p-1">KH</th>
+                        <th class="border border-slate-300 p-1">TH</th>
+                        <th class="border border-slate-300 p-1">%</th>
+                        <th class="border border-slate-300 p-1">KH</th>
+                        <th class="border border-slate-300 p-1">TH</th>
+                        <th class="border border-slate-300 p-1">%</th>
+                        <th class="border border-slate-300 p-1">KH</th>
+                        <th class="border border-slate-300 p-1">TH</th>
+                        <th class="border border-slate-300 p-1">%</th>
+                        <th class="border border-slate-300 p-1">KH</th>
+                        <th class="border border-slate-300 p-1">TH</th>
+                        <th class="border border-slate-300 p-1">%</th>
+                    </tr>
+                </thead>
+                <tbody id="cmaDataBody" class="table-input">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách 9 CMA 
+        const cmaList = ["Thuận Hóa", "Phú Xuân", "Phong Điền", "Quảng Điền", "Hương Trà", "Hương Thủy", "Phú Vang", "Nam Đông", "A Lưới"];
+
+        // Khởi tạo năm từ 2024 đến 2030 vào Select 
+        const selectYear = document.getElementById('selectYear');
+        for (let y = 2024; y <= 2030; y++) {
+            let opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = "Năm " + y;
+            selectYear.appendChild(opt);
+        }
+
+        // Tạo dòng bảng dữ liệu cho 9 CMA 
+        function renderRows() {
+            const tbody = document.getElementById('cmaDataBody');
+            tbody.innerHTML = '';
+
+            cmaList.forEach((cma, index) => {
+                let row = document.createElement('tr');
+                row.className = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+                
+                let html = `<td class="border border-slate-300 p-2 font-medium text-slate-900">${cma}</td>`;
+                
+                // 4 hạng mục: Lắp đặt, Cải tạo, Nâng dời, Dò tìm 
+                for (let i = 1; i <= 4; i++) {
+                    html += `
+                        <td class="border border-slate-300 p-1"><input type="number" class="kh-${i}" value="0" onchange="calcPercent(this)"></td>
+                        <td class="border border-slate-300 p-1"><input type="number" class="th-${i}" value="0" onchange="calcPercent(this)"></td>
+                        <td class="border border-slate-300 p-1 text-center font-semibold text-blue-600 pct-${i}">0%</td>
+                    `;
+                }
+                
+                row.innerHTML = html;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Tính tỷ lệ % hoàn thành kế hoạch
+        function calcPercent(input) {
+            let row = input.closest('tr');
+            for (let i = 1; i <= 4; i++) {
+                let kh = parseFloat(row.querySelector(`.kh-${i}`).value) || 0;
+                let th = parseFloat(row.querySelector(`.th-${i}`).value) || 0;
+                let pctElem = row.querySelector(`.pct-${i}`);
+                
+                if (kh > 0) {
+                    let pct = ((th / kh) * 100).toFixed(1);
+                    pctElem.textContent = pct + '%';
+                    pctElem.className = pct >= 100 ? "border border-slate-300 p-1 text-center font-semibold text-emerald-600" 
+                                                   : "border border-slate-300 p-1 text-center font-semibold text-amber-600";
+                } else {
+                    pctElem.textContent = '0%';
+                }
+            }
+        }
+
+        // Lưu số liệu vào LocalStorage 
+        function saveData() {
+            let year = selectYear.value;
+            let period = document.getElementById('selectPeriod').value;
+            let key = `CMA_DATA_${year}_${period}`;
+
+            let data = [];
+            let rows = document.querySelectorAll('#cmaDataBody tr');
+
+            rows.forEach((row, idx) => {
+                let rowData = {
+                    cma: cmaList[idx],
+                    items: []
+                };
+                for (let i = 1; i <= 4; i++) {
+                    rowData.items.push({
+                        kh: row.querySelector(`.kh-${i}`).value,
+                        th: row.querySelector(`.th-${i}`).value
+                    });
+                }
+                data.push(rowData);
+            });
+
+            localStorage.setItem(key, JSON.stringify(data));
+            alert(`Đã lưu thành công số liệu cho ${period} - Năm ${year}!`);
+        }
+
+        // Tải số liệu từ LocalStorage 
+        function loadData() {
+            let year = selectYear.value;
+            let period = document.getElementById('selectPeriod').value;
+            let key = `CMA_DATA_${year}_${period}`;
+
+            document.getElementById('tableTitle').textContent = `Số Liệu Báo Cáo CMA & So Sánh Kế Hoạch (${period} - Năm ${year})`;
+
+            let saved = localStorage.getItem(key);
+            renderRows();
+
+            if (saved) {
+                let data = JSON.parse(saved);
+                let rows = document.querySelectorAll('#cmaDataBody tr');
+
+                data.forEach((rowData, idx) => {
+                    if (rows[idx]) {
+                        for (let i = 1; i <= 4; i++) {
+                            rows[idx].querySelector(`.kh-${i}`).value = rowData.items[i-1].kh;
+                            rows[idx].querySelector(`.th-${i}`).value = rowData.items[i-1].th;
+                        }
+                        calcPercent(rows[idx].querySelector(`.kh-1`));
+                    }
+                });
+            }
+        }
+
+        // Chạy lần đầu khi mở web
+        renderRows();
+    </script>
+</body>
+</html>
