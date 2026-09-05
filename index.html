@@ -45,12 +45,12 @@
             border-left: 1px solid #d1d5db;
         }
 
-        /* VIỀN RANH GIỚI TÁCH BẢNG CHUẨN XÁC (NẰM Ở CỘT % BẢNG CỐ ĐỊNH) */
+        /* VIỀN RANH GIỚI TÁCH BẢNG CHUẨN XÁC */
         .border-split-right {
             border-right: 2px solid #1e3a8a !important;
         }
 
-        /* KHÓA CHIỀU CAO CỐ ĐỊNH KHÔNG BỊ BÉO/GẦY */
+        /* KHÓA CHIỀU CAO CỐ ĐỊNH */
         .excel-table th.h-header-top { height: 48px !important; }
         .excel-table th.h-header-sub { height: 36px !important; }
         .excel-table tr { height: 28px !important; }
@@ -99,11 +99,20 @@
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Header HueWACO (Đã bỏ badge GitHub Pages) -->
-    <header class="bg-blue-900 text-white p-3 shadow-md border-b-4 border-yellow-500">
-        <div class="container mx-auto">
-            <h1 class="text-lg font-bold uppercase tracking-wide">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
-            <p class="text-[11px] text-blue-200">Hệ thống nhập liệu & quản lý tiến độ báo cáo</p>
+    <!-- Header HueWACO với nền hình dòng nước sạch & bọt khí -->
+    <header class="relative bg-cover bg-center text-white p-4 shadow-lg border-b-4 border-yellow-500 overflow-hidden" 
+            style="background-image: url('Water.webp');">
+        
+        <!-- Lớp phủ xanh mỏng để nổi bật tiêu đề -->
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-950/80 via-blue-900/60 to-transparent"></div>
+
+        <div class="container mx-auto relative z-10">
+            <h1 class="text-xl font-black uppercase tracking-wide drop-shadow-lg text-white">
+                TỔNG HỢP ĐƠN ONLINE - HUEWACO
+            </h1>
+            <p class="text-xs text-blue-100 font-medium drop-shadow mt-0.5">
+                Hệ thống nhập liệu & quản lý tiến độ báo cáo
+            </p>
         </div>
     </header>
 
