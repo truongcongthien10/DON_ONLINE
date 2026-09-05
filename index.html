@@ -15,34 +15,34 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* KHUNG CHỨA BẢNG VÀ LỚP NỀN BAO TRẮNG CHE CHẮN (VIỀN ĐỎ TRONG HÌNH) */
+        /* KHUNG CHỨA BẢNG VÀ NỀN CHE */
         .table-container {
             position: relative;
             overflow-x: auto;
             max-height: 65vh;
         }
 
-        /* NỀN BAO TRẮNG NẰM DƯỚI 3 CỘT CỐ ĐỊNH TẠO TẤM MÀN CHE DỮ LIỆU CUỘN */
+        /* Nền trắng che chắn khép kín bên dưới toàn bộ khối 5 cột cố định */
         .table-container::before {
             content: "";
             position: sticky;
             left: 0;
             top: 0;
             display: block;
-            width: 325px; /* Tổng chiều rộng đúng bằng khối cố định (45+120+55+55+50) */
+            width: 325px; /* Chiều rộng chính xác tuyệt đối: 45 + 120 + 55 + 55 + 50 = 325px */
             height: 100%;
-            background-color: #ffffff !important; /* Nền trắng che hoàn toàn vệt cuộn */
-            z-index: 5; /* Cao hơn dữ liệu cuộn (z-index: 1), thấp hơn cột cố định (z-index: 10+) */
+            background-color: #ffffff !important;
+            z-index: 5;
             pointer-events: none;
             float: left;
             margin-right: -325px;
         }
 
-        /* Bảng cố định kích thước chuẩn */
+        /* TRIỆT TIÊU TOÀN BỘ KẼ HỞ GIỮA CÁC CỘT */
         .table-fixed-layout {
             table-layout: fixed;
             width: max-content;
-            border-collapse: collapse !important;
+            border-collapse: collapse !important; /* Xóa bỏ kẽ hở 1px giữa các ô */
             position: relative;
             z-index: 1;
         }
@@ -75,7 +75,7 @@
             z-index: 20;
         }
 
-        /* TỌA ĐỘ VÀ CỐ ĐỊNH NỐI TIẾP CHO KHỐI CỘT BÊN TRÁI (VIỀN XANH TRONG HÌNH) */
+        /* TỌA ĐỘ VÀ NỐI TIẾP CỦA CÁC CỘT CỐ ĐỊNH (KHÔNG HỞ KẼ) */
         .col-fix-stt {
             position: sticky;
             left: 0px;
@@ -88,6 +88,14 @@
             width: 120px; min-width: 120px; max-width: 120px;
             z-index: 10;
         }
+
+        /* FIX LỖI HÌNH 1: CỐ ĐỊNH CẢ TIÊU ĐỀ "TỔNG HỢP" LẪN CÁC CỘT TỔNG/ONLINE/% */
+        .col-fix-head-tot {
+            position: sticky;
+            left: 165px;
+            z-index: 45 !important; /* Ưu tiên z-index cao để không bị trôi */
+        }
+
         .col-fix-tot-tot {
             position: sticky;
             left: 165px;
@@ -105,7 +113,7 @@
             left: 275px;
             width: 50px; min-width: 50px; max-width: 50px;
             z-index: 10;
-            box-shadow: 4px 0px 6px -1px rgba(0, 0, 0, 0.3);
+            box-shadow: 4px 0px 6px -1px rgba(0, 0, 0, 0.35);
         }
 
         /* CỐ ĐỊNH DÒNG TỔNG NẰM Ở ĐÁY */
@@ -127,12 +135,11 @@
         thead th.col-fix-cma, 
         thead th.col-fix-tot-tot, 
         thead th.col-fix-tot-on, 
-        thead th.col-fix-tot-pct,
-        thead th.col-fix-head-tot {
+        thead th.col-fix-tot-pct {
             z-index: 40 !important;
         }
 
-        /* MÀU NỀN CHO CÁC Ô CỐ ĐỊNH */
+        /* MÀU NỀN ĐỤC TUYỆT ĐỐI CHE TOÀN BỘ VỆT DƯỚI */
         tbody td.col-fix-stt,
         tbody td.col-fix-cma {
             background-color: #0f172a !important;
@@ -222,7 +229,6 @@
                 </span>
             </div>
             
-            <!-- THÊM LỚP TABLE-CONTAINER TẠO KHUNG NỀN BAO BÊN DƯỚI -->
             <div class="table-container">
                 <table class="table-fixed-layout text-xs text-left text-slate-700">
                     <colgroup>
@@ -242,6 +248,7 @@
                         <tr class="bg-blue-900 text-white">
                             <th rowspan="2" class="p-2 col-fix-stt bg-slate-900">STT</th>
                             <th rowspan="2" class="p-2 col-fix-cma bg-slate-900">KHU VỰC</th>
+                            <!-- Bổ sung class col-fix-head-tot để cố định ô TỔNG HỢP này -->
                             <th colspan="3" class="p-2 col-fix-head-tot bg-amber-600 text-yellow-100">TỔNG HỢP</th>
                             <th colspan="3" class="p-2 bg-blue-800">Lắp đặt</th>
                             <th colspan="3" class="p-2 bg-blue-800">Cải tạo</th>
