@@ -15,11 +15,10 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* BẢNG TÍNH LƯỚI NỀN EXCEL & CỐ ĐỊNH LAYOUT */
+        /* THIẾT LẬP BẢNG EXCEL */
         .excel-table {
             table-layout: fixed !important;
-            width: max-content;
-            border-collapse: separate !important; /* Dùng separate để position: sticky hoạt động chuẩn trên các trình duyệt */
+            border-collapse: separate !important;
             border-spacing: 0;
             background-color: #ffffff;
             border-top: 1px solid #d1d5db;
@@ -36,24 +35,14 @@
             white-space: nowrap;
             vertical-align: middle;
             overflow: hidden;
+            text-align: center;
         }
 
-        /* CHIỀU CAO CỐ ĐỊNH DÒNG TIÊU ĐỀ */
-        .excel-table th.header-row-top {
-            height: 48px !important;
-            line-height: 1.4;
-            font-size: 13px;
-        }
-
-        .excel-table th.header-row-sub {
-            height: 36px !important;
-            line-height: 1.3;
-        }
-
-        /* CHIỀU CAO CÁC DÒNG NỘI DUNG NHẬP LIỆU */
-        .excel-table td {
-            height: 28px;
-        }
+        /* KHÓA CHIỀU CAO ĐỂ 2 BẢNG KHỚP HÀNG TỰ ĐỘNG */
+        .excel-table th.h-header-top { height: 48px !important; }
+        .excel-table th.h-header-sub { height: 36px !important; }
+        .excel-table tr { height: 28px !important; }
+        .excel-table td { height: 28px !important; }
 
         .excel-table input {
             width: 100%;
@@ -80,28 +69,19 @@
         .bg-excel-total-light { background-color: #fef3c7; }
         .bg-excel-foot { background-color: #1e293b; color: #ffffff; }
 
-        /* THIẾT LẬP POSITION STICKY CHO KHU VỰC CỐ ĐỊNH BÊN TRÁI (3 KHỐI/5 CỘT) */
-        .sticky-col {
-            position: sticky !important;
-            z-index: 10;
+        /* THANH CUỘN ĐẸP CHO BẢNG PHỤ */
+        .scrollable-table-container::-webkit-scrollbar {
+            height: 10px;
         }
-        
-        .sticky-header {
-            position: sticky !important;
-            z-index: 20 !important; /* Dòng header cố định có z-index cao nhất */
+        .scrollable-table-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
         }
-
-        /* Vị trí pixel cố định chuẩn xác theo chiều rộng từng cột */
-        .col-pos-1 { left: 0px; width: 40px; }
-        .col-pos-2 { left: 40px; width: 100px; }
-        .col-pos-top-3 { left: 140px; width: 180px; } /* Ô Tổng Hợp ở Header top */
-        .col-pos-3 { left: 140px; width: 60px; }
-        .col-pos-4 { left: 200px; width: 60px; }
-        .col-pos-5 { left: 260px; width: 60px; }
-
-        /* Viền đệm bên phải khối cố định để phân biệt rõ với phần cuộn */
-        .sticky-border-right {
-            border-right: 3px solid #1e3a8a !important;
+        .scrollable-table-container::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        .scrollable-table-container::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
         }
     </style>
 </head>
@@ -164,8 +144,8 @@
             </div>
         </div>
 
-        <!-- Khung Bảng Dữ Liệu Excel -->
-        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
+        <!-- Khung Bảng Dữ Liệu Excel (Split Screen View) -->
+        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-2">
                 <h2 id="tableTitle" class="text-sm font-bold text-blue-900 uppercase tracking-wide">
                     NHẬP LIỆU TUẦN 1 - THÁNG 9 - NĂM 2026
@@ -175,11 +155,39 @@
                 </span>
             </div>
             
-            <table class="excel-table text-center" id="mainTable">
-                <thead id="tableHead" class="text-white uppercase font-bold"></thead>
-                <tbody id="cmaTableBody"></tbody>
-                <tfoot id="cmaTableFoot" class="font-bold"></tfoot>
-            </table>
+            <!-- FLEX CONTAINER TÁCH RỜI 2 BẢNG -->
+            <div class="flex w-full items-start border-r border-b border-slate-300">
+                
+                <!-- BẢNG CỐ ĐỊNH BÊN TRÁI (FIXED PANEL) -->
+                <div class="flex-shrink-0 border-r-2 border-blue-900 z-10 bg-white shadow-md">
+                    <table class="excel-table w-[320px]" id="fixedTable">
+                        <thead class="text-white uppercase font-bold">
+                            <tr class="bg-excel-header">
+                                <th rowspan="2" style="width: 40px;" class="h-header-top bg-slate-900">STT</th>
+                                <th rowspan="2" style="width: 100px;" class="h-header-top bg-slate-900">KHU VỰC</th>
+                                <th colspan="3" style="width: 180px;" class="h-header-top bg-amber-600 text-yellow-100">TỔNG HỢP</th>
+                            </tr>
+                            <tr class="bg-slate-800 text-yellow-300 text-[11px]">
+                                <th style="width: 60px;" class="h-header-sub bg-amber-700">TỔNG</th>
+                                <th style="width: 60px;" class="h-header-sub bg-amber-700">ONLINE</th>
+                                <th style="width: 60px;" class="h-header-sub bg-amber-700">%</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fixedTableBody"></tbody>
+                        <tfoot id="fixedTableFoot" class="font-bold"></tfoot>
+                    </table>
+                </div>
+
+                <!-- BẢNG CUỘN NHẬP LIỆU BÊN PHẢI (SCROLLABLE PANEL) -->
+                <div class="flex-grow overflow-x-auto scrollable-table-container bg-white">
+                    <table class="excel-table" id="scrollableTable">
+                        <thead id="scrollableTableHead" class="text-white uppercase font-bold"></thead>
+                        <tbody id="scrollableTableBody"></tbody>
+                        <tfoot id="scrollableTableFoot" class="font-bold"></tfoot>
+                    </table>
+                </div>
+
+            </div>
         </div>
     </div>
 
@@ -292,27 +300,18 @@
             loadData();
         }
 
-        function renderTableHeader(filter) {
-            const thead = document.getElementById('tableHead');
-            
-            /* Thêm class sticky-header và vị trí col-pos cho 3 ô tiêu đề cố định bên trái */
-            let h1 = `<tr class="bg-excel-header">
-                <th rowspan="2" class="header-row-top sticky-header col-pos-1 py-4 px-1 bg-slate-900 text-center">STT</th>
-                <th rowspan="2" class="header-row-top sticky-header col-pos-2 py-4 px-2 bg-slate-900 text-center">KHU VỰC</th>
-                <th colspan="3" class="header-row-top sticky-header col-pos-top-3 sticky-border-right py-4 px-2 bg-amber-600 text-yellow-100 tracking-wider">TỔNG HỢP</th>`;
-            
-            let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                <th class="header-row-sub sticky-header col-pos-3 py-2.5 px-1 bg-amber-700">TỔNG</th>
-                <th class="header-row-sub sticky-header col-pos-4 py-2.5 px-1 bg-amber-700">ONLINE</th>
-                <th class="header-row-sub sticky-header col-pos-5 sticky-border-right py-2.5 px-1 bg-amber-700">%</th>`;
+        function renderScrollableHeader(filter) {
+            const thead = document.getElementById('scrollableTableHead');
+            let h1 = `<tr class="bg-excel-header">`;
+            let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">`;
 
             categories.forEach((catName, idx) => {
                 let catId = idx + 1;
                 if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" style="width: 225px;" class="header-row-top py-4 px-2 bg-blue-800 tracking-wider">${catName}</th>`;
-                    h2 += `<th style="width: 75px;" class="header-row-sub py-2.5 px-1 bg-slate-800">TỔNG</th>
-                           <th style="width: 75px;" class="header-row-sub py-2.5 px-1 bg-slate-800">ONLINE</th>
-                           <th style="width: 75px;" class="header-row-sub py-2.5 px-1 bg-slate-800 text-yellow-400">%</th>`;
+                    h1 += `<th colspan="3" style="width: 225px;" class="h-header-top bg-blue-800 tracking-wider">${catName}</th>`;
+                    h2 += `<th style="width: 75px;" class="h-header-sub bg-slate-800">TỔNG</th>
+                           <th style="width: 75px;" class="h-header-sub bg-slate-800">ONLINE</th>
+                           <th style="width: 75px;" class="h-header-sub bg-slate-800 text-yellow-400">%</th>`;
                 }
             });
 
@@ -320,86 +319,102 @@
             thead.innerHTML = h1 + h2;
         }
 
-        function renderTableRows(isReadOnly = false) {
+        function renderTables(isReadOnly = false) {
             const filter = document.getElementById('selectCategoryFilter').value;
-            renderTableHeader(filter);
+            renderScrollableHeader(filter);
 
-            const tbody = document.getElementById('cmaTableBody');
-            tbody.innerHTML = '';
+            const fixedTbody = document.getElementById('fixedTableBody');
+            const scrollTbody = document.getElementById('scrollableTableBody');
+
+            fixedTbody.innerHTML = '';
+            scrollTbody.innerHTML = '';
 
             cmaList.forEach((cma, idx) => {
-                let tr = document.createElement('tr');
-                tr.className = idx % 2 === 0 ? 'bg-white hover:bg-blue-50' : 'bg-slate-50 hover:bg-blue-50';
-                
-                /* Gán class sticky-col và vị trí tương ứng cho 5 cột đầu tiên của từng hàng */
-                let html = `
-                    <td class="sticky-col col-pos-1 bg-excel-cma font-medium">${idx + 1}</td>
-                    <td class="sticky-col col-pos-2 bg-excel-cma font-bold text-left px-2 truncate">${cma}</td>
-                    <td class="sticky-col col-pos-3 font-bold text-blue-900 bg-excel-total-light row-total-all">0</td>
-                    <td class="sticky-col col-pos-4 font-bold text-emerald-800 bg-excel-total-light row-online-all">0</td>
-                    <td class="sticky-col col-pos-5 sticky-border-right font-bold text-amber-900 bg-amber-200 row-pct-all">0%</td>
+                let bgClass = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+
+                // Render Bảng Cố Định (Fixed)
+                let trFixed = document.createElement('tr');
+                trFixed.className = `${bgClass} hover:bg-blue-50`;
+                trFixed.innerHTML = `
+                    <td style="width: 40px;" class="bg-excel-cma font-medium">${idx + 1}</td>
+                    <td style="width: 100px;" class="bg-excel-cma font-bold text-left px-2 truncate">${cma}</td>
+                    <td style="width: 60px;" class="font-bold text-blue-900 bg-excel-total-light row-total-all">0</td>
+                    <td style="width: 60px;" class="font-bold text-emerald-800 bg-excel-total-light row-online-all">0</td>
+                    <td style="width: 60px;" class="font-bold text-amber-900 bg-amber-200 row-pct-all">0%</td>
                 `;
+                fixedTbody.appendChild(trFixed);
+
+                // Render Bảng Cuộn (Scrollable)
+                let trScroll = document.createElement('tr');
+                trScroll.className = `${bgClass} hover:bg-blue-50`;
+                let htmlScroll = '';
 
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     if (filter === "ALL" || filter == c) {
                         if (isReadOnly) {
-                            html += `
+                            htmlScroll += `
                                 <td style="width: 75px;" class="font-semibold cat-tot-${c}">0</td>
                                 <td style="width: 75px;" class="font-semibold text-emerald-700 cat-on-${c}">0</td>
                                 <td style="width: 75px;" class="font-bold text-blue-700 cat-pct-${c}">0%</td>
                             `;
                         } else {
-                            html += `
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                            htmlScroll += `
+                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
+                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
                                 <td style="width: 75px;" class="font-bold text-blue-700 pct-${c}">0%</td>
                             `;
                         }
                     }
                 });
 
-                tr.innerHTML = html;
-                tbody.appendChild(tr);
+                trScroll.innerHTML = htmlScroll;
+                scrollTbody.appendChild(trScroll);
             });
 
-            renderFooter(filter);
+            renderFooters(filter);
         }
 
-        function renderFooter(filter) {
-            const tfoot = document.getElementById('cmaTableFoot');
-            let html = `
+        function renderFooters(filter) {
+            const fixedFoot = document.getElementById('fixedTableFoot');
+            const scrollFoot = document.getElementById('scrollableTableFoot');
+
+            fixedFoot.innerHTML = `
                 <tr class="bg-excel-foot">
-                    <td class="sticky-col col-pos-1 p-1 text-center bg-slate-950 text-white">--</td>
-                    <td class="sticky-col col-pos-2 p-1 text-left px-2 bg-slate-950 text-white">HueWACO</td>
-                    <td class="sticky-col col-pos-3 p-1 bg-amber-600 text-white" id="footTotalAll">0</td>
-                    <td class="sticky-col col-pos-4 p-1 bg-amber-600 text-white" id="footOnlineAll">0</td>
-                    <td class="sticky-col col-pos-5 sticky-border-right p-1 bg-amber-700 text-white" id="footPctAll">0%</td>
+                    <td style="width: 40px;" class="p-1 bg-slate-950 text-white">--</td>
+                    <td style="width: 100px;" class="p-1 text-left px-2 bg-slate-950 text-white truncate">HueWACO</td>
+                    <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footTotalAll">0</td>
+                    <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footOnlineAll">0</td>
+                    <td style="width: 60px;" class="p-1 bg-amber-700 text-white" id="footPctAll">0%</td>
+                </tr>
             `;
 
+            let htmlScrollFoot = `<tr class="bg-excel-foot">`;
             categories.forEach((_, cIdx) => {
                 let c = cIdx + 1;
                 if (filter === "ALL" || filter == c) {
-                    html += `
+                    htmlScrollFoot += `
                         <td style="width: 75px;" id="footCatTot-${c}" class="p-1 text-slate-800 bg-slate-200">0</td>
                         <td style="width: 75px;" id="footCatOn-${c}" class="p-1 text-emerald-800 bg-slate-200">0</td>
                         <td style="width: 75px;" id="footCatPct-${c}" class="p-1 text-blue-900 bg-slate-200">0%</td>
                     `;
                 }
             });
-            html += `</tr>`;
-            tfoot.innerHTML = html;
+            htmlScrollFoot += `</tr>`;
+            scrollFoot.innerHTML = htmlScrollFoot;
         }
 
-        function calculateRow(element) {
-            let row = element.closest('tr');
+        function calculateRow(rowIndex, element) {
+            let fixedRow = document.querySelectorAll('#fixedTableBody tr')[rowIndex];
+            let scrollRow = document.querySelectorAll('#scrollableTableBody tr')[rowIndex];
+
             let grandTotal = 0, grandOnline = 0;
 
             categories.forEach((_, cIdx) => {
                 let c = cIdx + 1;
-                let totElem = row.querySelector(`.tot-${c}`);
-                let onElem = row.querySelector(`.on-${c}`);
-                let pctElem = row.querySelector(`.pct-${c}`);
+                let totElem = scrollRow.querySelector(`.tot-${c}`);
+                let onElem = scrollRow.querySelector(`.on-${c}`);
+                let pctElem = scrollRow.querySelector(`.pct-${c}`);
 
                 let tot = totElem ? (parseInt(totElem.value, 10) || 0) : 0;
                 let on = onElem ? (parseInt(onElem.value, 10) || 0) : 0;
@@ -412,9 +427,9 @@
                 grandOnline += on;
             });
 
-            row.querySelector('.row-total-all').textContent = grandTotal;
-            row.querySelector('.row-online-all').textContent = grandOnline;
-            row.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
+            fixedRow.querySelector('.row-total-all').textContent = grandTotal;
+            fixedRow.querySelector('.row-online-all').textContent = grandOnline;
+            fixedRow.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
 
             calculateTableTotals();
         }
@@ -422,27 +437,30 @@
         function calculateTableTotals() {
             let period = document.getElementById('selectPeriod').value;
             let filter = document.getElementById('selectCategoryFilter').value;
-            let rows = document.querySelectorAll('#cmaTableBody tr');
-            
+            let fixedRows = document.querySelectorAll('#fixedTableBody tr');
+            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+
             let footTotAll = 0, footOnAll = 0;
             let catTotals = Array(categories.length + 1).fill(0);
             let catOnlines = Array(categories.length + 1).fill(0);
 
             let isReadOnly = period === 'MONTH' || period.startsWith('Q') || period === 'YEAR';
 
-            rows.forEach(row => {
-                footTotAll += parseInt(row.querySelector('.row-total-all').textContent, 10) || 0;
-                footOnAll += parseInt(row.querySelector('.row-online-all').textContent, 10) || 0;
+            fixedRows.forEach((fixedRow, idx) => {
+                let scrollRow = scrollRows[idx];
+
+                footTotAll += parseInt(fixedRow.querySelector('.row-total-all').textContent, 10) || 0;
+                footOnAll += parseInt(fixedRow.querySelector('.row-online-all').textContent, 10) || 0;
 
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     if (filter === "ALL" || filter == c) {
                         let tot = isReadOnly 
-                            ? (parseInt(row.querySelector(`.cat-tot-${c}`)?.textContent, 10) || 0)
-                            : (parseInt(row.querySelector(`.tot-${c}`)?.value, 10) || 0);
+                            ? (parseInt(scrollRow.querySelector(`.cat-tot-${c}`)?.textContent, 10) || 0)
+                            : (parseInt(scrollRow.querySelector(`.tot-${c}`)?.value, 10) || 0);
                         let on = isReadOnly
-                            ? (parseInt(row.querySelector(`.cat-on-${c}`)?.textContent, 10) || 0)
-                            : (parseInt(row.querySelector(`.on-${c}`)?.value, 10) || 0);
+                            ? (parseInt(scrollRow.querySelector(`.cat-on-${c}`)?.textContent, 10) || 0)
+                            : (parseInt(scrollRow.querySelector(`.on-${c}`)?.value, 10) || 0);
 
                         catTotals[c] += tot;
                         catOnlines[c] += on;
@@ -480,9 +498,11 @@
 
             let key = `HUEWACO_${year}_${month}_${period}`;
             let data = [];
+            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
 
-            document.querySelectorAll('#cmaTableBody tr').forEach((row, idx) => {
-                let rowData = { cma: cmaList[idx], categories: [] };
+            cmaList.forEach((cma, idx) => {
+                let row = scrollRows[idx];
+                let rowData = { cma: cma, categories: [] };
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
@@ -533,7 +553,7 @@
                     document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ NĂM ${year}`;
                 }
 
-                renderTableRows(true);
+                renderTables(true);
 
                 let aggregated = cmaList.map(cma => ({
                     cma: cma,
@@ -557,17 +577,20 @@
                     });
                 });
 
-                let rows = document.querySelectorAll('#cmaTableBody tr');
+                let fixedRows = document.querySelectorAll('#fixedTableBody tr');
+                let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+
                 aggregated.forEach((rData, rIdx) => {
-                    let row = rows[rIdx];
+                    let fixedRow = fixedRows[rIdx];
+                    let scrollRow = scrollRows[rIdx];
                     let rTotAll = 0, rOnAll = 0;
 
                     rData.categories.forEach((cat, cIdx) => {
                         let c = cIdx + 1;
                         if (filter === "ALL" || filter == c) {
-                            let totElem = row.querySelector(`.cat-tot-${c}`);
-                            let onElem = row.querySelector(`.cat-on-${c}`);
-                            let pctElem = row.querySelector(`.cat-pct-${c}`);
+                            let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
+                            let onElem = scrollRow.querySelector(`.cat-on-${c}`);
+                            let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
 
                             if (totElem) totElem.textContent = cat.tot;
                             if (onElem) onElem.textContent = cat.on;
@@ -577,9 +600,9 @@
                         rOnAll += cat.on;
                     });
 
-                    row.querySelector('.row-total-all').textContent = rTotAll;
-                    row.querySelector('.row-online-all').textContent = rOnAll;
-                    row.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
+                    fixedRow.querySelector('.row-total-all').textContent = rTotAll;
+                    fixedRow.querySelector('.row-online-all').textContent = rOnAll;
+                    fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
                 });
 
                 calculateTableTotals();
@@ -589,21 +612,21 @@
                 notice.classList.add('hidden');
                 document.getElementById('tableTitle').textContent = `NHẬP LIỆU ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
 
-                renderTableRows(false);
+                renderTables(false);
 
                 let saved = localStorage.getItem(`HUEWACO_${year}_${month}_${period}`);
                 if (saved) {
                     let data = JSON.parse(saved);
-                    let rows = document.querySelectorAll('#cmaTableBody tr');
+                    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
                     data.forEach((rData, rIdx) => {
-                        let row = rows[rIdx];
-                        if (row) {
+                        let scrollRow = scrollRows[rIdx];
+                        if (scrollRow) {
                             rData.categories.forEach((cat, cIdx) => {
                                 let c = cIdx + 1;
-                                if (row.querySelector(`.tot-${c}`)) row.querySelector(`.tot-${c}`).value = cat.tot;
-                                if (row.querySelector(`.on-${c}`)) row.querySelector(`.on-${c}`).value = cat.on;
+                                if (scrollRow.querySelector(`.tot-${c}`)) scrollRow.querySelector(`.tot-${c}`).value = cat.tot;
+                                if (scrollRow.querySelector(`.on-${c}`)) scrollRow.querySelector(`.on-${c}`).value = cat.on;
                             });
-                            calculateRow(row.querySelector('input'));
+                            calculateRow(rIdx, scrollRow.querySelector('input'));
                         }
                     });
                 }
