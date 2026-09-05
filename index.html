@@ -15,7 +15,7 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* BẢNG TÍNH LƯỚI NỀN EXCEL CHUẨN */
+        /* BẢNG TÍNH LƯỚI NỀN EXCEL ĐƠN GIẢN, DỄ NHÌN */
         .excel-table {
             width: 100%;
             border-collapse: collapse !important;
@@ -25,32 +25,34 @@
 
         .excel-table th, 
         .excel-table td {
-            border: 1px solid #d1d5db !important; /* Kẻ khung xám mảnh chuẩn Excel */
-            padding: 3px 4px;
+            border: 1px solid #d1d5db !important; /* Viền ô tính mảnh xám chuẩn Excel */
+            padding: 0;
             font-size: 12px;
             box-sizing: border-box;
             white-space: nowrap;
+            height: 28px;
+            vertical-align: middle;
         }
 
-        /* INPUT PHẲNG NHƯ Ô TÍNH EXCEL */
+        /* INPUT PHẲNG NẰM GỌN TRONG Ô EXCEL */
         .excel-table input {
             width: 100%;
             height: 100%;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 2px;
+            background: transparent;
+            border: none !important;
+            border-radius: 0 !important;
             text-align: center;
             font-size: 12px;
             outline: none;
-            padding: 2px 0;
+            margin: 0;
+            padding: 0;
             color: #0f172a;
         }
 
-        /* HIỆU ỨNG FOCUS KHI CHỌN Ô EXCEL */
+        /* HIỆU ỨNG FOCUS CHUẨN XANH EXCEL */
         .excel-table input:focus {
-            background-color: #fef08a !important; /* Vàng nhạt Excel khi nhấp chọn */
-            border-color: #2563eb !important;
-            box-shadow: inset 0 0 0 1px #2563eb;
+            background-color: #fef08a !important; /* Vàng nhạt Excel khi chọn ô */
+            box-shadow: inset 0 0 0 2px #2563eb !important; /* Viền xanh đậm bao quanh ô */
             font-weight: bold;
         }
 
@@ -216,19 +218,19 @@
         function renderTableHeader(filter) {
             const thead = document.getElementById('tableHead');
             let h1 = `<tr class="bg-excel-header">
-                <th rowspan="2" class="p-1.5 bg-slate-900 w-10">STT</th>
-                <th rowspan="2" class="p-1.5 bg-slate-900 w-32">KHU VỰC</th>
-                <th colspan="3" class="p-1.5 bg-amber-600 text-yellow-100">TỔNG HỢP</th>`;
+                <th rowspan="2" class="p-1 bg-slate-900 w-10">STT</th>
+                <th rowspan="2" class="p-1 bg-slate-900 w-32">KHU VỰC</th>
+                <th colspan="3" class="p-1 bg-amber-600 text-yellow-100">TỔNG HỢP</th>`;
             
             let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                <th class="p-1 bg-amber-700 w-14">TỔNG</th>
-                <th class="p-1 bg-amber-700 w-14">ONLINE</th>
-                <th class="p-1 bg-amber-700 w-12">%</th>`;
+                <th class="p-1 bg-amber-700 w-12">TỔNG</th>
+                <th class="p-1 bg-amber-700 w-12">ONLINE</th>
+                <th class="p-1 bg-amber-700 w-10">%</th>`;
 
             categories.forEach((catName, idx) => {
                 let catId = idx + 1;
                 if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" class="p-1.5 bg-blue-800">${catName}</th>`;
+                    h1 += `<th colspan="3" class="p-1 bg-blue-800">${catName}</th>`;
                     h2 += `<th class="p-1 bg-slate-800">TỔNG</th><th class="p-1 bg-slate-800">ONLINE</th><th class="p-1 bg-slate-800 text-yellow-400">%</th>`;
                 }
             });
@@ -267,8 +269,8 @@
                             `;
                         } else {
                             html += `
-                                <td class="p-0.5"><input type="number" min="0" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
-                                <td class="p-0.5"><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td><input type="number" min="0" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
                                 <td class="font-bold text-blue-700 pct-${c}">0%</td>
                             `;
                         }
