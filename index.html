@@ -99,14 +99,11 @@
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Header HueWACO -->
+    <!-- Header HueWACO (Đã bỏ badge GitHub Pages) -->
     <header class="bg-blue-900 text-white p-3 shadow-md border-b-4 border-yellow-500">
-        <div class="container mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-lg font-bold uppercase tracking-wide">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
-                <p class="text-[11px] text-blue-200">Hệ thống nhập liệu & quản lý tiến độ báo cáo</p>
-            </div>
-            <span class="text-xs bg-yellow-500 text-blue-950 font-bold px-2.5 py-1 rounded"></span>
+        <div class="container mx-auto">
+            <h1 class="text-lg font-bold uppercase tracking-wide">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
+            <p class="text-[11px] text-blue-200">Hệ thống nhập liệu & quản lý tiến độ báo cáo</p>
         </div>
     </header>
 
@@ -156,7 +153,7 @@
             </div>
         </div>
 
-        <!-- Khung Bảng Dữ Liệu Excel (Split Screen View Cân Bằng) -->
+        <!-- Khung Bảng Dữ Liệu Excel -->
         <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-2">
                 <h2 id="tableTitle" class="text-sm font-bold text-blue-900 uppercase tracking-wide">
@@ -167,7 +164,6 @@
                 </span>
             </div>
             
-            <!-- CONTAINER KẾT NỐI KHÔNG KHOẢNG HỞ (gap-0) -->
             <div class="flex w-full items-start gap-0">
                 
                 <!-- BẢNG CỐ ĐỊNH BÊN TRÁI -->
@@ -344,7 +340,6 @@
             cmaList.forEach((cma, idx) => {
                 let bgClass = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
 
-                // Render Bảng Cố Định (Gán border-split-right vào cột % cuối)
                 let trFixed = document.createElement('tr');
                 trFixed.className = `${bgClass} hover:bg-blue-50`;
                 trFixed.innerHTML = `
@@ -356,7 +351,6 @@
                 `;
                 fixedTbody.appendChild(trFixed);
 
-                // Render Bảng Cuộn
                 let trScroll = document.createElement('tr');
                 trScroll.className = `${bgClass} hover:bg-blue-50`;
                 let htmlScroll = '';
