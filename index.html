@@ -7,161 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* KHUNG CHỨA BẢNG CÓ THANH CUỘN */
-        .table-container {
-            overflow-x: auto;
-            max-height: 68vh;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-        }
-
-        /* BẢNG CHÂN PHƯƠNG - LIỀN MẠCH */
-        .table-fixed-layout {
-            table-layout: fixed;
-            width: max-content;
-            border-collapse: collapse !important;
-        }
-
-        .table-fixed-layout th, 
-        .table-fixed-layout td {
-            box-sizing: border-box;
-            border: 1px solid #cbd5e1; /* Đường viền mảnh, chân phương */
-        }
-
-        .table-input input { 
-            width: 100%; 
-            text-align: center; 
-            border: 1px solid #94a3b8; 
-            border-radius: 3px; 
-            padding: 2px 0;
-            font-size: 13px;
-        }
-
-        .table-input input:focus { 
-            outline: 2px solid #2563eb; 
-            background-color: #fef08a !important; 
-            font-weight: bold;
-        }
-
-        /* CỐ ĐỊNH DÒNG TIÊU ĐỀ KHI CUỘN DỌC */
-        thead th {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-
-        /* KHỐI 5 CỘT BÊN TRÁI CỐ ĐỊNH KHI CUỘN NGANG */
-        .col-fix-stt {
-            position: sticky;
-            left: 0px;
-            width: 45px; min-width: 45px; max-width: 45px;
-            z-index: 10;
-        }
-        .col-fix-cma {
-            position: sticky;
-            left: 45px;
-            width: 120px; min-width: 120px; max-width: 120px;
-            z-index: 10;
-        }
-        .col-fix-head-tot {
-            position: sticky;
-            left: 165px;
-            z-index: 45 !important;
-        }
-        .col-fix-tot-tot {
-            position: sticky;
-            left: 165px;
-            width: 55px; min-width: 55px; max-width: 55px;
-            z-index: 10;
-        }
-        .col-fix-tot-on {
-            position: sticky;
-            left: 220px;
-            width: 55px; min-width: 55px; max-width: 55px;
-            z-index: 10;
-        }
-        .col-fix-tot-pct {
-            position: sticky;
-            left: 275px;
-            width: 50px; min-width: 50px; max-width: 50px;
-            z-index: 10;
-            /* Đã bỏ box-shadow để không còn vệt cắt đè lên các cột bên phải */
-        }
-
-        /* DÒNG TỔNG NẰM Ở CỐ ĐỊNH Ở ĐÁY BẢNG */
-        tfoot td {
-            position: sticky;
-            bottom: 0;
-            z-index: 30 !important;
-        }
-        
-        tfoot td.col-fix-stt,
-        tfoot td.col-fix-cma,
-        tfoot td.col-fix-tot-tot,
-        tfoot td.col-fix-tot-on,
-        tfoot td.col-fix-tot-pct {
-            z-index: 50 !important;
-        }
-
-        thead th.col-fix-stt, 
-        thead th.col-fix-cma, 
-        thead th.col-fix-tot-tot, 
-        thead th.col-fix-tot-on, 
-        thead th.col-fix-tot-pct {
-            z-index: 40 !important;
-        }
-
-        /* MÀU NỀN ĐỘT NỔI CHÂN PHƯƠNG */
-        tbody td.col-fix-stt,
-        tbody td.col-fix-cma {
-            background-color: #0f172a !important; /* Xanh đen thanh lịch */
-            color: #ffffff;
-        }
-        tbody tr:hover td.col-fix-stt,
-        tbody tr:hover td.col-fix-cma {
-            background-color: #1e293b !important;
-        }
-
-        tbody td.col-fix-tot-tot,
-        tbody td.col-fix-tot-on {
-            background-color: #fef3c7 !important;
-        }
-        tbody td.col-fix-tot-pct {
-            background-color: #fde68a !important;
-        }
-
-        tfoot td.col-fix-stt,
-        tfoot td.col-fix-cma {
-            background-color: #020617 !important;
-            color: #ffffff;
-        }
-        tfoot td.col-fix-tot-tot,
-        tfoot td.col-fix-tot-on,
-        tfoot td.col-fix-tot-pct {
-            background-color: #d97706 !important;
-            color: #ffffff;
-        }
-
-        .bg-row-even { background-color: #ffffff; }
-        .bg-row-odd { background-color: #f8fafc; }
+        .table-custom { width: 100%; border-collapse: collapse; }
+        .table-custom th, .table-custom td { border: 1px solid #cbd5e1; box-sizing: border-box; }
+        .table-custom input { width: 100%; text-align: center; border: 1px solid #94a3b8; border-radius: 4px; padding: 3px 0; font-size: 13px; }
+        .table-custom input:focus { outline: 2px solid #2563eb; background-color: #fef08a !important; font-weight: bold; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Header HueWACO -->
     <header class="bg-blue-900 text-white p-4 shadow-md border-b-4 border-yellow-500">
         <div class="container mx-auto flex justify-between items-center">
             <div>
-                <h1 class="text-xl font-bold tracking-wide uppercase">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
-                <p class="text-xs text-blue-200">Hệ thống theo dõi & tổng hợp tiến độ từng tuần, tháng, năm</p>
+                <h1 class="text-xl font-bold uppercase">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
+                <p class="text-xs text-blue-200">Hệ thống theo dõi & tổng hợp tiến độ</p>
             </div>
             <span class="text-xs bg-yellow-500 text-blue-950 font-bold px-3 py-1 rounded">GitHub Pages</span>
         </div>
@@ -169,120 +31,74 @@
 
     <div class="container mx-auto p-4 space-y-4">
 
-        <!-- Thanh Bộ Lọc -->
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+        <!-- Bộ Lọc Đã Bổ Sung Chọn Dịch Vụ -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
-                <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-semibold">
-                </select>
+                <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-2 text-sm font-semibold"></select>
             </div>
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
-                <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-semibold">
+                <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-2 text-sm font-semibold"></select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO:</label>
+                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 text-sm font-bold text-blue-800"></select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-blue-900 mb-1">LOẠI DỊCH VỤ:</label>
+                <select id="selectCategoryFilter" onchange="filterCategoryView()" class="w-full border-2 border-blue-600 rounded p-2 text-sm font-bold text-blue-900 bg-blue-50">
+                    <option value="ALL">-- Hiển thị Tất Cả Dịch Vụ --</option>
+                    <option value="1">1. Lắp đặt</option>
+                    <option value="2">2. Cải tạo</option>
+                    <option value="3">3. Nâng dời hạ</option>
+                    <option value="4">4. Dò tìm</option>
+                    <option value="5">5. Phụ lục</option>
+                    <option value="6">6. Kiểm định ĐH</option>
+                    <option value="7">7. Tạm ngừng</option>
+                    <option value="8">8. Cắt hủy</option>
+                    <option value="9">9. Mở nước</option>
+                    <option value="10">10. Kiểm tra ĐH</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO / NHẬP LIỆU:</label>
-                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-bold text-blue-800">
-                </select>
+                <button onclick="loadData()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 rounded shadow-sm text-sm">🔍 Xem / Tra Cứu</button>
             </div>
             <div>
-                <button onclick="loadData()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 rounded shadow-sm text-sm">
-                    🔍 Xem / Tra Cứu
-                </button>
-            </div>
-            <div>
-                <button id="btnSave" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow-sm text-sm">
-                    💾 Lưu Số Liệu Tuần
-                </button>
+                <button id="btnSave" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow-sm text-sm">💾 Lưu Số Liệu</button>
             </div>
         </div>
 
-        <!-- Khung Bảng dữ liệu -->
-        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+        <!-- Khung Bảng -->
+        <div class="bg-white p-4 rounded-lg shadow-sm border border-slate-200 overflow-x-auto">
             <div class="flex justify-between items-center mb-3">
-                <h2 id="tableTitle" class="text-base font-bold text-blue-900 uppercase">
-                    Số Liệu Báo Cáo Đơn Online
-                </h2>
-                <span id="readOnlyNotice" class="hidden text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded border border-amber-300">
-                    🔒 Chế độ Tổng hợp (Tự động cộng dồn các tuần)
-                </span>
+                <h2 id="tableTitle" class="text-base font-bold text-blue-900 uppercase">Số Liệu Báo Cáo Đơn Online</h2>
+                <span id="readOnlyNotice" class="hidden text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded border border-amber-300">🔒 Chế độ Tổng hợp</span>
             </div>
             
-            <div class="table-container">
-                <table class="table-fixed-layout text-xs text-left text-slate-700">
-                    <colgroup>
-                        <col style="width: 45px;">  <!-- STT -->
-                        <col style="width: 120px;"> <!-- Khu vực -->
-                        <col style="width: 55px;">  <!-- Tổng hợp - Tổng -->
-                        <col style="width: 55px;">  <!-- Tổng hợp - Online -->
-                        <col style="width: 50px;">  <!-- Tổng hợp - % -->
-                        <script>
-                            for(let i=0; i<10; i++) {
-                                document.write('<col style="width: 50px;"><col style="width: 50px;"><col style="width: 45px;">');
-                            }
-                        </script>
-                    </colgroup>
-
-                    <thead class="text-white uppercase font-bold text-center">
-                        <tr class="bg-blue-900 text-white">
-                            <th rowspan="2" class="p-2 col-fix-stt bg-slate-900">STT</th>
-                            <th rowspan="2" class="p-2 col-fix-cma bg-slate-900">KHU VỰC</th>
-                            <th colspan="3" class="p-2 col-fix-head-tot bg-amber-600 text-yellow-100">TỔNG HỢP</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Lắp đặt</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Cải tạo</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Nâng dời hạ</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Dò tìm</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Phụ lục</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Kiểm định ĐH</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Tạm ngừng</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Cắt hủy</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Mở nước</th>
-                            <th colspan="3" class="p-2 bg-blue-800">Kiểm tra ĐH</th>
-                        </tr>
-                        <tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                            <th class="p-1 col-fix-tot-tot bg-amber-700">TỔNG</th>
-                            <th class="p-1 col-fix-tot-on bg-amber-700">ONLINE</th>
-                            <th class="p-1 col-fix-tot-pct bg-amber-700">%</th>
-                            <script>
-                                for(let i=0; i<10; i++) {
-                                    document.write(`
-                                        <th class="p-1 bg-slate-800">TỔNG</th>
-                                        <th class="p-1 bg-slate-800">ONLINE</th>
-                                        <th class="p-1 bg-slate-800 text-yellow-400">%</th>
-                                    `);
-                                }
-                            </script>
-                        </tr>
-                    </thead>
-                    <tbody id="cmaTableBody" class="table-input">
-                    </tbody>
-                    <tfoot id="cmaTableFoot" class="bg-slate-200 font-bold text-slate-900 text-center">
-                    </tfoot>
-                </table>
-            </div>
+            <table class="table-custom text-xs text-center text-slate-700" id="mainTable">
+                <thead id="tableHead" class="text-white uppercase font-bold"></thead>
+                <tbody id="cmaTableBody"></tbody>
+                <tfoot id="cmaTableFoot" class="bg-slate-200 font-bold text-slate-900"></tfoot>
+            </table>
         </div>
     </div>
 
     <script>
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
-        const totalCategories = 10;
+        const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Phụ lục", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
-        function padZero(num) {
-            return num < 10 ? '0' + num : num;
-        }
+        function padZero(num) { return num < 10 ? '0' + num : num; }
 
         function updateWeekDropdown() {
             const year = parseInt(document.getElementById('selectYear').value) || 2026;
             const monthStr = document.getElementById('selectMonth').value || "M9";
             const month = parseInt(monthStr.replace('M', ''));
             const selectPeriod = document.getElementById('selectPeriod');
-
-            const currentSelectedPeriod = selectPeriod.value;
+            const currentSelected = selectPeriod.value;
             selectPeriod.innerHTML = '';
 
             const daysInMonth = new Date(year, month, 0).getDate();
-
             const weeks = [
                 { id: "W1", name: "Tuần 1", start: 1, end: 7 },
                 { id: "W2", name: "Tuần 2", start: 8, end: 14 },
@@ -295,8 +111,7 @@
                 if (w.start <= daysInMonth) {
                     let opt = document.createElement('option');
                     opt.value = w.id;
-                    let endDay = Math.min(w.end, daysInMonth);
-                    opt.textContent = `${w.name} (Từ ${padZero(w.start)}/${padZero(month)} đến ${padZero(endDay)}/${padZero(month)}/${year})`;
+                    opt.textContent = `${w.name} (${padZero(w.start)}/${padZero(month)} - ${padZero(Math.min(w.end, daysInMonth))}/${padZero(month)})`;
                     selectPeriod.appendChild(opt);
                 }
             });
@@ -307,120 +122,149 @@
             optMonth.textContent = `-- Tổng Hợp Cả Tháng ${month}/${year} --`;
             selectPeriod.appendChild(optMonth);
 
-            if (currentSelectedPeriod && Array.from(selectPeriod.options).some(o => o.value === currentSelectedPeriod)) {
-                selectPeriod.value = currentSelectedPeriod;
+            if (currentSelected && Array.from(selectPeriod.options).some(o => o.value === currentSelected)) {
+                selectPeriod.value = currentSelected;
             }
         }
 
         function initTime() {
             const selectYear = document.getElementById('selectYear');
             const selectMonth = document.getElementById('selectMonth');
-            
             const now = new Date();
-            const currentYear = now.getFullYear();
-            const currentMonth = now.getMonth() + 1;
 
             for (let y = 2024; y <= 2030; y++) {
                 let opt = document.createElement('option');
-                opt.value = y;
-                opt.textContent = "Năm " + y;
-                if (y === currentYear) opt.selected = true;
+                opt.value = y; opt.textContent = "Năm " + y;
+                if (y === now.getFullYear()) opt.selected = true;
                 selectYear.appendChild(opt);
             }
-
             for (let m = 1; m <= 12; m++) {
                 let opt = document.createElement('option');
-                opt.value = "M" + m;
-                opt.textContent = "Tháng " + m;
-                if (m === currentMonth) opt.selected = true;
+                opt.value = "M" + m; opt.textContent = "Tháng " + m;
+                if (m === (now.getMonth() + 1)) opt.selected = true;
                 selectMonth.appendChild(opt);
             }
-
             updateWeekDropdown();
         }
 
+        function filterCategoryView() {
+            loadData();
+        }
+
+        function renderTableHeader(filter) {
+            const thead = document.getElementById('tableHead');
+            let h1 = `<tr class="bg-blue-900">
+                <th rowspan="2" class="p-2 bg-slate-900 w-12">STT</th>
+                <th rowspan="2" class="p-2 bg-slate-900 w-32">KHU VỰC</th>
+                <th colspan="3" class="p-2 bg-amber-600 text-yellow-100">TỔNG HỢP</th>`;
+            
+            let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">
+                <th class="p-1 bg-amber-700 w-14">TỔNG</th>
+                <th class="p-1 bg-amber-700 w-14">ONLINE</th>
+                <th class="p-1 bg-amber-700 w-12">%</th>`;
+
+            categories.forEach((catName, idx) => {
+                let catId = idx + 1;
+                if (filter === "ALL" || filter == catId) {
+                    h1 += `<th colspan="3" class="p-2 bg-blue-800">${catName}</th>`;
+                    h2 += `<th class="p-1 bg-slate-800">TỔNG</th><th class="p-1 bg-slate-800">ONLINE</th><th class="p-1 bg-slate-800 text-yellow-400">%</th>`;
+                }
+            });
+
+            h1 += `</tr>`; h2 += `</tr>`;
+            thead.innerHTML = h1 + h2;
+        }
+
         function renderTableRows(isReadOnly = false) {
+            const filter = document.getElementById('selectCategoryFilter').value;
+            renderTableHeader(filter);
+
             const tbody = document.getElementById('cmaTableBody');
             tbody.innerHTML = '';
 
             cmaList.forEach((cma, idx) => {
                 let tr = document.createElement('tr');
-                let rowBgClass = idx % 2 === 0 ? 'bg-row-even' : 'bg-row-odd';
-                tr.className = `${rowBgClass} hover:bg-slate-100`;
+                tr.className = idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50 hover:bg-slate-100';
                 
                 let html = `
-                    <td class="p-2 text-center font-medium col-fix-stt">${idx + 1}</td>
-                    <td class="p-2 font-bold col-fix-cma">${cma}</td>
-                    <td class="p-1 text-center font-bold text-blue-900 col-fix-tot-tot row-total-all">0</td>
-                    <td class="p-1 text-center font-bold text-emerald-800 col-fix-tot-on row-online-all">0</td>
-                    <td class="p-1 text-center font-bold text-amber-900 col-fix-tot-pct row-pct-all">0%</td>
+                    <td class="p-2 bg-slate-900 text-white font-medium">${idx + 1}</td>
+                    <td class="p-2 bg-slate-900 text-white font-bold text-left">${cma}</td>
+                    <td class="p-1 font-bold text-blue-900 bg-amber-100 row-total-all">0</td>
+                    <td class="p-1 font-bold text-emerald-800 bg-amber-100 row-online-all">0</td>
+                    <td class="p-1 font-bold text-amber-900 bg-amber-200 row-pct-all">0%</td>
                 `;
 
-                for (let c = 1; c <= totalCategories; c++) {
-                    if (isReadOnly) {
-                        html += `
-                            <td class="p-1 text-center font-semibold cat-tot-${c}">0</td>
-                            <td class="p-1 text-center font-semibold text-emerald-700 cat-on-${c}">0</td>
-                            <td class="p-1 text-center font-bold text-blue-700 cat-pct-${c}">0%</td>
-                        `;
-                    } else {
-                        html += `
-                            <td class="p-1"><input type="number" min="0" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
-                            <td class="p-1"><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
-                            <td class="p-1 text-center font-bold text-blue-700 pct-${c}">0%</td>
-                        `;
+                categories.forEach((_, cIdx) => {
+                    let c = cIdx + 1;
+                    if (filter === "ALL" || filter == c) {
+                        if (isReadOnly) {
+                            html += `
+                                <td class="p-1 font-semibold cat-tot-${c}">0</td>
+                                <td class="p-1 font-semibold text-emerald-700 cat-on-${c}">0</td>
+                                <td class="p-1 font-bold text-blue-700 cat-pct-${c}">0%</td>
+                            `;
+                        } else {
+                            html += `
+                                <td class="p-1"><input type="number" min="0" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td class="p-1"><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(this)"></td>
+                                <td class="p-1 font-bold text-blue-700 pct-${c}">0%</td>
+                            `;
+                        }
                     }
-                }
+                });
 
                 tr.innerHTML = html;
                 tbody.appendChild(tr);
             });
 
-            renderFooter();
+            renderFooter(filter);
         }
 
-        function renderFooter() {
+        function renderFooter(filter) {
             const tfoot = document.getElementById('cmaTableFoot');
             let html = `
                 <tr>
-                    <td class="p-2 text-center font-bold col-fix-stt">--</td>
-                    <td class="p-2 text-center font-bold col-fix-cma">HueWACO</td>
-                    <td id="footTotalAll" class="p-2 text-center font-bold col-fix-tot-tot">0</td>
-                    <td id="footOnlineAll" class="p-2 text-center font-bold col-fix-tot-on">0</td>
-                    <td id="footPctAll" class="p-2 text-center font-bold col-fix-tot-pct">0%</td>
+                    <td class="p-2 bg-slate-950 text-white">--</td>
+                    <td class="p-2 bg-slate-950 text-white">HueWACO</td>
+                    <td id="footTotalAll" class="p-2 bg-amber-600 text-white">0</td>
+                    <td id="footOnlineAll" class="p-2 bg-amber-600 text-white">0</td>
+                    <td id="footPctAll" class="p-2 bg-amber-700 text-white">0%</td>
             `;
 
-            for (let c = 1; c <= totalCategories; c++) {
-                html += `
-                    <td id="footCatTot-${c}" class="p-1 text-center font-bold bg-slate-200">0</td>
-                    <td id="footCatOn-${c}" class="p-1 text-center font-bold text-emerald-800 bg-slate-200">0</td>
-                    <td id="footCatPct-${c}" class="p-1 text-center font-bold text-blue-900 bg-slate-200">0%</td>
-                `;
-            }
+            categories.forEach((_, cIdx) => {
+                let c = cIdx + 1;
+                if (filter === "ALL" || filter == c) {
+                    html += `
+                        <td id="footCatTot-${c}" class="p-1 bg-slate-200">0</td>
+                        <td id="footCatOn-${c}" class="p-1 text-emerald-800 bg-slate-200">0</td>
+                        <td id="footCatPct-${c}" class="p-1 text-blue-900 bg-slate-200">0%</td>
+                    `;
+                }
+            });
             html += `</tr>`;
             tfoot.innerHTML = html;
         }
 
         function calculateRow(element) {
             let row = element.closest('tr');
-            let grandTotal = 0;
-            let grandOnline = 0;
+            let grandTotal = 0, grandOnline = 0;
 
-            for (let c = 1; c <= totalCategories; c++) {
-                let tot = parseFloat(row.querySelector(`.tot-${c}`).value) || 0;
-                let on = parseFloat(row.querySelector(`.on-${c}`).value) || 0;
+            categories.forEach((_, cIdx) => {
+                let c = cIdx + 1;
+                let totElem = row.querySelector(`.tot-${c}`);
+                let onElem = row.querySelector(`.on-${c}`);
                 let pctElem = row.querySelector(`.pct-${c}`);
 
-                if (tot > 0) {
-                    let pct = Math.round((on / tot) * 100);
-                    pctElem.textContent = pct + '%';
-                } else {
-                    pctElem.textContent = '0%';
+                let tot = totElem ? (parseFloat(totElem.value) || 0) : 0;
+                let on = onElem ? (parseFloat(onElem.value) || 0) : 0;
+
+                if (pctElem) {
+                    pctElem.textContent = tot > 0 ? Math.round((on / tot) * 100) + '%' : '0%';
                 }
 
                 grandTotal += tot;
                 grandOnline += on;
-            }
+            });
 
             row.querySelector('.row-total-all').textContent = grandTotal;
             row.querySelector('.row-online-all').textContent = grandOnline;
@@ -431,44 +275,49 @@
 
         function calculateTableTotals() {
             let period = document.getElementById('selectPeriod').value;
+            let filter = document.getElementById('selectCategoryFilter').value;
             let rows = document.querySelectorAll('#cmaTableBody tr');
             
-            let footTotAll = 0;
-            let footOnAll = 0;
-            let catTotals = Array(totalCategories + 1).fill(0);
-            let catOnlines = Array(totalCategories + 1).fill(0);
+            let footTotAll = 0, footOnAll = 0;
+            let catTotals = Array(categories.length + 1).fill(0);
+            let catOnlines = Array(categories.length + 1).fill(0);
 
             rows.forEach(row => {
-                if (period === 'MONTH') {
-                    footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
-                    footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
+                footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
+                footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
 
-                    for (let c = 1; c <= totalCategories; c++) {
-                        catTotals[c] += parseFloat(row.querySelector(`.cat-tot-${c}`).textContent) || 0;
-                        catOnlines[c] += parseFloat(row.querySelector(`.cat-on-${c}`).textContent) || 0;
-                    }
-                } else {
-                    for (let c = 1; c <= totalCategories; c++) {
-                        let tot = parseFloat(row.querySelector(`.tot-${c}`)?.value) || 0;
-                        let on = parseFloat(row.querySelector(`.on-${c}`)?.value) || 0;
+                categories.forEach((_, cIdx) => {
+                    let c = cIdx + 1;
+                    if (filter === "ALL" || filter == c) {
+                        let tot = period === 'MONTH' 
+                            ? (parseFloat(row.querySelector(`.cat-tot-${c}`)?.textContent) || 0)
+                            : (parseFloat(row.querySelector(`.tot-${c}`)?.value) || 0);
+                        let on = period === 'MONTH'
+                            ? (parseFloat(row.querySelector(`.cat-on-${c}`)?.textContent) || 0)
+                            : (parseFloat(row.querySelector(`.on-${c}`)?.value) || 0);
+
                         catTotals[c] += tot;
                         catOnlines[c] += on;
                     }
-                    footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
-                    footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
-                }
+                });
             });
 
             document.getElementById('footTotalAll').textContent = footTotAll;
             document.getElementById('footOnlineAll').textContent = footOnAll;
             document.getElementById('footPctAll').textContent = footTotAll > 0 ? Math.round((footOnAll / footTotAll) * 100) + '%' : '0%';
 
-            for (let c = 1; c <= totalCategories; c++) {
-                document.getElementById(`footCatTot-${c}`).textContent = catTotals[c];
-                document.getElementById(`footCatOn-${c}`).textContent = catOnlines[c];
-                let pct = catTotals[c] > 0 ? Math.round((catOnlines[c] / catTotals[c]) * 100) + '%' : '0%';
-                document.getElementById(`footCatPct-${c}`).textContent = pct;
-            }
+            categories.forEach((_, cIdx) => {
+                let c = cIdx + 1;
+                if (filter === "ALL" || filter == c) {
+                    let totCell = document.getElementById(`footCatTot-${c}`);
+                    let onCell = document.getElementById(`footCatOn-${c}`);
+                    let pctCell = document.getElementById(`footCatPct-${c}`);
+
+                    if (totCell) totCell.textContent = catTotals[c];
+                    if (onCell) onCell.textContent = catOnlines[c];
+                    if (pctCell) pctCell.textContent = catTotals[c] > 0 ? Math.round((catOnlines[c] / catTotals[c]) * 100) + '%' : '0%';
+                }
+            });
         }
 
         function saveData() {
@@ -477,7 +326,7 @@
             let period = document.getElementById('selectPeriod').value;
 
             if (period === 'MONTH') {
-                alert('Không thể lưu ở chế độ Tổng hợp Tháng! Vui lòng chọn tuần cụ thể để nhập.');
+                alert('Không thể lưu ở chế độ Tổng hợp Tháng!');
                 return;
             }
 
@@ -486,23 +335,24 @@
 
             document.querySelectorAll('#cmaTableBody tr').forEach((row, idx) => {
                 let rowData = { cma: cmaList[idx], categories: [] };
-                for (let c = 1; c <= totalCategories; c++) {
-                    rowData.categories.push({
-                        tot: row.querySelector(`.tot-${c}`).value,
-                        on: row.querySelector(`.on-${c}`).value
-                    });
-                }
+                categories.forEach((_, cIdx) => {
+                    let c = cIdx + 1;
+                    let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
+                    let onVal = row.querySelector(`.on-${c}`)?.value || "0";
+                    rowData.categories.push({ tot: totVal, on: onVal });
+                });
                 data.push(rowData);
             });
 
             localStorage.setItem(key, JSON.stringify(data));
-            alert(`Đã lưu thành công dữ liệu ${period} - ${month} - ${year}!`);
+            alert(`Lưu thành công số liệu ${period} - ${month} - ${year}!`);
         }
 
         function loadData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
+            let filter = document.getElementById('selectCategoryFilter').value;
 
             const btnSave = document.getElementById('btnSave');
             const notice = document.getElementById('readOnlyNotice');
@@ -510,13 +360,13 @@
             if (period === 'MONTH') {
                 btnSave.classList.add('hidden');
                 notice.classList.remove('hidden');
-                document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ THÁNG (${month.replace('M','Tháng ')} - NĂM ${year})`;
+                document.getElementById('tableTitle').textContent = `TỔNG HỢP THÁNG ${month.replace('M','')} - NĂM ${year}`;
 
                 renderTableRows(true);
 
                 let aggregated = cmaList.map(cma => ({
                     cma: cma,
-                    categories: Array.from({length: totalCategories}, () => ({tot: 0, on: 0}))
+                    categories: Array.from({length: categories.length}, () => ({tot: 0, on: 0}))
                 }));
 
                 ['W1','W2','W3','W4','W5'].forEach(w => {
@@ -539,11 +389,15 @@
 
                     rData.categories.forEach((cat, cIdx) => {
                         let c = cIdx + 1;
-                        row.querySelector(`.cat-tot-${c}`).textContent = cat.tot;
-                        row.querySelector(`.cat-on-${c}`).textContent = cat.on;
-                        let pct = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
-                        row.querySelector(`.cat-pct-${c}`).textContent = pct;
+                        if (filter === "ALL" || filter == c) {
+                            let totElem = row.querySelector(`.cat-tot-${c}`);
+                            let onElem = row.querySelector(`.cat-on-${c}`);
+                            let pctElem = row.querySelector(`.cat-pct-${c}`);
 
+                            if (totElem) totElem.textContent = cat.tot;
+                            if (onElem) onElem.textContent = cat.on;
+                            if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
+                        }
                         rTotAll += cat.tot;
                         rOnAll += cat.on;
                     });
@@ -558,7 +412,7 @@
             } else {
                 btnSave.classList.remove('hidden');
                 notice.classList.add('hidden');
-                document.getElementById('tableTitle').textContent = `NHẬP LIỆU ${period} - ${month.replace('M','THÁNG ')} - NĂM ${year}`;
+                document.getElementById('tableTitle').textContent = `NHẬP LIỆU ${period} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
 
                 renderTableRows(false);
 
@@ -574,7 +428,7 @@
                                 if (row.querySelector(`.tot-${c}`)) row.querySelector(`.tot-${c}`).value = cat.tot;
                                 if (row.querySelector(`.on-${c}`)) row.querySelector(`.on-${c}`).value = cat.on;
                             });
-                            calculateRow(row.querySelector('.tot-1'));
+                            calculateRow(row.querySelector('input'));
                         }
                     });
                 }
