@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chương Trình Báo Cáo & Tổng Hợp Đơn Online</title>
+    <title>Báo Cáo Tổng Hợp Đơn Online - HueWACO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -12,116 +12,151 @@
             text-align: right; 
             border: 1px solid #cbd5e1; 
             border-radius: 4px; 
-            padding: 4px;
-            transition: background-color 0.2s ease;
+            padding: 3px 4px;
+            font-size: 13px;
+            transition: all 0.2s ease;
         }
-        /* Highlight vàng nhạt khi focus vào ô nhập liệu */
+        /* Highlight vàng nhạt khi bấm chọn vào ô nhập */
         .table-input input:focus { 
-            outline: 2px solid #f59e0b; 
-            background-color: #fef3c7 !important; 
+            outline: 2px solid #eab308; 
+            background-color: #fef9c3 !important; 
+        }
+        /* Cố định cột thông tin bên trái khi cuộn ngang */
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            background-color: #f8fafc;
+            z-index: 10;
         }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-blue-800 text-white p-4 shadow-md">
+    <!-- Header HueWACO -->
+    <header class="bg-blue-900 text-white p-4 shadow-lg border-b-4 border-yellow-500">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">BÁO CÁO TỔNG HỢP ĐƠN ONLINE (CMA)</h1>
-            <span class="text-sm bg-blue-700 px-3 py-1 rounded">Hệ Thống Báo Cáo GitHub Pages</span>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide uppercase">TỔNG HỢP ĐƠN ONLINE - HUEWACO</h1>
+                <p class="text-xs text-blue-200">Hệ thống theo dõi & tổng hợp tiến độ từng tuần, tháng, năm</p>
+            </div>
+            <span class="text-xs bg-yellow-500 text-blue-950 font-bold px-3 py-1 rounded shadow">GitHub Pages</span>
         </div>
     </header>
 
-    <div class="container mx-auto p-4 space-y-6">
+    <div class="container mx-auto p-4 space-y-4">
 
-        <!-- Bộ Lọc / Thao Tác -->
-        <div class="bg-white p-4 rounded-lg shadow border border-slate-200 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <!-- Thanh Điều Khiển & Bộ Lọc -->
+        <div class="bg-white p-4 rounded-xl shadow border border-slate-200 grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Loại Thao Tác:</label>
-                <select id="selectMode" onchange="toggleMode()" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-blue-500 font-semibold text-blue-800">
-                    <option value="TH">Báo Cáo / Nhập Thực Hiện Tháng</option>
-                    <option value="KH">Nhập Kế Hoạch Cho Từng Năm</option>
+                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
+                <select id="selectYear" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-semibold">
+                    <!-- Tự động nạp danh sách năm -->
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-slate-700 mb-1">Chọn Năm:</label>
-                <select id="selectYear" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
-                    <!-- Javascript nạp năm đến 2030 -->
-                </select>
-            </div>
-            <div id="periodContainer">
-                <label class="block text-sm font-medium text-slate-700 mb-1">Chọn Kỳ Báo Cáo:</label>
-                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 focus:ring-2 focus:ring-blue-500">
-                    <option value="T1">Tháng 1</option><option value="T2">Tháng 2</option><option value="T3">Tháng 3</option>
-                    <option value="T4">Tháng 4</option><option value="T5">Tháng 5</option><option value="T6">Tháng 6</option>
-                    <option value="T7">Tháng 7</option><option value="T8">Tháng 8</option><option value="T9">Tháng 9</option>
-                    <option value="T10">Tháng 10</option><option value="T11">Tháng 11</option><option value="T12">Tháng 12</option>
-                    <option value="Q1">Quý 1</option><option value="Q2">Quý 2</option>
-                    <option value="Q3">Quý 3</option><option value="Q4">Quý 4</option>
-                    <option value="NAM">Cả Năm</option>
+                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
+                <select id="selectMonth" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-semibold">
+                    <!-- 12 Tháng -->
                 </select>
             </div>
             <div>
-                <button onclick="loadData()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded font-medium shadow">
-                    Xem / Tra Cứu
+                <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO / NHẬP LIỆU:</label>
+                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-600 font-bold text-blue-800">
+                    <option value="W1">Tuần 1 (Ngày 01 - 07)</option>
+                    <option value="W2">Tuần 2 (Ngày 08 - 14)</option>
+                    <option value="W3">Tuần 3 (Ngày 15 - 21)</option>
+                    <option value="W4">Tuần 4 (Ngày 22 - 28)</option>
+                    <option value="W5">Tuần 5 (Còn lại)</option>
+                    <option value="MONTH" class="font-bold text-emerald-700">-- Tổng Hợp Cả Tháng --</option>
+                </select>
+            </div>
+            <div>
+                <button onclick="loadData()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-2 rounded shadow text-sm">
+                    🔍 Xem / Tra Cứu
                 </button>
             </div>
             <div>
-                <button onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 rounded font-medium shadow">
-                    Lưu Số Liệu
+                <button id="btnSave" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded shadow text-sm">
+                    💾 Lưu Số Liệu Tuần
                 </button>
             </div>
         </div>
 
-        <!-- Bảng Dữ Liệu -->
-        <div class="bg-white p-4 rounded-lg shadow border border-slate-200 overflow-x-auto">
-            <h2 id="tableTitle" class="text-lg font-semibold text-slate-800 mb-3">
-                Dữ Liệu Báo Cáo
-            </h2>
+        <!-- Bảng Dữ Liệu Báo Cáo -->
+        <div class="bg-white p-4 rounded-xl shadow border border-slate-200 overflow-x-auto">
+            <div class="flex justify-between items-center mb-3">
+                <h2 id="tableTitle" class="text-base font-bold text-blue-900 uppercase">
+                    Số Liệu Báo Cáo Đơn Online
+                </h2>
+                <span id="readOnlyNotice" class="hidden text-xs bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded border border-amber-300">
+                    🔒 Chế độ Tổng hợp (Tự động cộng dồn các tuần)
+                </span>
+            </div>
             
-            <table class="w-full text-xs text-left text-slate-600 border-collapse border border-slate-300">
-                <thead class="bg-slate-200 text-slate-700 uppercase font-bold text-center">
-                    <tr>
-                        <th rowspan="2" class="border border-slate-300 p-2 min-w-[110px]">Tên CMA</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Lắp Đặt</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Cải Tạo</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Nâng Dời Hạ</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Dò Tìm Rò Rỉ</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Thay Định Kỳ</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Sửa Chữa / BT</th>
-                        <th colspan="3" class="border border-slate-300 p-1">Kiểm Định / Khác</th>
+            <table class="w-full text-xs text-left text-slate-700 border-collapse border border-slate-300 shadow-sm">
+                <!-- Header Phối Màu Chuyên Nghiệp -->
+                <thead class="text-white uppercase font-bold text-center">
+                    <!-- Dòng tiêu đề cấp 1 -->
+                    <tr class="bg-blue-900 text-white">
+                        <th rowspan="2" class="border border-slate-400 p-2 min-w-[40px] sticky-col bg-blue-950">STT</th>
+                        <th rowspan="2" class="border border-slate-400 p-2 min-w-[120px] sticky-col bg-blue-950" style="left:40px;">Khu vực</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-amber-600 text-yellow-100">TỔNG CỘNG</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Lắp đặt</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Cải tạo</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Nâng dời hạ</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Dò tìm</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Phụ lục</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Kiểm định ĐH</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Tạm ngừng</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Cắt hủy</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Mở nước</th>
+                        <th colspan="3" class="border border-slate-400 p-2 bg-blue-800">Kiểm tra ĐH</th>
                     </tr>
-                    <tr class="bg-slate-100">
-                        <!-- Tạo 7 cặp cột KH/TH/% cho 7 hạng mục -->
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
-                        <th class="border border-slate-300 p-1">KH</th><th class="border border-slate-300 p-1">TH</th><th class="border border-slate-300 p-1">%</th>
+                    <!-- Dòng tiêu đề cấp 2 (Tổng đơn / Đơn Online / %) -->
+                    <tr class="bg-slate-800 text-yellow-300 text-[11px]">
+                        <!-- Cột tổng -->
+                        <th class="border border-slate-400 p-1 bg-amber-700">Tổng đơn</th>
+                        <th class="border border-slate-400 p-1 bg-amber-700">Online</th>
+                        <th class="border border-slate-400 p-1 bg-amber-700">%</th>
+                        <!-- 10 Hạng mục -->
+                        <script>
+                            for(let i=0; i<10; i++) {
+                                document.write(`
+                                    <th class="border border-slate-400 p-1">Tổng</th>
+                                    <th class="border border-slate-400 p-1">Online</th>
+                                    <th class="border border-slate-400 p-1 text-yellow-400">%</th>
+                                `);
+                            }
+                        </script>
                     </tr>
                 </thead>
-                <tbody id="cmaDataBody" class="table-input">
-                    <!-- Tự động nạp dòng dữ liệu -->
+                <tbody id="cmaTableBody" class="table-input">
+                    <!-- Tự động sinh dòng bằng JavaScript -->
                 </tbody>
+                <!-- Dòng Tổng Cộng HueWACO -->
+                <tfoot id="cmaTableFoot" class="bg-slate-200 font-bold text-slate-900 text-center border-t-2 border-slate-400">
+                    <!-- Tự động tính toán dòng tổng -->
+                </tfoot>
             </table>
         </div>
     </div>
 
+    <!-- Script Xử Lý Logic -->
     <script>
-        const cmaList = ["Thuận Hóa", "Phú Xuân", "Phong Điền", "Quảng Điền", "Hương Trà", "Hương Thủy", "Phú Vang", "Nam Đông", "A Lưới"];
-        const totalCategories = 7; // 7 hạng mục công việc từ sheet TỔNG HỢP
+        // Danh sách 9 Khu vực / CMA
+        const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
+        const totalCategories = 10; // 10 Hạng mục công việc
 
-        // Khởi tạo năm & thiết lập mặc định theo thời gian thực (2026, Tháng 9)
-        function initTimeDefaults() {
+        // Khởi tạo thời gian mặc định (2026, Tháng 9, Tuần 1)
+        function initTime() {
             const selectYear = document.getElementById('selectYear');
-            const selectPeriod = document.getElementById('selectPeriod');
+            const selectMonth = document.getElementById('selectMonth');
             
             const now = new Date();
-            const currentYear = now.getFullYear(); // Lấy năm hiện tại
-            const currentMonth = now.getMonth() + 1; // Lấy tháng hiện tại (1-12)
+            const currentYear = now.getFullYear(); // 2026
+            const currentMonth = now.getMonth() + 1; // Tháng hiện tại
 
+            // Nạp năm đến 2030
             for (let y = 2024; y <= 2030; y++) {
                 let opt = document.createElement('option');
                 opt.value = y;
@@ -130,166 +165,273 @@
                 selectYear.appendChild(opt);
             }
 
-            selectPeriod.value = "T" + currentMonth;
-        }
-
-        // Chuyển đổi giữa chế độ Nhập KH Năm và Báo Cáo Tháng
-        function toggleMode() {
-            const mode = document.getElementById('selectMode').value;
-            const periodContainer = document.getElementById('periodContainer');
-            
-            if (mode === 'KH') {
-                periodContainer.style.display = 'none';
-            } else {
-                periodContainer.style.display = 'block';
+            // Nạp 12 tháng
+            for (let m = 1; m <= 12; m++) {
+                let opt = document.createElement('option');
+                opt.value = "M" + m;
+                opt.textContent = "Tháng " + m;
+                if (m === currentMonth) opt.selected = true;
+                selectMonth.appendChild(opt);
             }
-            loadData();
         }
 
-        // Vẽ danh sách các ô nhập số liệu
-        function renderRows() {
-            const tbody = document.getElementById('cmaDataBody');
-            const mode = document.getElementById('selectMode').value;
+        // Vẽ các dòng nhập liệu cho 9 Khu vực
+        function renderTableRows(isReadOnly = false) {
+            const tbody = document.getElementById('cmaTableBody');
             tbody.innerHTML = '';
 
-            cmaList.forEach((cma, index) => {
-                let row = document.createElement('tr');
-                row.className = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+            cmaList.forEach((cma, idx) => {
+                let tr = document.createElement('tr');
+                tr.className = idx % 2 === 0 ? 'bg-white hover:bg-slate-50' : 'bg-slate-50 hover:bg-slate-100';
                 
-                let html = `<td class="border border-slate-300 p-2 font-medium text-slate-900">${cma}</td>`;
-                
-                for (let i = 1; i <= totalCategories; i++) {
-                    if (mode === 'KH') {
+                let html = `
+                    <td class="border border-slate-300 p-2 text-center font-medium sticky-col bg-inherit">${idx + 1}</td>
+                    <td class="border border-slate-300 p-2 font-bold text-slate-800 sticky-col bg-inherit" style="left:40px;">${cma}</td>
+                    <!-- 3 Cột Tổng Cộng Hàng Ngang -->
+                    <td class="border border-slate-300 p-1 text-right font-bold text-blue-900 bg-amber-50 row-total-all">0</td>
+                    <td class="border border-slate-300 p-1 text-right font-bold text-emerald-800 bg-amber-50 row-online-all">0</td>
+                    <td class="border border-slate-300 p-1 text-center font-bold text-amber-700 bg-amber-100 row-pct-all">0%</td>
+                `;
+
+                // 10 Hạng mục x 3 cột (Tổng đơn, Đơn Online, %)
+                for (let c = 1; c <= totalCategories; c++) {
+                    if (isReadOnly) {
                         html += `
-                            <td class="border border-slate-300 p-1" colspan="2"><input type="number" class="kh-${i} bg-amber-50 font-medium" value="0"></td>
-                            <td class="border border-slate-300 p-1 text-center font-semibold text-slate-400">-</td>
+                            <td class="border border-slate-300 p-1 text-right font-semibold cat-tot-${c}">0</td>
+                            <td class="border border-slate-300 p-1 text-right font-semibold text-emerald-700 cat-on-${c}">0</td>
+                            <td class="border border-slate-300 p-1 text-center font-bold text-blue-700 cat-pct-${c}">0%</td>
                         `;
                     } else {
                         html += `
-                            <td class="border border-slate-300 p-1"><input type="number" class="kh-${i} bg-slate-100" value="0" readonly></td>
-                            <td class="border border-slate-300 p-1"><input type="number" class="th-${i}" value="0" onchange="calcPercent(this)"></td>
-                            <td class="border border-slate-300 p-1 text-center font-semibold text-blue-600 pct-${i}">0%</td>
+                            <td class="border border-slate-300 p-1"><input type="number" min="0" class="tot-${c}" value="0" onchange="calculateRow(this)"></td>
+                            <td class="border border-slate-300 p-1"><input type="number" min="0" class="on-${c} text-emerald-700 font-medium" value="0" onchange="calculateRow(this)"></td>
+                            <td class="border border-slate-300 p-1 text-center font-bold text-blue-700 pct-${c}">0%</td>
                         `;
                     }
                 }
-                
-                row.innerHTML = html;
-                tbody.appendChild(row);
+
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
             });
+
+            renderFooter();
         }
 
-        // Tính toán tỷ lệ % thực hiện so với kế hoạch
-        function calcPercent(input) {
-            let row = input.closest('tr');
-            for (let i = 1; i <= totalCategories; i++) {
-                let khInput = row.querySelector(`.kh-${i}`);
-                let thInput = row.querySelector(`.th-${i}`);
-                let pctElem = row.querySelector(`.pct-${i}`);
+        // Tạo dòng Tổng cộng HueWACO ở cuối bảng
+        function renderFooter() {
+            const tfoot = document.getElementById('cmaTableFoot');
+            let html = `
+                <tr>
+                    <td colspan="2" class="border border-slate-400 p-2 text-center font-bold text-blue-950 sticky-col bg-slate-200">HueWACO</td>
+                    <td id="footTotalAll" class="border border-slate-400 p-2 text-right font-bold text-blue-950 bg-amber-200">0</td>
+                    <td id="footOnlineAll" class="border border-slate-400 p-2 text-right font-bold text-emerald-900 bg-amber-200">0</td>
+                    <td id="footPctAll" class="border border-slate-400 p-2 text-center font-bold text-amber-900 bg-amber-300">0%</td>
+            `;
 
-                if (khInput && thInput && pctElem) {
-                    let kh = parseFloat(khInput.value) || 0;
-                    let th = parseFloat(thInput.value) || 0;
-                    
-                    if (kh > 0) {
-                        let pct = ((th / kh) * 100).toFixed(1);
-                        pctElem.textContent = pct + '%';
-                        pctElem.className = pct >= 100 ? "border border-slate-300 p-1 text-center font-semibold text-emerald-600" 
-                                                       : "border border-slate-300 p-1 text-center font-semibold text-amber-600";
-                    } else {
-                        pctElem.textContent = '0%';
-                    }
+            for (let c = 1; c <= totalCategories; c++) {
+                html += `
+                    <td id="footCatTot-${c}" class="border border-slate-400 p-1 text-right font-bold">0</td>
+                    <td id="footCatOn-${c}" class="border border-slate-400 p-1 text-right font-bold text-emerald-800">0</td>
+                    <td id="footCatPct-${c}" class="border border-slate-400 p-1 text-center font-bold text-blue-900">0%</td>
+                `;
+            }
+            html += `</tr>`;
+            tfoot.innerHTML = html;
+        }
+
+        // Tính toán số liệu hàng ngang và cập nhật %
+        function calculateRow(element) {
+            let row = element.closest('tr');
+            let grandTotal = 0;
+            let grandOnline = 0;
+
+            for (let c = 1; c <= totalCategories; c++) {
+                let tot = parseFloat(row.querySelector(`.tot-${c}`).value) || 0;
+                let on = parseFloat(row.querySelector(`.on-${c}`).value) || 0;
+                let pctElem = row.querySelector(`.pct-${c}`);
+
+                if (tot > 0) {
+                    let pct = Math.round((on / tot) * 100);
+                    pctElem.textContent = pct + '%';
+                } else {
+                    pctElem.textContent = '0%';
                 }
+
+                grandTotal += tot;
+                grandOnline += on;
+            }
+
+            // Ghi số liệu vào cột TỔNG CỘNG hàng ngang
+            row.querySelector('.row-total-all').textContent = grandTotal;
+            row.querySelector('.row-online-all').textContent = grandOnline;
+            row.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
+
+            calculateTableTotals();
+        }
+
+        // Tính tổng cộng toàn bảng (Dòng HueWACO)
+        function calculateTableTotals() {
+            let period = document.getElementById('selectPeriod').value;
+            let rows = document.querySelectorAll('#cmaTableBody tr');
+            
+            let footTotAll = 0;
+            let footOnAll = 0;
+            let catTotals = Array(totalCategories + 1).fill(0);
+            let catOnlines = Array(totalCategories + 1).fill(0);
+
+            rows.forEach(row => {
+                if (period === 'MONTH') {
+                    footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
+                    footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
+
+                    for (let c = 1; c <= totalCategories; c++) {
+                        catTotals[c] += parseFloat(row.querySelector(`.cat-tot-${c}`).textContent) || 0;
+                        catOnlines[c] += parseFloat(row.querySelector(`.cat-on-${c}`).textContent) || 0;
+                    }
+                } else {
+                    for (let c = 1; c <= totalCategories; c++) {
+                        let tot = parseFloat(row.querySelector(`.tot-${c}`)?.value) || 0;
+                        let on = parseFloat(row.querySelector(`.on-${c}`)?.value) || 0;
+                        catTotals[c] += tot;
+                        catOnlines[c] += on;
+                    }
+                    footTotAll += parseFloat(row.querySelector('.row-total-all').textContent) || 0;
+                    footOnAll += parseFloat(row.querySelector('.row-online-all').textContent) || 0;
+                }
+            });
+
+            // Cập nhật Footer
+            document.getElementById('footTotalAll').textContent = footTotAll;
+            document.getElementById('footOnlineAll').textContent = footOnAll;
+            document.getElementById('footPctAll').textContent = footTotAll > 0 ? Math.round((footOnAll / footTotAll) * 100) + '%' : '0%';
+
+            for (let c = 1; c <= totalCategories; c++) {
+                document.getElementById(`footCatTot-${c}`).textContent = catTotals[c];
+                document.getElementById(`footCatOn-${c}`).textContent = catOnlines[c];
+                let pct = catTotals[c] > 0 ? Math.round((catOnlines[c] / catTotals[c]) * 100) + '%' : '0%';
+                document.getElementById(`footCatPct-${c}`).textContent = pct;
             }
         }
 
-        // Lưu dữ liệu vào LocalStorage
+        // Lưu dữ liệu Tuần vào LocalStorage
         function saveData() {
             let year = document.getElementById('selectYear').value;
-            let mode = document.getElementById('selectMode').value;
+            let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
 
-            if (mode === 'KH') {
-                let key = `CMA_KH_${year}`;
-                let data = [];
-                document.querySelectorAll('#cmaDataBody tr').forEach((row, idx) => {
-                    let rowData = { cma: cmaList[idx], items: [] };
-                    for (let i = 1; i <= totalCategories; i++) {
-                        rowData.items.push(row.querySelector(`.kh-${i}`).value);
-                    }
-                    data.push(rowData);
-                });
-                localStorage.setItem(key, JSON.stringify(data));
-                alert(`Đã lưu Kế Hoạch thành công cho Năm ${year}!`);
-            } else {
-                let key = `CMA_TH_${year}_${period}`;
-                let data = [];
-                document.querySelectorAll('#cmaDataBody tr').forEach((row, idx) => {
-                    let rowData = { cma: cmaList[idx], items: [] };
-                    for (let i = 1; i <= totalCategories; i++) {
-                        rowData.items.push(row.querySelector(`.th-${i}`).value);
-                    }
-                    data.push(rowData);
-                });
-                localStorage.setItem(key, JSON.stringify(data));
-                alert(`Đã lưu số liệu Thực Hiện thành công cho ${period} - Năm ${year}!`);
+            if (period === 'MONTH') {
+                alert('Không thể lưu ở chế độ Tổng hợp Tháng! Vui lòng chọn tuần cụ thể để nhập.');
+                return;
             }
+
+            let key = `HUEWACO_${year}_${month}_${period}`;
+            let data = [];
+
+            document.querySelectorAll('#cmaTableBody tr').forEach((row, idx) => {
+                let rowData = { cma: cmaList[idx], categories: [] };
+                for (let c = 1; c <= totalCategories; c++) {
+                    rowData.categories.push({
+                        tot: row.querySelector(`.tot-${c}`).value,
+                        on: row.querySelector(`.on-${c}`).value
+                    });
+                }
+                data.push(rowData);
+            });
+
+            localStorage.setItem(key, JSON.stringify(data));
+            alert(`Đã lưu thành công dữ liệu ${period} - ${month} - ${year}!`);
         }
 
-        // Tải số liệu từ bộ nhớ LocalStorage
+        // Tải dữ liệu hoặc tổng hợp tháng
         function loadData() {
             let year = document.getElementById('selectYear').value;
-            let mode = document.getElementById('selectMode').value;
+            let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
 
-            renderRows();
+            const btnSave = document.getElementById('btnSave');
+            const notice = document.getElementById('readOnlyNotice');
 
-            if (mode === 'KH') {
-                document.getElementById('tableTitle').textContent = `Nhập Kế Hoạch Cho Từng CMA (Năm ${year})`;
-                let savedKH = localStorage.getItem(`CMA_KH_${year}`);
-                if (savedKH) {
-                    let data = JSON.parse(savedKH);
-                    document.querySelectorAll('#cmaDataBody tr').forEach((row, idx) => {
-                        if (data[idx]) {
-                            for (let i = 1; i <= totalCategories; i++) {
-                                row.querySelector(`.kh-${i}`).value = data[idx].items[i-1] || 0;
-                            }
-                        }
+            if (period === 'MONTH') {
+                // Chế độ xem tổng hợp cả tháng
+                btnSave.classList.add('hidden');
+                notice.classList.remove('hidden');
+                document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ THÁNG (${month.replace('M','Tháng ')} - ${year})`;
+
+                renderTableRows(true); // Render dạng hiển thị đọc
+
+                // Khởi tạo mảng tổng hợp 9 CMA
+                let aggregated = cmaList.map(cma => ({
+                    cma: cma,
+                    categories: Array.from({length: totalCategories}, () => ({tot: 0, on: 0}))
+                }));
+
+                // Cộng dồn 5 tuần
+                ['W1','W2','W3','W4','W5'].forEach(w => {
+                    let weekData = localStorage.getItem(`HUEWACO_${year}_${month}_${w}`);
+                    if (weekData) {
+                        let parsed = JSON.parse(weekData);
+                        parsed.forEach((r, rIdx) => {
+                            r.categories.forEach((cat, cIdx) => {
+                                aggregated[rIdx].categories[cIdx].tot += parseFloat(cat.tot) || 0;
+                                aggregated[rIdx].categories[cIdx].on += parseFloat(cat.on) || 0;
+                            });
+                        });
+                    }
+                });
+
+                // Đổ dữ liệu đã cộng dồn ra bảng
+                let rows = document.querySelectorAll('#cmaTableBody tr');
+                aggregated.forEach((rData, rIdx) => {
+                    let row = rows[rIdx];
+                    let rTotAll = 0, rOnAll = 0;
+
+                    rData.categories.forEach((cat, cIdx) => {
+                        let c = cIdx + 1;
+                        row.querySelector(`.cat-tot-${c}`).textContent = cat.tot;
+                        row.querySelector(`.cat-on-${c}`).textContent = cat.on;
+                        let pct = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
+                        row.querySelector(`.cat-pct-${c}`).textContent = pct;
+
+                        rTotAll += cat.tot;
+                        rOnAll += cat.on;
                     });
-                }
+
+                    row.querySelector('.row-total-all').textContent = rTotAll;
+                    row.querySelector('.row-online-all').textContent = rOnAll;
+                    row.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
+                });
+
+                calculateTableTotals();
+
             } else {
-                document.getElementById('tableTitle').textContent = `Số Liệu Báo Cáo CMA & So Sánh Kế Hoạch (${period} - Năm ${year})`;
-                
-                // Tải Kế hoạch Năm tương ứng
-                let savedKH = localStorage.getItem(`CMA_KH_${year}`);
-                if (savedKH) {
-                    let dataKH = JSON.parse(savedKH);
-                    document.querySelectorAll('#cmaDataBody tr').forEach((row, idx) => {
-                        if (dataKH[idx]) {
-                            for (let i = 1; i <= totalCategories; i++) {
-                                row.querySelector(`.kh-${i}`).value = dataKH[idx].items[i-1] || 0;
-                            }
-                        }
-                    });
-                }
+                // Chế độ nhập liệu theo tuần
+                btnSave.classList.remove('hidden');
+                notice.classList.add('hidden');
+                document.getElementById('tableTitle').textContent = `NHẬP LIỆU ${period} - ${month.replace('M','THÁNG ')} - NĂM ${year}`;
 
-                // Tải Thực hiện Tháng tương ứng
-                let savedTH = localStorage.getItem(`CMA_TH_${year}_${period}`);
-                if (savedTH) {
-                    let dataTH = JSON.parse(savedTH);
-                    document.querySelectorAll('#cmaDataBody tr').forEach((row, idx) => {
-                        if (dataTH[idx]) {
-                            for (let i = 1; i <= totalCategories; i++) {
-                                row.querySelector(`.th-${i}`).value = dataTH[idx].items[i-1] || 0;
-                            }
-                            calcPercent(row.querySelector(`.th-1`));
+                renderTableRows(false);
+
+                let saved = localStorage.getItem(`HUEWACO_${year}_${month}_${period}`);
+                if (saved) {
+                    let data = JSON.parse(saved);
+                    let rows = document.querySelectorAll('#cmaTableBody tr');
+                    data.forEach((rData, rIdx) => {
+                        let row = rows[rIdx];
+                        if (row) {
+                            rData.categories.forEach((cat, cIdx) => {
+                                let c = cIdx + 1;
+                                if (row.querySelector(`.tot-${c}`)) row.querySelector(`.tot-${c}`).value = cat.tot;
+                                if (row.querySelector(`.on-${c}`)) row.querySelector(`.on-${c}`).value = cat.on;
+                            });
+                            calculateRow(row.querySelector('.tot-1'));
                         }
                     });
                 }
             }
         }
 
-        // Khởi chạy ứng dụng
-        initTimeDefaults();
+        // Chạy lần đầu tiên
+        initTime();
         loadData();
     </script>
 </body>
