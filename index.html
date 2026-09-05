@@ -6,6 +6,10 @@
     <title>Báo Cáo Tổng Hợp Đơn Online - HueWACO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            box-sizing: border-box !important;
+        }
+
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         input[type=number]::-webkit-inner-spin-button, 
@@ -15,14 +19,13 @@
         }
         input[type=number] { -moz-appearance: textfield; }
 
-        /* THIẾT LẬP BẢNG EXCEL */
+        /* ĐỒNG BỘ LƯỚI BẢNG EXCEL CHUẨN XÁC */
         .excel-table {
             table-layout: fixed !important;
             border-collapse: separate !important;
-            border-spacing: 0;
+            border-spacing: 0 !important;
             background-color: #ffffff;
             border-top: 1px solid #d1d5db;
-            border-left: 1px solid #d1d5db;
         }
 
         .excel-table th, 
@@ -31,14 +34,23 @@
             border-bottom: 1px solid #d1d5db !important;
             padding: 0;
             font-size: 12px;
-            box-sizing: border-box;
             white-space: nowrap;
             vertical-align: middle;
             overflow: hidden;
             text-align: center;
         }
 
-        /* KHÓA CHIỀU CAO ĐỂ 2 BẢNG KHỚP HÀNG TỰ ĐỘNG */
+        /* Bảng cố định có thêm viền trái */
+        #fixedTable {
+            border-left: 1px solid #d1d5db;
+        }
+
+        /* VIỀN RANH GIỚI TÁCH BẢNG CHUẨN XÁC (NẰM Ở CỘT % BẢNG CỐ ĐỊNH) */
+        .border-split-right {
+            border-right: 2px solid #1e3a8a !important;
+        }
+
+        /* KHÓA CHIỀU CAO CỐ ĐỊNH KHÔNG BỊ BÉO/GẦY */
         .excel-table th.h-header-top { height: 48px !important; }
         .excel-table th.h-header-sub { height: 36px !important; }
         .excel-table tr { height: 28px !important; }
@@ -69,7 +81,7 @@
         .bg-excel-total-light { background-color: #fef3c7; }
         .bg-excel-foot { background-color: #1e293b; color: #ffffff; }
 
-        /* THANH CUỘN ĐẸP CHO BẢNG PHỤ */
+        /* THANH CUỘN BẢNG PHỤ */
         .scrollable-table-container::-webkit-scrollbar {
             height: 10px;
         }
@@ -144,7 +156,7 @@
             </div>
         </div>
 
-        <!-- Khung Bảng Dữ Liệu Excel (Split Screen View) -->
+        <!-- Khung Bảng Dữ Liệu Excel (Split Screen View Cân Bằng) -->
         <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-2">
                 <h2 id="tableTitle" class="text-sm font-bold text-blue-900 uppercase tracking-wide">
@@ -155,22 +167,22 @@
                 </span>
             </div>
             
-            <!-- FLEX CONTAINER TÁCH RỜI 2 BẢNG -->
-            <div class="flex w-full items-start border-r border-b border-slate-300">
+            <!-- CONTAINER KẾT NỐI KHÔNG KHOẢNG HỞ (gap-0) -->
+            <div class="flex w-full items-start gap-0">
                 
-                <!-- BẢNG CỐ ĐỊNH BÊN TRÁI (FIXED PANEL) -->
-                <div class="flex-shrink-0 border-r-2 border-blue-900 z-10 bg-white shadow-md">
+                <!-- BẢNG CỐ ĐỊNH BÊN TRÁI -->
+                <div class="flex-shrink-0 bg-white">
                     <table class="excel-table w-[320px]" id="fixedTable">
                         <thead class="text-white uppercase font-bold">
                             <tr class="bg-excel-header">
                                 <th rowspan="2" style="width: 40px;" class="h-header-top bg-slate-900">STT</th>
                                 <th rowspan="2" style="width: 100px;" class="h-header-top bg-slate-900">KHU VỰC</th>
-                                <th colspan="3" style="width: 180px;" class="h-header-top bg-amber-600 text-yellow-100">TỔNG HỢP</th>
+                                <th colspan="3" style="width: 180px;" class="h-header-top bg-amber-600 text-yellow-100 border-split-right">TỔNG HỢP</th>
                             </tr>
                             <tr class="bg-slate-800 text-yellow-300 text-[11px]">
                                 <th style="width: 60px;" class="h-header-sub bg-amber-700">TỔNG</th>
                                 <th style="width: 60px;" class="h-header-sub bg-amber-700">ONLINE</th>
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700">%</th>
+                                <th style="width: 60px;" class="h-header-sub bg-amber-700 border-split-right">%</th>
                             </tr>
                         </thead>
                         <tbody id="fixedTableBody"></tbody>
@@ -178,7 +190,7 @@
                     </table>
                 </div>
 
-                <!-- BẢNG CUỘN NHẬP LIỆU BÊN PHẢI (SCROLLABLE PANEL) -->
+                <!-- BẢNG CUỘN BÊN PHẢI -->
                 <div class="flex-grow overflow-x-auto scrollable-table-container bg-white">
                     <table class="excel-table" id="scrollableTable">
                         <thead id="scrollableTableHead" class="text-white uppercase font-bold"></thead>
@@ -332,7 +344,7 @@
             cmaList.forEach((cma, idx) => {
                 let bgClass = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
 
-                // Render Bảng Cố Định (Fixed)
+                // Render Bảng Cố Định (Gán border-split-right vào cột % cuối)
                 let trFixed = document.createElement('tr');
                 trFixed.className = `${bgClass} hover:bg-blue-50`;
                 trFixed.innerHTML = `
@@ -340,11 +352,11 @@
                     <td style="width: 100px;" class="bg-excel-cma font-bold text-left px-2 truncate">${cma}</td>
                     <td style="width: 60px;" class="font-bold text-blue-900 bg-excel-total-light row-total-all">0</td>
                     <td style="width: 60px;" class="font-bold text-emerald-800 bg-excel-total-light row-online-all">0</td>
-                    <td style="width: 60px;" class="font-bold text-amber-900 bg-amber-200 row-pct-all">0%</td>
+                    <td style="width: 60px;" class="font-bold text-amber-900 bg-amber-200 border-split-right row-pct-all">0%</td>
                 `;
                 fixedTbody.appendChild(trFixed);
 
-                // Render Bảng Cuộn (Scrollable)
+                // Render Bảng Cuộn
                 let trScroll = document.createElement('tr');
                 trScroll.className = `${bgClass} hover:bg-blue-50`;
                 let htmlScroll = '';
@@ -385,7 +397,7 @@
                     <td style="width: 100px;" class="p-1 text-left px-2 bg-slate-950 text-white truncate">HueWACO</td>
                     <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footTotalAll">0</td>
                     <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footOnlineAll">0</td>
-                    <td style="width: 60px;" class="p-1 bg-amber-700 text-white" id="footPctAll">0%</td>
+                    <td style="width: 60px;" class="p-1 bg-amber-700 text-white border-split-right" id="footPctAll">0%</td>
                 </tr>
             `;
 
