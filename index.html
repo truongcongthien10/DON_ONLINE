@@ -8,7 +8,6 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-        /* Ẩn mũi tên tăng/giảm số ở các ô input number */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
@@ -18,12 +17,11 @@
             -moz-appearance: textfield;
         }
 
-        /* Khóa cứng kích thước bảng & chống trôi viền */
+        /* Khóa kích thước bảng, dùng border-collapse chuẩn để không bị hở khe 1px */
         .table-fixed-layout {
             table-layout: fixed;
             width: max-content;
-            border-collapse: separate;
-            border-spacing: 0;
+            border-collapse: collapse; 
         }
 
         .table-fixed-layout th, 
@@ -38,7 +36,6 @@
             border-radius: 4px; 
             padding: 3px 2px;
             font-size: 13px;
-            transition: all 0.2s ease;
         }
 
         .table-input input:focus { 
@@ -47,71 +44,44 @@
             font-weight: bold;
         }
 
-        /* CONFIG CỐ ĐỊNH CHUẨN XÁC VỊ TRÍ PIXEL */
+        /* FIX HEADER CỐ ĐỊNH CHIỀU DỌC */
         thead th {
             position: sticky;
             top: 0;
             z-index: 20;
         }
 
-        /* Vị trí cố định liền mạch không khe hở */
+        /* CHỈ CỐ ĐỊNH DUY NHẤT 2 CỘT: STT (50px) VÀ KHU VỰC (130px) */
         .sticky-col-stt {
             position: sticky;
             left: 0px;
-            width: 45px;
-            min-width: 45px;
-            max-width: 45px;
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
             z-index: 10;
         }
         .sticky-col-cma {
             position: sticky;
-            left: 45px;
-            width: 125px;
-            min-width: 125px;
-            max-width: 125px;
+            left: 50px; /* Bằng đúng width của cột STT */
+            width: 130px;
+            min-width: 130px;
+            max-width: 130px;
             z-index: 10;
-        }
-        .sticky-col-tot-tot {
-            position: sticky;
-            left: 170px;
-            width: 60px;
-            min-width: 60px;
-            max-width: 60px;
-            z-index: 10;
-        }
-        .sticky-col-tot-on {
-            position: sticky;
-            left: 230px;
-            width: 60px;
-            min-width: 60px;
-            max-width: 60px;
-            z-index: 10;
-        }
-        .sticky-col-tot-pct {
-            position: sticky;
-            left: 290px;
-            width: 55px;
-            min-width: 55px;
-            max-width: 55px;
-            z-index: 10;
-            /* Tạo vạch ngăn cách màu xám đậm che sạch hoàn toàn nội dung cuộn bên dưới */
+            /* Đổ bóng ngăn cách rõ ràng giữa khu vực cố định và phần nội dung trượt bên phải */
             box-shadow: 4px 0px 6px -2px rgba(0, 0, 0, 0.3);
         }
 
-        /* Tăng Z-index cho giao điểm Header + Sticky Column */
+        /* Ưu tiên z-index cao hơn cho 2 ô giao giữa Header và Sticky Column */
         thead th.sticky-col-stt, 
-        thead th.sticky-col-cma, 
-        thead th.sticky-col-tot-tot, 
-        thead th.sticky-col-tot-on, 
-        thead th.sticky-col-tot-pct,
-        thead th.sticky-group-tot {
-            z-index: 35;
+        thead th.sticky-col-cma {
+            z-index: 30;
+            background-color: #091e42 !important; /* Xanh đen đục 100% */
         }
 
-        /* Màu nền che đục hoàn toàn (Đảm bảo không lộ vết cuộn) */
+        /* Màu nền kín đục tuyệt đối cho STT và KHU VỰC */
         tbody td.sticky-col-stt,
         tbody td.sticky-col-cma {
-            background-color: #0f172a !important; /* Slate 900 đục tuyệt đối */
+            background-color: #0f172a !important; /* Slate 900 đục */
             color: #ffffff;
         }
         tbody tr:hover td.sticky-col-stt,
@@ -119,25 +89,15 @@
             background-color: #1e293b !important;
         }
 
-        tbody td.sticky-col-tot-tot,
-        tbody td.sticky-col-tot-on {
-            background-color: #fef3c7 !important; /* Amber 100 đục */
-        }
-        tbody td.sticky-col-tot-pct {
-            background-color: #fde68a !important; /* Amber 200 đục */
-        }
-
         tfoot td.sticky-col-stt,
         tfoot td.sticky-col-cma {
             background-color: #020617 !important;
             color: #ffffff;
         }
-        tfoot td.sticky-col-tot-tot,
-        tfoot td.sticky-col-tot-on,
-        tfoot td.sticky-col-tot-pct {
-            background-color: #f59e0b !important;
-            color: #ffffff;
-        }
+
+        /* Nền cho các ô TỔNG CỘNG (Trượt tự nhiên bên dưới cột KHU VỰC) */
+        .bg-tot-cell { background-color: #fef3c7; }
+        .bg-tot-pct { background-color: #fde68a; }
 
         .bg-row-even { background-color: #ffffff; }
         .bg-row-odd { background-color: #f8fafc; }
@@ -145,7 +105,6 @@
 </head>
 <body class="bg-slate-100 min-h-screen">
 
-    <!-- Header HueWACO -->
     <header class="bg-blue-900 text-white p-4 shadow-lg border-b-4 border-yellow-500">
         <div class="container mx-auto flex justify-between items-center">
             <div>
@@ -158,7 +117,6 @@
 
     <div class="container mx-auto p-4 space-y-4">
 
-        <!-- Thanh Điều Khiển & Bộ Lọc -->
         <div class="bg-white p-4 rounded-xl shadow border border-slate-200 grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
@@ -187,7 +145,6 @@
             </div>
         </div>
 
-        <!-- Bảng Dữ Liệu Báo Cáo -->
         <div class="bg-white p-4 rounded-xl shadow border border-slate-200 overflow-x-auto max-h-[75vh]">
             <div class="flex justify-between items-center mb-3">
                 <h2 id="tableTitle" class="text-base font-bold text-blue-900 uppercase">
@@ -198,14 +155,13 @@
                 </span>
             </div>
             
-            <table class="table-fixed-layout text-xs text-left text-slate-700 border-collapse">
+            <table class="table-fixed-layout text-xs text-left text-slate-700">
                 <colgroup>
-                    <col style="width: 45px;">  <!-- STT -->
-                    <col style="width: 125px;"> <!-- Khu vực -->
-                    <col style="width: 60px;">  <!-- Tổng chung -->
-                    <col style="width: 60px;">  <!-- Online chung -->
-                    <col style="width: 55px;">  <!-- % chung -->
-                    <!-- 10 Hạng mục (mỗi hạng mục 3 cột: 60px, 60px, 55px) -->
+                    <col style="width: 50px;">  <!-- STT -->
+                    <col style="width: 130px;"> <!-- Khu vực -->
+                    <col style="width: 65px;">  <!-- Tổng cộng - Tổng -->
+                    <col style="width: 65px;">  <!-- Tổng cộng - Online -->
+                    <col style="width: 55px;">  <!-- Tổng cộng - % -->
                     <script>
                         for(let i=0; i<10; i++) {
                             document.write('<col style="width: 60px;"><col style="width: 60px;"><col style="width: 55px;">');
@@ -215,30 +171,30 @@
 
                 <thead class="text-white uppercase font-bold text-center">
                     <tr class="bg-blue-900 text-white">
-                        <th rowspan="2" class="border border-slate-500 p-2 sticky-col-stt bg-blue-950">STT</th>
-                        <th rowspan="2" class="border border-slate-500 p-2 sticky-col-cma bg-blue-950">Khu vực</th>
-                        <th colspan="3" class="border border-slate-500 p-2 sticky-group-tot sticky-col-tot-tot bg-amber-600 text-yellow-100">TỔNG CỘNG</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Lắp đặt</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Cải tạo</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Nâng dời hạ</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Dò tìm</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Phụ lục</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Kiểm định ĐH</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Tạm ngừng</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Cắt hủy</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Mở nước</th>
-                        <th colspan="3" class="border border-slate-500 p-2 bg-blue-800">Kiểm tra ĐH</th>
+                        <th rowspan="2" class="border border-slate-600 p-2 sticky-col-stt">STT</th>
+                        <th rowspan="2" class="border border-slate-600 p-2 sticky-col-cma">Khu vực</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-amber-600 text-yellow-100">TỔNG CỘNG</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Lắp đặt</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Cải tạo</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Nâng dời hạ</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Dò tìm</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Phụ lục</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Kiểm định ĐH</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Tạm ngừng</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Cắt hủy</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Mở nước</th>
+                        <th colspan="3" class="border border-slate-600 p-2 bg-blue-800">Kiểm tra ĐH</th>
                     </tr>
                     <tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                        <th class="border border-slate-500 p-1 sticky-col-tot-tot bg-amber-700">Tổng</th>
-                        <th class="border border-slate-500 p-1 sticky-col-tot-on bg-amber-700">Online</th>
-                        <th class="border border-slate-500 p-1 sticky-col-tot-pct bg-amber-700">%</th>
+                        <th class="border border-slate-600 p-1 bg-amber-700">Tổng</th>
+                        <th class="border border-slate-600 p-1 bg-amber-700">Online</th>
+                        <th class="border border-slate-600 p-1 bg-amber-700">%</th>
                         <script>
                             for(let i=0; i<10; i++) {
                                 document.write(`
-                                    <th class="border border-slate-500 p-1 bg-slate-800">Tổng</th>
-                                    <th class="border border-slate-500 p-1 bg-slate-800">Online</th>
-                                    <th class="border border-slate-500 p-1 bg-slate-800 text-yellow-400">%</th>
+                                    <th class="border border-slate-600 p-1 bg-slate-800">Tổng</th>
+                                    <th class="border border-slate-600 p-1 bg-slate-800">Online</th>
+                                    <th class="border border-slate-600 p-1 bg-slate-800 text-yellow-400">%</th>
                                 `);
                             }
                         </script>
@@ -339,9 +295,9 @@
                 let html = `
                     <td class="border border-slate-300 p-2 text-center font-medium sticky-col-stt">${idx + 1}</td>
                     <td class="border border-slate-300 p-2 font-bold sticky-col-cma">${cma}</td>
-                    <td class="border border-slate-300 p-1 text-center font-bold text-blue-900 sticky-col-tot-tot row-total-all">0</td>
-                    <td class="border border-slate-300 p-1 text-center font-bold text-emerald-800 sticky-col-tot-on row-online-all">0</td>
-                    <td class="border border-slate-300 p-1 text-center font-bold text-amber-800 sticky-col-tot-pct row-pct-all">0%</td>
+                    <td class="border border-slate-300 p-1 text-center font-bold text-blue-900 bg-tot-cell row-total-all">0</td>
+                    <td class="border border-slate-300 p-1 text-center font-bold text-emerald-800 bg-tot-cell row-online-all">0</td>
+                    <td class="border border-slate-300 p-1 text-center font-bold text-amber-900 bg-tot-pct row-pct-all">0%</td>
                 `;
 
                 for (let c = 1; c <= totalCategories; c++) {
@@ -373,9 +329,9 @@
                 <tr>
                     <td class="border border-slate-400 p-2 text-center font-bold sticky-col-stt">--</td>
                     <td class="border border-slate-400 p-2 text-center font-bold sticky-col-cma">HueWACO</td>
-                    <td id="footTotalAll" class="border border-slate-400 p-2 text-center font-bold sticky-col-tot-tot">0</td>
-                    <td id="footOnlineAll" class="border border-slate-400 p-2 text-center font-bold sticky-col-tot-on">0</td>
-                    <td id="footPctAll" class="border border-slate-400 p-2 text-center font-bold sticky-col-tot-pct">0%</td>
+                    <td id="footTotalAll" class="border border-slate-400 p-2 text-center font-bold bg-amber-500 text-white">0</td>
+                    <td id="footOnlineAll" class="border border-slate-400 p-2 text-center font-bold bg-amber-500 text-white">0</td>
+                    <td id="footPctAll" class="border border-slate-400 p-2 text-center font-bold bg-amber-600 text-white">0%</td>
             `;
 
             for (let c = 1; c <= totalCategories; c++) {
