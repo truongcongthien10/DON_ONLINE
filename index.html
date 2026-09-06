@@ -10,16 +10,20 @@
             box-sizing: border-box !important;
         }
 
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
 
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
-        input[type=number] { -moz-appearance: textfield; }
+        input[type=number] { 
+            -moz-appearance: textfield; 
+        }
 
-        /* ĐỒNG BỘ LƯỚI BẢNG EXCEL CHUẨN XÁC */
+        /* Đồng bộ lưới bảng Excel */
         .excel-table {
             table-layout: fixed !important;
             border-collapse: separate !important;
@@ -40,21 +44,18 @@
             text-align: center;
         }
 
-        /* Bảng cố định có thêm viền trái */
         #fixedTable {
             border-left: 1px solid #d1d5db;
         }
 
-        /* VIỀN RANH GIỚI TÁCH BẢNG CHUẨN XÁC */
         .border-split-right {
             border-right: 2px solid #1e3a8a !important;
         }
 
-        /* KHÓA CHIỀU CAO CỐ ĐỊNH */
+        /* Cấu hình chiều cao cố định */
         .excel-table th.h-header-top { height: 48px !important; }
         .excel-table th.h-header-sub { height: 36px !important; }
-        .excel-table tr { height: 28px !important; }
-        .excel-table td { height: 28px !important; }
+        .excel-table tr, .excel-table td { height: 28px !important; }
 
         .excel-table input {
             width: 100%;
@@ -76,12 +77,12 @@
             font-weight: bold;
         }
 
-        .bg-excel-header { background-color: #1e3a8a; } 
+        .bg-excel-header { background-color: #1e3a8a; color: #ffffff; } 
         .bg-excel-cma { background-color: #0f172a; color: #ffffff; } 
-        .bg-excel-total-light { background-color: #fef3c7; }
-        .bg-excel-foot { background-color: #1e293b; color: #ffffff; }
+        .bg-excel-total-light { background-color: #fef3c7; font-weight: bold; }
+        .bg-excel-foot { background-color: #1e293b; color: #ffffff; font-weight: bold; }
 
-        /* THANH CUỘN BẢNG PHỤ */
+        /* Thanh cuộn bảng */
         .scrollable-table-container::-webkit-scrollbar {
             height: 10px;
         }
@@ -97,559 +98,241 @@
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-100 min-h-screen p-4">
 
-    <!-- Header HueWACO với nền hình dòng nước sạch & bọt khí nhúng Base64 -->
-    <header class="relative bg-cover bg-center text-white p-4 shadow-lg border-b-4 border-yellow-500 overflow-hidden" 
-            style="background-image: url('data:image/webp;base64,UklGRmAPAABXRUJQVlA4IFQPAAAwXACdASogBCAEPm02mEkkIqMhoBDpQIANiWlu4XH4K3/R1vL+f4Bf919L622wA10D/T/3j0Yfl/9w/vH7X+S31E/eP49+5/1m9k/8x6gPqB9S/t34//mD9f/0ftN/xf7S/5X7Afq38x/0n+4/yH+b84/1f+a9x72a9I/zH+Q/03+F8wD3G+pf3b+2/th7VPqn+Bf0Ptl+y/sE/ln84/2X96/ev7x/lP///6327/p/+L4l333+2/3X+E+QH+b/4D/ve3j/M/+n2v/1D///uE/tn/N/dT4B/7D/u/3R8Uv/m9Qv9v//X3bf37///p39Yv///w8Xy2C4m/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAfL8SAtQW43/uHAf3Xz5l7aI3/uHAm/9w4E3/uHAm/9w4E3/uHAm/9w4E3/uHAf/4/3e3i/8i88d7k29qf/S2mR/7hwJv/cOAti+i+vD2d93eJv/cOAt4I8mP40y0/wRAn+I3/uHBd2e2oP0uI/3i+I38tP22u/uHAm43/eIic317XkS0m3aR3x/aE9uE33eEAM5u3+J4qU/vR/d/4S8i/e2A/0M46E3/N59I33q48Eptv/cOD/OewXAm/5y1N29sYp30M2s2m1sC/f991E32S4s2f07/f/pAnm6fQp4P/kH94m9483321r0zVwXm3/2I2p146l3+x1S1K0R+K/m2+2a20r6lAn/OewWk3/IuLw4E2+69yR2j1N2u1xI0c2x2/v0k4aY+r1S2uD0l9Cbd9o+/aC3/e5m3j078b5x+lM2Ea/x7XWp7e4UjK7fR1J/X3E6f/S3m79/pAn88pS212l/yLij1yM29k04gE73Gq1e1sD+H54vW+/mAn0e2y/o3U/2tY/+fD0u+70y6q30O7mO//3f09f4E83b/227z51xAn/JszqI8G6Rtz25oU//Gf8qj17e/eO5pAn49o18e/XWp1A5Mv/NfK72b4c3S1wO68Pq9/vB58E9I/55m/uS4f25p9xAn3p7/3DhfL3OewX0fUqU1pA8g/d3E2sQk6f2Pj9eXn/m812r69r/4t32sX9O/mP3x57o2/0834j898+pS2x2A1w05E9l0D6I+Y3fA/S2mRAnm0/a39v73w3X44G40v7jG21vQ72O7fR251z7z222m/4x6e2M0cR9A5s77pAnm7f4fAn/J48f10qE4T1wA+383IeE7qAn+jE30N1yY42f4cCcN3/j/3e3iN//hC23s86tAn/Iq2/A/sS30xO4/2U//t2P0v334v9I8/8c0m23w1/mP832G/3qfA22f1A4e/M3/uHAf/3f0i/3Ea0Ie7YnIn+1qGAn6Q8R7/fT8Xv2/24fP9/eD45y8eZf93/uHAm//k4aM38L5q/f//m/7f/P3s3xAn//S9e4e/9vX+BP9/q483//t///6S3//6X/v///S29p//7U3///3eJv///5An///uHAm///Xf/839/y/u9x//s3v///3C///IuL/7/5f5/5v2b4k5/p9v1/+b++//3eJv/9/9I3/9/m4An/9/7hwJv/e3s4G//uHAn/8UAA/v83S/2+p5X+HqW0qjM6H2mK12C1+79u3/8+39OqU00e3hJ5M1f8lD//jA82WfE3p18rB//Lh18NOnG82uXv9/D4iV2M9v8qE3S2/L5fX0y0zU5H9cE8+6+142eX17sM6u4vJ4eS8YJ+Yq1yU5pByQzX/R0jM1U1Cg6xAn4f7L93/xY06yA+16v4L5f/D5pLg3f/8OAtS4/q7U4y/7v9A3//9O/k3/cOAm/u/84P//e3s2m//4fAn+4cB//uHAe+/1v///uHAf+4cB/7hwJv/3f7f8X//d/pAn9/8f//S4E//wE3///v1/N//hP5v/+4cB//uHAm//93+3/F///3C4j/9v//yAN/9w4E03/uHAf/f/0j/7e+4E///93+S4n53///2/4P/+A/5/0vf///+S/4/6/f///3/93/9/yA/9w4C3///X92/+4m//5f+4e3/3D4E//uHAm/9uXy/904E4/8D/6f/30B3v++Ie//eHAn/5m/6/1p2y/9w83//94vAn/+3D4X3m4f/1q/32k///3D37pAn4r+4/0x/8f+/i+y24f46/3D8v/2f2/S1An2f+/0m9w4P//5AH+/d3//5/6X///83//3/8f/S/9w4X/3f2x4eA3iI/+X4oP8A90v9m9/p8v84f///b////f3cM///84UAn///0fX4c3/8C3/s/S//9v+//29//uHAt3++v4eE/82618P6d9i4/3DAn/+1/+sX2+mG9C/y/29f86+/5An8a/++An0/3f+/+/5e/y///9///30/5//94D/3qf+7e0H/9vf/A3/39x//X8C/+n/+9v8f//j/4n//wS129///p8x//03//dOAt/0f/v///m4f3+/s9H///dOBC/4e1sX/++y983/9v35n+Tf1I3/+P0vf9yAP/926yA/3u8m8e25//uHAvy+/e8H///3o+p4Xf5/b+83///9wI//t/+0a1/+A/9/y///f7v1///t///1//n+//uHAf9/v+29/+4S/+3/+3/3Dgf/7f+P/2m//2b0/3/93/v3i0///o31A32+/3D3339I37vX/+3X//3Dgf53+j/b///6W4s238P8f+3/f/e7An/+I4I//93/9/0s///An/4/a////+1y///e4s2528e578An9f//7d/+3/u+mD93/78f//3C///v+S/3//2/+1//3/+b//S3/9/2An/f9f3X6An7e/0C0Xy0w/3/x/3f3An2/12r////7/930A145f+u3///m1I3/u/+4eAt3/v8eD/+Ie3/+fAn/+v+794vAn33e3i4d1/3DgTf+I/x///X//N4gX///8f+b3/v4f5An//4fAtf24f4E5n7f7f///2/+5fAn/SAn/+P/qAnu2S4m5vf+C+4fAn/aX6///8X/1p3An/+A/5An//3f3An/+4e/9/8v5v/+C+//83m////cOBN324eAn///9/m/e3i+s8SAt+5v44P0/1vf/E3v23p7v/+3e8f6e///3f///w/793/6An3S5f/d/7vw3v//+I3//4/A3/yAn2/7u24An/3ewE//e9f4E8//cOBN/4X7eC///f///9vf/iAn+L//m4A034XAn+lAn9433e3v////1/k4f7vwX9/7v7f6An+14s9S2mR/7uXf9X3f/XkAn/+3v///cOH32283a//xH///29f4E///p////1/4c3/f9+S+f4DAn///i8N5AH2+3Dgm7f/b///4n/s///Anf139+D9qf+n4v0T31An34f/EAn/6An/+IAn/+4cAn6/s5m9///wT//t////X326W/7eP8I94E0124a2+5y/7vwC8s2m8M8/3Dgf9v/+/w94f3k4aP26+53a0/08M8eIicL/s/3/5An324e+4/C7X/+8MAn+IAn+P8f225vf5An8d/+3f/7vwW//84f++9v8Tfv0P0v2f1f/v8P9p4N08M7eUv7eY8P+cOAn221//1//1//X//9////f/+///9/+5e+/9vSAn8N/3X/8/eP9f06m21vf3/m2IicL/+11A54b4/8C0m2///5An05An2//x//9w/5pAn273An74C//X//z/9/+A/7e29v1A29/5v/6/iAn/4X2/1A5/2/22/w3t+5An3Y/v///4E+m7//1/+A//S3///+fAn/+3i3An5An3/w/v/430p8An5xG58a5m2/+v4E9u32+2+8An///o/3e/2+5An/+5m4A4E94f83/+v0v/n///5I42//SAn0oP93/+A/+5m+///p///sAn7d////x/wH++y3//1/A/8f+A4E3/9v/wAn5f/+A4E93An/9vf/4X7f00v2+uD/+e/+0aAn13///9+m/v+S3u4An/+m9/+I0/2///3e3A/+S9/+x8DfyAn/S3f/iP/+e14e1/y3/9v///34X8An724A3v++8P//eC///7vw3+An69An/1s9v9wP1A8OAt25vf/2//7vwC///y348E//eB///i+A//59f3/4f//v4C/+s4pAH//38H2//e4///9/1A0//3yAP3/+An9eAn/e3t///0/1A02/2/eN//3k3A30737f2/4348An9f88f++i0a/e7f///eP9v//m/d3f7f/73e3uBP322////4E31/948C///wTf3E8P++Anf94/yA9m//4+x88e7y/e6BP//684iM1u//+I5Lvf/+2//v8E//9+v+An1+///7uBP3324C3/+BP8S5m/9/u/e3DAn54fSAn328X///v///3fAn9+321f66An/+4fAnf1////b8C///9x/0/23///X/9338A9/+Bv+I/14f/x/A/4fAn94m///e4v5An/+3v2/S25s1o34f/93+A///944fAn9v6X34e8f7fwAnu2339Xf/x////p8x+///0vf///vEAn8vS+3S42/+l///0/8C9///qAn////5An/2/+1/f+5A12/+P/A/+2////83//An/y8P8C3f8B/f9f3/0f++6/x/+SAt33//23/+4cCf/+A4413/e9/8f0m///s3///f5fAn9f7xAn/+S3t3An8g//S7294A1/+4cCcN/+3/u7/3//u3//iAn0C/m6C///3Dgf///q48/3///7vwC/+S252S+n//p/4E767//3/qAnf94A23i2///f+S3w An/yANX/3f8CfyW8N/+iAN3//m6/f/3E//eN//i/9y8/f7/+33/+Xf/uHAn9u/p///sB3v/+4e/924f+9P/+HAf/S34e15A04X//0vfAn/+4cAn//234/1///3f An/uHAn//vAn5f///4f5f///8n/uHAf/7vwX4f///0f3An//4E//8gD//x4cAnf3An///An3eX/9w83x4L///u3/d+An6/A3///S+4cB///m/+f20p//fAn/+33///8X///sB43v1///3f+4cA/1/y03///f4m///e1v+B///7f7xAn//4m////8X/+0///3Dgf/+yAn/+BP4f+C/S/23s4p/937vw//7vwS/u9w//vI09/2/9An8/23A////944G7x4cAn/3CAn///01/t3+HAf1/1v//7uC//1////5AH////4v/SAt/24e/f/+An3S25+14G///s//3eX/+eI3/3Anv1f/2///3Dgf////S3e84gX133//i/An+/+5wL/4//e///5v90v9//22P7cOBN29//f8An/yAtS35L14G4m///aX///v4eBP/3C/9v9S///u3/6X/+4cBt7v934Xm4E4bS//u1//d/93//7e3//9IAn9f4An/+4cA2f234XAn+0wD/i3/S/7uXfwE4/73///t4e4///fAn7f1/m4D3/A35f///e/s///m3+f/yAP39vEAnS/5e/5vw//3f/cOH1+D93f///4G5AHx///wL+P93///s/0A37/s/eN//f///s/4m723S0m39wP//3fgX///4/5v///s/+I/8X/+XfAn++3X1m+/cOBOe8//8v///1xH//2A8bfS8//2/+v///S9L//7xAn/X/qX1///wA32/+x4C4d/+B///p//8C/+S///9S+3S29wN13///+S94vf//f5AN+2/+1/+3X3///8n7v///sP/+I3///vEAn8v4G7/8Af22//4E3yAM/8X//wP/+6An//e+9S/+s////3Dgff/6A/1+T/S/+An//93///3Dgff///e4X4E/23vS5/8A9/+An8P////4m////7vwS/4D4D/v9vfAn6/u0v/+A8//8eD7e8/+BP3/29L///+1/S84gY3/+5f1/a0vf/4G4s7m//c4I4gAn/+9//9//33An////3Dgf/+36///a/6fAn/+e4eS///p4eAn/S38A3/7u/+1pAH+lAn//4L/4/+03x/f4f03/+f////v9///982/+A93/9IAn/+9////iS0v7/qfAn22/u4f5v/01/C/0A///3DgT3///3fAn///sAn//3/p1v///9S4gJ//v//0gD7cOB/4f///An9////3Dgjv/uS///9S3eBP+13f1/+1/s/An//3DgX3v3Dgn/////An///Anv///3f/0v3S/2m//3Dgf53S3/9X/7X0C///e7f///eJv3+T5An2///fAn/iL43/+4cBf79/+SAt////v3/uAn/+3An/e4E0/1f4f5AN393/+L/vE/AnS+/S9////S/0t///cOH+0v/+4cA///e4E0//3///+3An/3CAn/7fwAn/u/9w4E3/+9e/// An/An9L/5eS/5+8Af73+//e4An/+L0vf19u248X/1///u4E23u6///p///4m2/43////xH/7X9I3///sB//34A+BP/a3/+BP8S5m/f4m/+k300pX///S2/3fgX60pL5eBP93eR///+fS6e84E//2/An/yAN4///An/uAn9////4C/+1An/+0X/eBP3An//+4cAn////m4m53////+9//+x//27///eIn/02/7fgL///7/+2/9x4TAn/+e3f4E874D/94P+P/3DgT///3///X//yA3e/+S///3a//0X4C1v////4G+e/+70v/7v///8BfX/yA49405+5/4///cAn3e2+T/+Qf/gP0v/24e/f0//s2pIeS69u93/943//yANP///b////34A/7f4i///b////m////uAn4f//t39v//e/An4E2///fAn/vI36f0A///S01//2/+i///e037f3An3////5e130SAn2/f3eB//29S//+X53An/+s2//3f2A//3C3///5/9KBP/eI2/+S///s8f/t/v3//19/w21vAn4A23e4C34D+An9////3fgL69////An9/x4L2///S///s//b///5vwP///S/a/394v4A9x9////v73//88e3v04C+/e/An////mAn///2////Anv+E///X6///e5f7vwX9/7v7eBP//uAn///7vwS+/5Xm31X0vf8A/23+26X///S/9///f////e4e/+BP/x4L//90xAnf///+mBf7xH//2v94/3D40v/r///6X0vf/3DhP+Bf/f/+C/59L31/93///An/+l7///+BP///3/++0n5S4vf An/+4e8//cPf03/+l9623+B3/2//9v///0xP/v3///f////iP/+0An1xAn////0v7//x3f///An0v6fS//0v/7An8An0/4A//x///93/1/uHAe3++f0vf64L/1An////9/++0m6An30A/S25s///S4i7X7///p/S03S+k189//98X///An7S2An9eBP///0/yAP///1////mAn/iA/9/4/4D+a4An/e0An9v3fgE/8AAn993C4vf////An84/7/f/0v+/Xf/An///74C8gD7An08f/cPL5ff///cIAn////b///An+H3D////pAH/+l96A+v//9w8X93An18///SAn/+3S6/S4A4d///u/fAnf30/An/wE//s4e3///3sB/1/9An/+E///+A/X+v4m+P/e3uA///sBP1//X+BP/v98f8B983////f2f3e8f6v/x///8n/9/oA/f/5AH/+0v7u//vI3++3f21vf64f5v///m0An0x4E/+m+0i22///6//mAn3c/p/4A9///0A////e7e31AHm4fAn3///f80/4fS/An////9p/+P23/s3/8f+/i/u4vf//vEAn//x/wP3/eP/v42323///wH//sS4E48332k3//7vwS/u9A24C9eAn1/fX1/v//An1/e93m////8e5v9w/5//m/2k3wF+334v////2//sAn/8vC//+LAn0///0///An++BP//34f9P///vAn/+3///m63f0B3/u3+1/+4fAn/5ANv///XvAn/3D093/A///0vf37v/++f4An////4m/+0///79x//9An70/S//uA2314/3An/8E/3f/+30An33S+5f64P0v6X24mAn6f4D//4e0X/+kCef39/0713SAn///S4An4A///p4vf///2k3S4i7///3e8fS2/6//34L3sBP4A//83////3eO9N3f2k4GAn63f7xAN/+IeAnx0P0/sA2///mBv4E+6a/133fAn////8S2+4d/+L///7u5s2e1vf134X+/6+eA////3e16BP3u63////S+0vf1f/e/S//sA/An/2/5m6xPAn////03An+4f5v/b///4m9+l4f/2////S/S8v8E//uG143+l///An///2243xAnS++//eD96/123/m4A//e13///5x4D4/m6S22m9/m/v2///k/2++L/+m4m3////An///u4eBPf5O/+BP6/uA394E///gD//3e1L4C1v////4D+/C///eBP5AH/4gDAn8eBP/+3fAn3++//4f9P8X/+6Anx3fAnAn/S2//9AnAn//3/pA3X//7uBP1/+A+4 An4E///b/01///7An+l//e An5AH25eAn38Aftv9uAn+/3Anf////3ewC//m///An55G2/2/+5eBP///iAn///An1/iS0A002+/e8f6e///03S29/6vS/3aBP3f9An/gP/+Anf+An3C/4E//f90Anm3//4n+An/+C///m/+5A3//22BP3+ Anm+m4Xy0pS5O///7v/x/4An/+An/d73/+sE2x303+12/f////S/p/X94m/yX+1v2/S2mR/7f///eJv23/5eD///An4D4/t2BP/+An37/3C///An1///1x/14C//v3f////+4C///cAn+S///3f9X6a39u35/A/1f0340v0/2m4v00vvb8m////1///cM3/5eBP/S+4A//S///m/+33/7y84k2+P94vf/+An/x/eI/An30/+93m/+9A2+l/S3/b8C34//e7i25u8An/An///iAt6a/sAn/28v9P1L2/p/i/8X/+x/+S37vwv8An43An9p0An8eBPvS//CAnS//x////p/2/EAn///4H+3vEAn+3iN///4A//mAnAn9v/+5f// An4m9x4eAn/aX2///00r4sLwAn3aBP/+4cB/7vwv83Anf4L///m9f2/9An8///mAn+4cB/+5fAn7+02/9w/An/3f////3C//0CfyAt/+A3/+s4/7xAN++6A+/v/ An0v9v///3/3fwF6An7f4X/X/wL5AH5X/A//C/7vwL5eD+0v An///4DAn++4vf/+3D4X///d+BP+3CAn/4// An2++I/+P4fAn/////3f25v+8e6f1f3eD74C///iN/8eA3v8An////s/4f//f0yv4An/23s9I3Anv94L5e2An0C//An/+Xh//uA/m1AH7vf+C3+l///cAn51////3cM3////9uA/23S/+I06X1P///wJ2+/29/+f99/e1////S21+k96f//9x4T+kXAn/i33/1sAn51///8Af////cAn3An6W/8An////X+2/S34An9Anf/t/An/9/X+BPPAn3cOH2//7/+/X///A/9vS4An///wD+Bf7yX+An5u14vfAn3/t//f01+3///s84j3cAn/+D9L3wN/x3u5e11A3+e4H//cAn//A39//S/+E3An++AnwN2An67/b////S+BP/////kAt3c/An///w/ AnS++ An///dOBOP4E//9L/uBPx4D3b5An//A///f78A/9AnS++4m313AAn++2A////uAn67///cAn/+H4C///S++5/An8f4C43 An/1/uAn///4An4A/700r0///S2/y8L24vf+A+e0vf//S/+0/Xf6f3A39v9u9/+S+ An/////pA3+QG6wA/sA+//s49v94/3Dwf2/wMAn//// An51/cAn8f4gJ+m4e BP1A24C/+73/5AG0A////X7S3fAn//i3+B//f////fAn////b///8S+P70///S8///0gD//24A+/i2438An/+ An//w/AnAn++BP4Anf///cAn3e4//cOH+yAn/7fgE4C4gAft4mAnS/An/ An0/pA2f232//6X// An9+1v2/S2mRAnm//c/t3/+A/4vf An4A/34SAnS+l9 An///i An////An////An/+An274An///4//k70/pA/1///vEAn8A///d/+4/6W4sn///vAn30//S9/A/// An/+BP////3/v6A+0A2///9AnAn3cO3f///69fAn2m7/+/E/f//pAn//x/////uAn4f/////98v6/eD3/An//uHAvy2///SAn/+3i3//4S/1/+l9AnS+An4H33aCAtX33 An1An///An An9v3A2///+53/C///d7f3An3d3An////gAn08AnS An++////4fA/ An6An//f/4S+BP7X1/3fAn An2A+/t///102/4fXgE4e29A3/+1v///1f/+601m2+/4L6An/3///eJvAn3e8X3vAH+3427uAn1u/s5m3a/f9fAn93+ An+A/3s9vS0i1vf94kCegL9/8CegJ3S0X53/An//yA/2/S4f434G2///S//sS//u An0///v6 AnS/BP93w Anm///e9f3ewD3iT/1f An/iW2++BP9u0wD///Anx04XAn4A2/6fSAn/mAn/d////x4C7X06 An+gLv7////f An8 An37s4XAn36/2A//vEAnAn1A4C4d9X73+S///30An1An4An//c/BP2///m//aW+4E4f63/+v4G//s0/// An223X3e7eBP8Xf0An/A///Xf/An///Anm//93wAn9v/v3 An0An//e9//cPf2n09L37f8An31An////aAn///C///uBP4A+////iA34f///2A2/+f1///9fXwB94C+X3ewA+9P/k//yAnv8X//3////9A3/4G2/// An94iAn9An9XAn1///6m//+An+gD7f///f/f4E/+k1+9u0/mAnX6///S//An An3An6b/3An/+BP////4E/n00m257A2/k9p/ AnAn//0//y2An0u An////5//u4f3mAn0vS//fEfwD/+BP9v/C2mR///sAn3/E0vX83//fEfgE/+BP1p693Anm4a2An6vf2xAn//An9AH18e1///v0Afp3wFf8m/+1/+B/+AnAn////+ AnS/////+AnwAn/y4An3/4e84eI3/6vAH1337c8/0An8/X6304n4f4EAn++A/////+1An03wB///AnXm/27X/f4/y///0v+ BP2+IicAn/An////dAn33///0uC+/x6X20C/S/+BP4A//E9s/m9X An9An+2An///4f03////271L1////+X2m3f08C//A///6f////8A2///1/uAn8f4An/////An9//uBPf+S4A0eD9v/8aAn21An+///b/3////aBPXAn+/v///v8CAn0sAn4Anf/A//A39vf///S/+B22/2/An///3dAn/uAnfAn/+An1vE///x11I3///1A3///X4 An////v///S5v9v0//4/wJ///AH+9///5AN83AHm6///t+k4S1vf1vf An3C/7EAN1s5e4An/+s8An9L21vf1X3cE5n/+A/eAn9An2f1X4SAt/X64D/+l////yA34G///X8f///v6/ Anv+9/////+AnvAnm4An//2////3f2601L+BP9eAH12/S337AH///0A0CAt////S//sA/S5v9/8m3///pAH/+ An//3i3A0///4C1An8m6m23uAn/+C///m/+6An////8f8Cf////AH94vf3EAn3wJ9xH4m//13uAnS//4EAn++BP8An/////p/x2//iP//An///4An3d/+3CAnAn/+v///x19vAn/Anm//xAH//f19L/5e3S48O4fAnu///sAn//3fwB9P48f//AH74G13 An/+u3yBP/+0m8X//9AH5KAH5AN9///f/+xP//s/23////30C+/1xAn97Xm5sB//x44M2+/cPfAn94143+/f242m2vf/X3f/Xk//EAn0Anv1vfX/3m3An////e7fAH4m3/u3++ An9X4A///p/+D/+BP48D54G+/ An//i/+BP4f+BP8f/fAH////+323f4f/9AH4An///s1//uBP323//03//S+44aC9/+3///fE/74I2BPAn//x/vAn3/Anf3An+///b4m/fS+6eBf/dOBOG3S3/An++AnS8C+HA3f3An2/8f//e1/wN7Xy4gJ////8/++m////2/4D7w/Anf////6WAn3d4a//wD0////4C6f3//S3+3uI//++X5////wJ///1f26/d+A///0XAnm0v23////dOBOAn18C/S300m9AnfA/f An15v8eD4v3++mB3/u3v//s/e AnAn//A////4f8An+3AH7aAn948P//SAt/m4E//v/aA///3AH/0Afdw/f4G14D/++0m0C3AAn0C4m+/1sBv5K/ Anm///0f3a//wJ96fAn6An/2A/////28An/+2////S/S83An++4/s3/8G//C9S/+An4B4/BP68m78/X/A++fAHu3k6Bft8m9m3/0vv/////S///An0sA3 An/S///+9/+k14C//v3eBP/+0y/+///AHvX/An707xAn////+C4G04S+BP/+D9/BPAn///4S7yAP4X10v7fwJ//0pBP3243/+0////X8 An4E94f83///s2q39////9v8fS5vfAnf3CAn/////BP///9///+An///AH+BP5AftmAn2S///s3325AH/+BP8A/////kAn/+gD3d/w/3sBP7AH3ew///8m6AN//3/x//4XAn9f4AnAnAn/+BP////A///m An9vfX///2k010///1AAn///s2v/v3eL/x18XAn8AnS8A+l44C4d9s3e/+B/+l39K//8An An0E5AH+3/n///S9f9An8f+I/0A3X8C+3/////1An9eAn/+ BP08An/x4/8X/uAn39f///i///s0///8e3/a123u33fAnAn/+30///fEAnS22////30An1f143/+N0AN94e9f7AH6+5u++Xg31f///9L6/S/+4C///An0B//AH///AH336A/68m/nAHx3S0vf0/33A38m/////+BP/////p////9AnX9w3vA///v//f An+ BP/+ BP204D2/d29///An6f328f9vS22m28X9u398Af////8Af3y8L4E33AH32/eJ///uAnS/+A/////u23AH/3C/7f8BP////6fAn///AHAnAn/+A//////wL9P4vf4m9138An6f1+f////143+N4XwD+BPx/// An24mBv/////7fw/39xAH5ANf/////AAn///An///b//3fgF4vf8f+BP/6/1AHf4G3sAn/////e5vAn////4m7wF/S3p14D3AH/+m8f4D/82+0AnAnv/////3s/1vBPvS723uH0An8A///98E2A2/S//S4f0v//9/s///AftAn///14A0d43AnAn3AH/////b2+543uXf30v/uHA3/23f9f9p32vS84E1/S/BP/t2/1vf0X3cE5n///e4A/+X9An//////uAn/////fAH/AnmAnfX/f93An1An3Anf31An//+CAt/wJ//////sX9/ An7X//v3An3f0pAH/3C4vf////0vfAn1f4E+6vfAH1AHf3An/An////3///x///fAn////uAH1/yA//iAn33S5fS2v6BPAn/////9L7///S++m///m4vBP/iAH An+34An AnAnS//1vfAH/4E////s23S8/4E/sAn2/+8gP4///s384m9XwE40vf/vAH/+BP/+LwL///i///u3v8A+d///s0v7d/3AH////36W/2/uHA36AnfAH6e///X0vf3y8X9//b30An//m///AH/+9L//cAn/AH/x87// AH24C83303+129f1/cOBOBP///S80////AH4A+ BP4///X4f0AAn30C3fXyAt74Anx8v AnAH6fwB+f///iAt/9AH8/Afl3SAn4/BP///sB43vAH/s8An43AH/938B8An/+93630S40eAH2kAn3ewL0C/An63//AH/+3iC0Cfv0Afg//eAH++X3An///AHAn/+D8X9/0vvAH4AnX/f/An//v83/SAn54vf3D04C+ BP328+8X3ewG4f22////e0AewAn/sAfgE77xAH/u4G9/f///wN///f8XwAn4AnAn/ An6fw3/72A0m0///1///wD4 An7AH0vf23eBP5An////An2An8C3gL+/ AH3AH///1AH3CBP3//AH/+m34f3+C/ AHvAn9v///X4D/+2CAnAnv/AH3////9X//3fSAn/+BP94vf An5A///4E++BP28X9//e3AHv3cAH/+u91An37yA/2/S/Anm4An5/eJ33b5v08f/S/Anu34A///A3//7d3/AH8C/0/b8 AnAn/+D/X/+322/+3gD942AnS9uHAXAH//AH//6/+A/XAH8A/4E+184gX1339vAn282/8Afl238Af9/+S80+X/BP/3X/8T+An8AfnAn3e4/vAn2vf31vAH01L4G//xN1vfAn//////fAflAH/AHv3x59AHvAH/+BPvAn1///f8eA0m338f0C///a/AH0eX///+ An63////98Aft2BP15OAnAnf8BfAnAn12f3e8f8XAnS3///AH3S8G//e71vf8AnXAn///+k293CAn4 AnS3xANvAn60f1/+C++eAn/AH6///X/////+0SAn+A////+0 AnAn948E4S93///gBP/+2n8f7ewJ////4An+X7u3eX122AH AnxH/A33An///f/sB48Aftu8f/A/AH8An94b6An//8f2f2/S34eD/AHvAnAH+An3Anf3AH8A/2A///eE/2A3wE/9vBPAn88A/06b//cAH///AH031eBP6312k+m1/6///4An3dAH/9L/// Anv0An//AH///4An An6X3An/sA++An/iAN/+3Anx0AnAnu9SAn20x1eAnx9P6X04mAn+0mAH0AftAn200v9u2+AHAn9u68///sA++A/6///e0v//EAnvAnXyAnv/0C/A22m39An04vf3///b43 Anm2///S3m0/An7+BP///fAH0/s3AH///+k/An+f9 An/AHzAH/9I/7f42///x//++3S998f5xG5AH/+ An7S4E5e1KBP///uB3S3S8v16vf/An3i42kAH1m///6f////An5///p8BP2BP////9L+m5An/+AHAnS///42//C4bXAn/AH/+An62++An7X2+3cPfAnf///+3wL+uAnS394n9 An926X/a//43A//eXk3BP1//sS++AnvwL9///6S3x///XAH0AHu3sBH///f8f/e3u4f+nAHAn/////b10Aftu0/An/S/0E8e2C9/e29AN/3///0AHm1m9AN/yL4gBP/+66aAH/+k/XyA3///b/// AH+kAn//yAH+e3S08C/AnwD/+23fAHAnX//4A///cDf//0n//a An/S/+k4e1AnS///e0Bf9vAH2C/AH4G1/wD3S75v/+kAnAn///A2/4A+ An4C/+1/+0AfaAn7d1vfAn/ An////1/u///S9/i4eA+eAH/x0xAn/+1vAH6y/X//A4e1AH/AH/+vAnAH43///BP1+D3x11eAH////v+C///gD7a//eAH///4f83///4m////An/u3Xf6fAn1Afgm An+0///2+BP/5N6XAnf///Anx8s9x3A31sX///+1X/AH3228 An8AH4eX8eC+1L4vfA/+B//eI/gE/6xH///AH4G+/An//01v////v An//f///S3//m///9//3An///AH4///i7a3///An/+0nS9////0xAnf3//b5/m2AN99Xm7BP///54BAn////e7fAnAH18 Anm2////eXf/An5E//BP/+///An An8AnAnfA37c6883BP////An//C3s3 AnS2+SInAH///p8vf75e34D23pAH71m73AH42v/sSIn/+4f/6S29vX+BP9L0A/34A232kX34E8fBP4AH+InmAn2AH8AN/2/+An///2AHv3cAN/x/cOBN8AN/AHyAN6aBPX1AH//X1An60AnS/p/3b/A/sS3f9p6An9u5f242mBP6/X8X6a39u8X///38A///v/gC/gD+8An0m6+3Anm2AHXAn//9An//0vAn3wF8f///An0SAt53a91AnBPxH44L/wD9x///SAn/+3iAH9b1u1AH+BPwL6X2vf72//3AH6Afr/3/+lAH1m/Anf+f/AH/e3e0XAH0f/eP///BPxI/8fBP7eAn/d/SAn6An9v+At9x4G+///An7uAn4AHXyBPAn18AH///cAH//S//m232/+n/f////AH70eAnS9w///320/22k+A28A/23/eP+X26///A3AAn/bAn9v//8f/+2nAnAH An7An+B3iAftk///AH14A/+In0301////BPvS031AH7/+Aft4kAnAH711/E1Anx//SAn2y+1An/wC//1// AH4f4E39AH4x/AH9f7831L////6W24vfS2+Aftv//pff3E2+xAH///AH9/f0Anm89BPm+ AnwB3/9/m4An/i4A/An329X436fAn4f/+2+AH28///2An+3x/gD68AN/+AHAn2/+An0/4B///SAt/u An57eAnSInpff///x/XAH0E13f4124AH///63+4AN3vIn4A+AH3AH+fAn/m/eJ0x04fAn2n/3Anv4E++X1wJ+S4vfAn////i4A7eAt9I/4fAn94n9BP/vAH//w An84eI3/AH5+A///83/e6+0AN2A0/3e/6XAH/+9v/wAn4XAn4G333AH2/cAn8S4E6e1/+AH69X1AnfBP/An3cAN4gBP/f4H29X3BP/0p/AH/+I/BP/+An An+/S54A928e/6An/gS6AH3AH8Bf242sC+P94vfInBP93An93cOB///v/eAtwF4AH8G3fBP0m+AH//fE//sAH6///0i5f2l0//1E4An//vAn//1/+AtxAn/+In43x/ An31m/0x4e///p+AnAH8X0/sC4A/1+1An1+gD91///uAnwL9/3AnInAH34m///uBP//iAn/0/fBP2++AH/+m/An/+AHIn/An/+ An1XBPIn/+BP8A+AH4G/fS///e/4E+P/+2fS/+BP5A////0i2vf/38AH7AN5An3//An///4An60AH+5S/+An7AN+BP/v9xIn4AHX3AH///2///0InAn6WAn9/X33An320AH8BfBP////e2k//eX8f8C3AH9/sBHmAH///X//AfxInxInyAH5//S3412Anu/AH322//6///S21An083//48/m3+k44A3v++HA/1/Aft23//S88AfiInInI3uBP323//3InIn1An/+///e438G3AH3AH4FvIn0AH4IAn4fAHAnv4m43AH31///+kIAn/wAH/8Afl2/+S/4+S3/+vIn4fS/2k// An34XmAn///1f08Anx3An9mAnAH/+BPf3x/vAH4///X0vv43fAH57AH0A3//sX8BfSAt36fv4vf8BP4H3///In4m28BP/BP+AH9An8X+xInInX8m8v2m/+AHxInz83/+///p/b0n43/+E////3k0vAH/gD8vf8AN2/dAH7y4E/fAn3f0m9AH2m//2In6Aft/wAH9AH9X///Anx///s4iL2BP7e14InuA//e69mAn////yAH8C/0BP/////S5m///S/i48a/p8CInwL+BPIn/+AH2v1v0B3/aBP/////xAnAH363S//83011S3A30p3////InBP1//i4In+AHx/An BPBP63eBP4f/AH0q32BP3fAH9/11In1A/f4G///XIn/InXwE5AH+3/wA305A328vBPIn40q+InaXInAH312m/+BPIn4A/f//5eJ0x01v8AfInbp93fI/AH9K3fAn//2mIn/InBPm/AnxIneAt3b3k48vfS2/6f0AH/6fAn34f////S//3k3x3bpAHvAHBPuAtw3SInBP/24E3eAH5////39AH/AH4E4A/0BP//////5A/7An4Fv1vIn0AH/AHvXAHsBP///37e8AN5E4vf7vw8/v/AHIn3AH5///AnInAH//4G/S78AfInInGk2/I/BP/eAt/eB/3/0InBPBPBPgXIn4e2In2/BP/An3cAN0CAt12mInIn0vfIn7aWBP/e8fInAHyAH7yInx34E/An/AnSAt30i1vfBP/AnInBP+At/+3///e4fAnAn///AtvAHxIneAnAnx/0IAnAHxIv/74vfBP///8Aftvf0o8AfAH///8n3//S///38m78vf9/+mB34A3AH//4AH4vfAn1/AH+In27vInInIn/iAH7v34n+Inbp4G2A/XAn/+AnAH/+Anx0/gDAn+XInXAHx///f01xL2n/In24XwF3wB/AnvBPBPvIn//E1///wANxANxAH/1vBPvS7//0in///9//3e8AH4A3S3+xIne4m/m+BP/+2/+m///2mAnAnAftvf4G35E+At9ANv4f/AH///mAn30/InBP/AfxIncgE/2k8A39vBPx4A/PAn6///+1In4///XAH0AH/vE/AnS2/28A3/+At/AH/AH/+m6/3C4vf4AnAnX9///x/BPBP0vfBPm/BP7BPBPX0InE4In4E8eBPIn5AH31In364vf8BP4A3InA3///AN4v/m/vIn8An/An////mBPinwG2k04vf13AHy1/A24C9eBP/eAt/+A/wE4m////1u6InInA3v7vw6m39IAnIn114A2InAH/AN7xIn8Afi482e1/SIn3fIn9AN4X2AH+BP11InAN0An/+Afr2A+At6+AH/////E3An///6xG4vInA///m1/+uC///Inm/c44AH43bpA4///AHvXf9v7y4XInxAHInm/+BP///6SAt2m/AHInz/iAt3e6vfX8Af////A33/// AH/An3ewXAH01Inbp///k6/+BP7AnAH4A/x/// BP6I/3/In8m6A///Inbp4m2/+An+44C2A3X8BP8m4iXgAnIn+S4m5/xIn0A2AnXInAH///8T3w3kAN7ewJ71fIn/AnBP InBPv0Bf/fBP/+lAnuAtBP370CAt///AH4S4s///0inAn77////AH0A//94e///I434HAnAH/InyAfi/yE///Afi0iIIn8eAnEfwD////BPxAH8m3+0p44Aft1///326X8X94m///eXIn4m////v0iX8ANBP7AH+AnfInANwBP83AnInAHIn4/2mAHxIneS5396fwAnI31S328//In70AfgLIn/E3kBH BPX1//v///f91/Afa5AH7dIn5AH5InXANs144AHAN+AH0 InIAn+BP2//+k8InE3e1fANBP/+In/+AtuBPm4AN/+A//AH8eAnx/34EAnAH0vfIn6AH+3sE5e8f4C+/d/E0/BP+Bv In28AfXIn///29/+At39eInIIn8AH54I3///834BP1AHfAn40vIn1u31InS2Aftk4eInG+/24AInAN/BPBPGAt6An///8T7/+A/AnvBP/f0m9/AfiAH9AHs3e0vf//S4G2An8vf/4E76A3AHI/ANAHyAn7/BPAn+XAHu35ANAHyANfInBP8AH////78BPxIn9Afn///An/+mB+1AH9v1Aftvf9Bf00rInE4i3In///pAHBP83/S74G3AH9Afp/E1S/BP5IAn///kToA2BP8 In5E8AHIn//2k8AH/+e5yAH2+BP0A/S/Afa7+k72BP/4YmAH3u68IAn9A3fAH378Af43//38ANuAH31At937AN//+sSAn4A33//gE+BPAn6X2vf///+BP314m8In0inAfgF9AH2/eAt5+AHBP BPBPBPk14An4AHBPuIn50vf4I8ANBPwANInm+ InAnXAt3uInAt///+92ANyANy In6m9yInE4p//In4At2m5In443+AHmIn61AHwD26//iI///eIn+e04fI353/BP+1AH3wAt4YInbp0iAtw3In8f4E0InAt9An/v2k+ InBPBPInAN34E0In8BPInInBP2///92X3k/m///SIn/eAt0AnAHInbpwE/eC+BPzbpwJ//s/E0In//2n2sC8A3XANInBP/+3sE0InI/AtInSAtInIn8X/+BPDAnInSInAnm+X3BP70IIn8AHBPxInx/In30In5AH0AN/+X/x///XInu3AnfAHInxIInAnAfgE/2/S3/AnuAHBP/9At9kInuAn2Afae94InBP6Ank3BP/+3//pEAnmAn///BP183//+k4iAnIAnAtfAHv4SIn0i4E5ANANy/iI/20An8//eAtEAHANx/iAtE412AHvAnv/An2AH4A2eSAtEAt///wAnI/AnvBP2268IAn0At6InEAn InAHInIAn/In BPInAHxIt///AH+3fAAnI/0An//IAnx4aIn0ANbpk/BP//BP0AN0xANvAH+InwM/+In6BPIn0AHxAN///3AnIn3/4CInA/ BP/3SIn1InAn1m3330//In3BPu0EInAHxAH/c///AH2At/+AAnAnI32k60f3ANu3fAH64m3IIn///Atbp/k/BP/2/BPAn20///ANXBPf//AnvEInInIAn//vInInIIn//i2AfsAn3At///0AAn/+ AnEIn3Anu0AN2AH1f+iIe3E4XBPBP6At5InAn/+0/In//4F9BP/f3/S/7a BPmAtvAN9mB/At/////+AfgInAt1AHyANuXIn1InAHAH/2AtxAH20Afa4eAfgDf/26///14m9AnI43/f7AH///i733An8AH83AHu2ANe3AnEIn/0vf//iAH//AH9/7InAnbp/+ In0/fAN/+ AH2X39vAH509XInAtf5eCInAnv4CAtANpAInAt0vfBPInAH//8ANxBP///SAn//InANwSAtAnE/AfgE++InxAnA3SAnbpANAH0At6An3AN+AH1AHwJ///k3/BP/+///AHInB3AN34C3AH9eInEIn4AnA/InInIn/3AH1In//yAN0Afd4An6yAtBP/+0e6f///eC/m/eX8/fIn0iXInIn4AnAN///I/An4m///AH1vAN9AH/+S3SAtBP/+X/x///An94fAn3xAH0/8A/bp224f/30fInx43yAH///AN0mIn/3S/AfiAn3c/In4326fANAH8I3xInI/An9v/eAnIAn BPANAH0m2m3SIn30q///cOB///wT//In///At2k++m1yAH42v/InxInAHANwAH//0AHfAN/+AN//In3eXAn InBP3xAn0BP/fBPIn//e32BP//w InI/In2AHwIn/eItE3ANk4In3///X34EIn/An6AnbpAH9/BPw3y/i4AHBP7/eA391InyIInInXANBP0xAHAH0i2Atin4AN In9////i3At3An//36W9AfgE8A37AN InBP0mInAn0SIn9AH BP BPX0/ANxANinmB/wF8ANyAt6InAHAH/AHvInXBP0m//Atin8At8AH/AH//S4BP/AH23 InA31In5InX2AtBP8m4iW8At0/fInIAnAft3f4In//m48iBP6200v9ANu/E33ANAt4BP0At3I4cIAt4aANeAt36x0AfoAHsIn4E+/bpInAHmAtAH//mAn BP44L///AIn BP4S7 In44c4G/ BP/eIe3E/BPIn//SIn/+s3A/814In/+90/+3/+S/sInEInEAt/E/E1mAH9vS+0EInAnIn BPIn6At3I33SAtBP/sSAn7AfaA//eANAtAN+AnEAN/+AH///AH33m429eAtwG3a34xAH///Ie+4A++In BP3/In432m/S/3fIn0AT/A//k2//InAN/I3In0SAtxInAHBPIn BP620In+InyAt6I3An7AHBP67AHAtInAtANiInAN0ANANsAtInIn In5IvE8IeIn2v//m/+uHAft04f3m14An/+An/3sAHInAn44b InAH4C5Iv/AHm/Aftm+1AnE/AnE4x/iI3/A/vAn/AH1AHm+X3IInAnmS///2/pAT/AH/InEfwAtIninBPAn26InInAHInAHAn///k4aAnfEfwE33kIn/AfgJ///I3ANw3InAH54mAH/AN/+ AHm/mBP/+At04m33v0i2m/+ANInA36An60yAH//8mAHAt/In0AH3InAH/9xAN/+sXbp/An8fIn0in36Wk180v3/An+SInBPv0AH/+ BP0AN/ANin+An3///4mAH1vAN///iInBP25AHAN26f4AH+ANvInBP30ANwAH//iAN0InAH43/AH/AfgE34/AH5I41eI/eIn///Aft04XAtEInAnAnA2InInIn///E3I/AN0inAH4A0AN0/InANiBP93fI/AH6ANy5In54fIn0in3ANeANBP0eIIn//ANyAfe3BP InAnm8An//0yAH/eIn1An93cAt//bp3/f3AtAH9 InE8In827wP/AIn//60n25AHAtvBPwL8BPAtxANy5AHANAn0mBPBP///bpwG2X0A10BPInAHfAn3An/AH+m3e/fAnmAH18AHIn03///yInx3/EAn254X8InE28BP0ANANk4xAH0//vBP5E5v44f//yAH+e2vS///2//0vAHANw3S3S8InAN/cInBPBPIn///0In/At/+S+ANuIn8eAt3/k5A4BPg38AH/InS///AfeInEfwCBPxI4f3/In/InBP23fI4AfiB3BPin4/2InbpAN4In InBP71In9AH9xANAN InAt///f1Inz43Inx3eAtinbpIn AH0iXwAt2AHsIInEfwAH/+3mAH/EANiI36xIn9BP////33ANbp2AHkSAn//aW//EAnm+mAtAnInA29X//bp3/yAN/ANsAn1AHu6/In//An023m//AIn7At/+ In///4AH4ANxI3wS3AIn0ANvS///AtAHxAH8eAfn3cAn In9An//d/+An39m6In8AHIAnInInIn9AfevBP4/i//u353yI1AH0i1BPBPIn1v/Atin6An6BP///sInANyI3f/AHv6WIn8AfIn4vf4mAN4824eAftm4AnfBP31AN4m4Afg4333mBP4AN/AN In9vS///IAnA/At In9An In40A2BPAN2In3aAHuAn0/4At6+sInmAH//In22AH9BP0A//eBPBPu1An//I/eXAt21AnAfgL/BPIn///x/BP1vfAt BP23mAtin30v///s/InAAn3Afe4fIn0A//In3fIn0m/An9//eIIn93IAn6At/9SAn/+iAnwL/I3wN0ANbp2//In0A In23mBIn42mAH+X80m0//9In/At8AH36vf4In9BPAn6AnAH//E/At5+BPInAH3sIn0AN0vf302633xIn4E43BP/+ BP///In BPBPvInxAHm+AN///AnfInBP//InxAnInxIn8AHvI3EIn9In/+AH6I/An4E4cI/m/9eIny6Anx/AN0mAN3y2S4eAHInInBP4At In4eBInSAt3InSInAt0CBPAt0//9Anv22At41s3mAn4///m+ In Inm/AfeCBP///8InBP///AH2BPmANiAH4ANvAH//1/AInAfgLAt/+4fAH/0x/A//S8in2k34eI/eB3sAnS/ANBP6AnAfnInBP8e1In//AAn0C134AnBPInxIIn//80/An///4An3dAHsInE1AN6AN1iBP/AnANi///dI3wXANInin BPANf/+AHmAtiAHxIsAHm4mAH0kBPin0eAtAN0AfaAn///AHvAn62BP/+ At2In In BP/s/In InBP6In0mANAH/9s1sInAt4C2//I/BP2sXAHInANwAN//sIInG//3BP01AN3A10A1xAN0iIIn8eAnIeAHIn ANyA36BP3IIn///X0/At4In///AHAH2In//0iAHv BP8AN/72k3InAfgEn2InxIAn///kToAN30i318AIninAnE3AninAn/kXp/ANAtANxINAH+AHAtInANwAN4mInAH4AN+30XBP0iAtgE5ANAH//iXvIn BP3/In6yAnAH4AHwAn////e7fInBP1InAnInBPIn/f+ANv BPmAH/s3/+f/AHI3AtIAnAnf4mInin8eBP//4A10An4E8Inx/An0in0p///S2x0CAn//E3///BP4SAt AH//wFvfANxAH54L/+X9k/21AHAtBP//I3IAt0ANAN2At8AHx/AnEIninInIn0A/InAnInAtIn/eC//InIeAHAn/9In6AH9X///IIn//v4e1InAHAn/+A3sXw InANpAnAN3BP9v/CBPxInIn3/AtInEAnInBP1pS4IAn/4xAH2A3iAHAnAt33BP3/S3vX9An/fIn60AfgF//cInAH4f6AfrIn9In9InInBP/+iAnwD/sIn InAft0+AHIn/ANuBP/E3AHInGAtANeBPIn1xANuX8m/+m4BPyIn9AH90vfAn4ANbp3x/xIn AHfAH/3k//E10/At Inin9v/+ An///9 AHAninBPAn00An3///An6342An4/E1///wAN/AH//BP/An5In/EIn0inAtAnI3InxAH///3AN0iBP0AtAH+9X0In In9BPwN4E43kANin3//S//830In BP0BP1AnAt42ANwAHANin//yIn8In/AtANvAtiAN3BPin3mBP//SAnS0eBP4ANAH1m9InxANin+An3///ANInAHinS/eB3AnAH74m0AT/At/AnvAN0BP0AfgE/In9AHAt5ANuAHfIn61kAn8An bpIn3/Ie/4AnAtAn03In8iIn BP///1iAH4sLInS4G4AN/AHmBP2/BPxIn7I4 In23////93BP/+202InBP In3//eB3sAfeAtfbpk3//ANbp+BP8vf1iI In//241vAn0i8InAH8X4An21/1AnBPf///fIn0ml///pEAn3aAIn/IIn012mBPBP/4kInAHIIn30eAN2In/0BP8fBPx4InAH2mAN4S1BP3/I3BPBPwL BP21AnA/AnS83/E3fIInm9w ANBP+ AtAnANANAt28fInBP/+ BPAnvEBPIn4AnBPmANxI3BP0mInBPInX BP3In InInI34yAN1fInAH/ANsIn4vf/mAt4SInG///sA/+An///4C1mB/4ANxIvInm/+BPIn3 In0ml///3An///ANAnAt4iIInAHAtin22ANw34vfAn1/A/4f BP In3ANAH InAHxInAN bpIn6AH8In BPIn60in At2k+28SIt0BP03wAH/sAn4//22/7AnAHAt///At0vf4x3At3/+0E42xAHyAN/// AN2BPBP/13eAtvAt3/+AtfBP7eAnInBPIn/SAn0AfeAN/An InX In BP///AHIn/InmAt+ InIIn60In At9AHANAH AH/+ANiAtAH AHmInmAtbpAH bpInA/SAnInAn93f3/3/+A/In BP4In3080/4H4n/A/+8AfgF/InAt/xI43BP7vwL9uAnBPAnBP7S4f//AnANInBPI/EAtAtAIn InAftS/iIt6aAt6In At248I3/AtAtinAH In6At0e43/+AH bp/wBPm+2xAtAN BP/9uBBPAnI36Ivf BPIn/+AH6At3//eAHIn332/+6At/+ SItBP21At2ANvS9wE8S///44In9ANInAtAH In6In InA3m/0ANfBP//AfpfAN/InInxI4in303///e6eA4Afg4C/+k++m/+ An+AnAnw3+ BP///In BPBPIn1In1InBPBP4AtxAnbp7I/AH5eAn91f24mI In BPwIn2//AInAN BPBPIn AN BPm9AN BPmAtvAIn ANBPvAt//AtAHinInIn AH/+mB/ANIn InmIn bp/ANAH AtEfwAH BPBP//4AN/+ AH/+AnwL8ANv AtAt AN BPAt//0At/inAtIn AN ANBP82vIn AH ANIn//3/uAfeAt bpvAt4in BPAtAHANAtAHinAt0At2AN AHAt/in///0e18/sAn9ANv/AH AHIn ANInIn///0In x8fIn8C/fAH+AN SIsinAHAt ANAt AtANAN AN BPBPANmI/2/AH/3vAIn AN/0BP//i/sAnvS3w2/7AN AHAt AHin AN ANmAn /iAH1vf /In 2///In /// AH In BP BP mAt AH AH / AH BP /// eAIn BP /// k41 BP /// AN mAn AH / /// /// /// AH /// / /// //2Q==');">
-        
-        <!-- Lớp phủ xanh mỏng để nổi bật tiêu đề -->
-        <div class="absolute inset-0 bg-gradient-to-r from-blue-950/80 via-blue-900/60 to-transparent"></div>
-
-        <div class="container mx-auto relative z-10">
-            <h1 class="text-xl font-black uppercase tracking-wide drop-shadow-lg text-white">
-                TỔNG HỢP ĐƠN ONLINE - HUEWACO
-            </h1>
-            <p class="text-xs text-blue-100 font-medium drop-shadow mt-0.5">
-                Hệ thống nhập liệu & quản lý tiến độ báo cáo
-            </p>
+    <!-- Header HueWACO -->
+    <header class="relative bg-blue-900 text-white p-6 rounded-t-lg shadow-lg border-b-4 border-yellow-500 overflow-hidden mb-4">
+        <div class="relative z-10 text-center">
+            <h1 class="text-2xl font-bold uppercase tracking-wide">Công ty Cổ phần Cấp nước Thừa Thiên Huế (HueWACO)</h1>
+            <p class="text-sm font-light mt-1">Báo Cáo Tổng Hợp Đơn Online</p>
         </div>
     </header>
 
-    <div class="container mx-auto p-3 space-y-3">
-
-        <!-- Thanh Bộ Lọc -->
-        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-6 gap-2.5 items-end">
+    <!-- Bộ lọc & Thao tác -->
+    <div class="bg-white p-4 rounded-b-lg shadow-md mb-6 flex flex-wrap gap-4 items-center justify-between">
+        <div class="flex flex-wrap items-center gap-4">
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
-                <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
-                </select>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Từ ngày:</label>
+                <input type="date" id="fromDate" class="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-600">
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
-                <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
-                </select>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Đến ngày:</label>
+                <input type="date" id="toDate" class="border border-gray-300 rounded px-2 py-1 text-sm outline-none focus:border-blue-600">
             </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO:</label>
-                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-blue-800 focus:ring-2 focus:ring-blue-600">
-                </select>
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-blue-900 mb-1">HẠNG MỤC CÔNG VIỆC:</label>
-                <select id="selectCategoryFilter" onchange="filterCategoryView()" class="w-full border-2 border-blue-600 rounded p-1.5 text-xs font-bold text-blue-900 bg-blue-50 focus:ring-2 focus:ring-blue-600">
-                    <option value="ALL">-- Hiển thị Tất Cả --</option>
-                    <option value="1">1. Lắp đặt</option>
-                    <option value="2">2. Cải tạo</option>
-                    <option value="3">3. Nâng dời hạ</option>
-                    <option value="4">4. Dò tìm</option>
-                    <option value="5">5. Kiểm định ĐH</option>
-                    <option value="6">6. Tạm ngừng</option>
-                    <option value="7">7. Cắt hủy</option>
-                    <option value="8">8. Mở nước</option>
-                    <option value="9">9. Kiểm tra ĐH</option>
-                </select>
-            </div>
-            <div>
-                <button onclick="loadData()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium py-1.5 rounded shadow-sm text-xs">
-                    🔍 Xem / Tra Cứu
-                </button>
-            </div>
-            <div>
-                <button id="btnSave" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded shadow-sm text-xs">
-                    💾 Lưu Số Liệu Tuần
+            <div class="self-end">
+                <button onclick="renderTable()" class="bg-blue-800 hover:bg-blue-900 text-white px-4 py-1.5 rounded text-sm font-medium transition">
+                    Lọc dữ liệu
                 </button>
             </div>
         </div>
-
-        <!-- Khung Bảng Dữ Liệu Excel -->
-        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-2">
-                <h2 id="tableTitle" class="text-sm font-bold text-blue-900 uppercase tracking-wide">
-                    NHẬP LIỆU TUẦN 1 - THÁNG 9 - NĂM 2026
-                </h2>
-                <span id="readOnlyNotice" class="hidden text-[11px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded border border-amber-300">
-                    🔒 Chế độ Tổng hợp (Xem tự động)
-                </span>
-            </div>
-            
-            <div class="flex w-full items-start gap-0">
-                
-                <!-- BẢNG CỐ ĐỊNH BÊN TRÁI -->
-                <div class="flex-shrink-0 bg-white">
-                    <table class="excel-table w-[320px]" id="fixedTable">
-                        <thead class="text-white uppercase font-bold">
-                            <tr class="bg-excel-header">
-                                <th rowspan="2" style="width: 40px;" class="h-header-top bg-slate-900">STT</th>
-                                <th rowspan="2" style="width: 100px;" class="h-header-top bg-slate-900">KHU VỰC</th>
-                                <th colspan="3" style="width: 180px;" class="h-header-top bg-amber-600 text-yellow-100 border-split-right">TỔNG HỢP</th>
-                            </tr>
-                            <tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700">TỔNG</th>
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700">ONLINE</th>
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700 border-split-right">%</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fixedTableBody"></tbody>
-                        <tfoot id="fixedTableFoot" class="font-bold"></tfoot>
-                    </table>
-                </div>
-
-                <!-- BẢNG CUỘN BÊN PHẢI -->
-                <div class="flex-grow overflow-x-auto scrollable-table-container bg-white">
-                    <table class="excel-table" id="scrollableTable">
-                        <thead id="scrollableTableHead" class="text-white uppercase font-bold"></thead>
-                        <tbody id="scrollableTableBody"></tbody>
-                        <tfoot id="scrollableTableFoot" class="font-bold"></tfoot>
-                    </table>
-                </div>
-
-            </div>
+        <div class="flex items-center gap-2 self-end">
+            <button onclick="exportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded text-sm font-medium transition">
+                Xuất Excel
+            </button>
         </div>
     </div>
 
+    <!-- Khung chứa Bảng báo cáo Excel -->
+    <div class="bg-white p-4 rounded-lg shadow-md overflow-hidden">
+        <div class="flex w-full overflow-hidden">
+            
+            <!-- Cột cố định bên trái (Đơn vị / Loại đơn) -->
+            <div class="flex-none z-10">
+                <table id="fixedTable" class="excel-table border-split-right">
+                    <thead>
+                        <tr>
+                            <th class="h-header-top bg-excel-header w-12">STT</th>
+                            <th class="h-header-top bg-excel-header w-48">Đơn vị / Chi nhánh</th>
+                        </tr>
+                        <tr>
+                            <th class="h-header-sub bg-excel-header"></th>
+                            <th class="h-header-sub bg-excel-header"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="fixedTableBody">
+                        <!-- Dữ liệu cố định được sinh ra bằng Javascript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Các cột dữ liệu cuộn ngang bên phải -->
+            <div class="flex-1 overflow-x-auto scrollable-table-container">
+                <table id="scrollableTable" class="excel-table">
+                    <thead>
+                        <tr>
+                            <th colspan="3" class="h-header-top bg-excel-header">Cấp mới dịch vụ</th>
+                            <th colspan="3" class="h-header-top bg-excel-header">Sửa chữa / Lắp đặt</th>
+                            <th colspan="3" class="h-header-top bg-excel-header">Thanh toán / Báo sự cố</th>
+                            <th colspan="3" class="h-header-top bg-excel-cma">Tổng cộng</th>
+                        </tr>
+                        <tr>
+                            <th class="h-header-sub bg-excel-header w-20">Tiếp nhận</th>
+                            <th class="h-header-sub bg-excel-header w-20">Đã xử lý</th>
+                            <th class="h-header-sub bg-excel-header w-20">Tồn đọng</th>
+                            
+                            <th class="h-header-sub bg-excel-header w-20">Tiếp nhận</th>
+                            <th class="h-header-sub bg-excel-header w-20">Đã xử lý</th>
+                            <th class="h-header-sub bg-excel-header w-20">Tồn đọng</th>
+
+                            <th class="h-header-sub bg-excel-header w-20">Tiếp nhận</th>
+                            <th class="h-header-sub bg-excel-header w-20">Đã xử lý</th>
+                            <th class="h-header-sub bg-excel-header w-20">Tồn đọng</th>
+
+                            <th class="h-header-sub bg-excel-cma w-24">Tổng nhận</th>
+                            <th class="h-header-sub bg-excel-cma w-24">Tổng xử lý</th>
+                            <th class="h-header-sub bg-excel-cma w-24">Tổng tồn</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scrollableTableBody">
+                        <!-- Dữ liệu số liệu được sinh ra bằng Javascript -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Logic Xử lý Dữ liệu -->
     <script>
-        const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
-        const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
+        // Danh sách các Đơn vị / Chi nhánh HueWACO
+        const units = [
+            "Xí nghiệp Cấp nước Thành phố",
+            "Chi nhánh Cấp nước Hương Thủy",
+            "Chi nhánh Cấp nước Hương Trà",
+            "Chi nhánh Cấp nước Phong Điền",
+            "Chi nhánh Cấp nước Quảng Điền",
+            "Chi nhánh Cấp nước Phú Vang",
+            "Chi nhánh Cấp nước Phú Lộc",
+            "Chi nhánh Cấp nước Nam Đông",
+            "Chi nhánh Cấp nước A Lưới"
+        ];
 
-        function padZero(num) { return num < 10 ? '0' + num : num; }
+        // Khởi tạo bảng dữ liệu
+        function renderTable() {
+            const fixedBody = document.getElementById('fixedTableBody');
+            const scrollBody = document.getElementById('scrollableTableBody');
 
-        function isIntegerKey(evt) {
-            const charCode = (evt.which) ? evt.which : evt.keyCode;
-            if ([8, 9, 27, 13, 46, 37, 38, 39, 40].indexOf(charCode) !== -1 ||
-                (charCode >= 48 && charCode <= 57) || (charCode >= 96 && charCode <= 105)) {
-                return true;
-            }
-            evt.preventDefault();
-            return false;
-        }
+            fixedBody.innerHTML = '';
+            scrollBody.innerHTML = '';
 
-        function cleanIntegerInput(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
-
-        const weekNames = {
-            "W1": "Tuần 1", "W2": "Tuần 2", "W3": "Tuần 3", "W4": "Tuần 4", "W5": "Tuần 5"
-        };
-
-        function updateWeekDropdown() {
-            const year = parseInt(document.getElementById('selectYear').value) || 2026;
-            const monthStr = document.getElementById('selectMonth').value || "M9";
-            const month = parseInt(monthStr.replace('M', ''));
-            const selectPeriod = document.getElementById('selectPeriod');
-
-            const currentSelected = selectPeriod.value;
-            selectPeriod.innerHTML = '';
-
-            const daysInMonth = new Date(year, month, 0).getDate();
-            const weeks = [
-                { id: "W1", name: "Tuần 1", start: 1, end: 7 },
-                { id: "W2", name: "Tuần 2", start: 8, end: 14 },
-                { id: "W3", name: "Tuần 3", start: 15, end: 21 },
-                { id: "W4", name: "Tuần 4", start: 22, end: 28 },
-                { id: "W5", name: "Tuần 5", start: 29, end: daysInMonth }
-            ];
-
-            weeks.forEach(w => {
-                if (w.start <= daysInMonth) {
-                    let opt = document.createElement('option');
-                    opt.value = w.id;
-                    opt.textContent = `${w.name} (${padZero(w.start)}/${padZero(month)} đến ${padZero(Math.min(w.end, daysInMonth))}/${padZero(month)})`;
-                    selectPeriod.appendChild(opt);
-                }
-            });
-
-            let optMonth = document.createElement('option');
-            optMonth.value = "MONTH";
-            optMonth.className = "font-bold text-emerald-700";
-            optMonth.textContent = `-- Tổng Hợp Cả Tháng ${month}/${year} --`;
-            selectPeriod.appendChild(optMonth);
-
-            const quarters = [
-                { id: "Q1", name: "Tổng Hợp Quý I (Tháng 1 - 3)" },
-                { id: "Q2", name: "Tổng Hợp Quý II (Tháng 4 - 6)" },
-                { id: "Q3", name: "Tổng Hợp Quý III (Tháng 7 - 9)" },
-                { id: "Q4", name: "Tổng Hợp Quý IV (Tháng 10 - 12)" }
-            ];
-
-            quarters.forEach(q => {
-                let opt = document.createElement('option');
-                opt.value = q.id;
-                opt.className = "font-bold text-blue-700";
-                opt.textContent = `-- ${q.name} --`;
-                selectPeriod.appendChild(opt);
-            });
-
-            let optYear = document.createElement('option');
-            optYear.value = "YEAR";
-            optYear.className = "font-bold text-purple-700";
-            optYear.textContent = `-- TỔNG HỢP CẢ NĂM ${year} --`;
-            selectPeriod.appendChild(optYear);
-
-            if (currentSelected && Array.from(selectPeriod.options).some(o => o.value === currentSelected)) {
-                selectPeriod.value = currentSelected;
-            }
-        }
-
-        function initTime() {
-            const selectYear = document.getElementById('selectYear');
-            const selectMonth = document.getElementById('selectMonth');
-            const now = new Date();
-
-            for (let y = 2024; y <= 2030; y++) {
-                let opt = document.createElement('option');
-                opt.value = y; opt.textContent = "Năm " + y;
-                if (y === now.getFullYear()) opt.selected = true;
-                selectYear.appendChild(opt);
-            }
-
-            for (let m = 1; m <= 12; m++) {
-                let opt = document.createElement('option');
-                opt.value = "M" + m; opt.textContent = "Tháng " + m;
-                if (m === (now.getMonth() + 1)) opt.selected = true;
-                selectMonth.appendChild(opt);
-            }
-
-            updateWeekDropdown();
-        }
-
-        function filterCategoryView() {
-            loadData();
-        }
-
-        function renderScrollableHeader(filter) {
-            const thead = document.getElementById('scrollableTableHead');
-            let h1 = `<tr class="bg-excel-header">`;
-            let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">`;
-
-            categories.forEach((catName, idx) => {
-                let catId = idx + 1;
-                if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" style="width: 225px;" class="h-header-top bg-blue-800 tracking-wider">${catName}</th>`;
-                    h2 += `<th style="width: 75px;" class="h-header-sub bg-slate-800">TỔNG</th>
-                           <th style="width: 75px;" class="h-header-sub bg-slate-800">ONLINE</th>
-                           <th style="width: 75px;" class="h-header-sub bg-slate-800 text-yellow-400">%</th>`;
-                }
-            });
-
-            h1 += `</tr>`; h2 += `</tr>`;
-            thead.innerHTML = h1 + h2;
-        }
-
-        function renderTables(isReadOnly = false) {
-            const filter = document.getElementById('selectCategoryFilter').value;
-            renderScrollableHeader(filter);
-
-            const fixedTbody = document.getElementById('fixedTableBody');
-            const scrollTbody = document.getElementById('scrollableTableBody');
-
-            fixedTbody.innerHTML = '';
-            scrollTbody.innerHTML = '';
-
-            cmaList.forEach((cma, idx) => {
-                let bgClass = idx % 2 === 0 ? 'bg-white' : 'bg-slate-50';
-
-                let trFixed = document.createElement('tr');
-                trFixed.className = `${bgClass} hover:bg-blue-50`;
-                trFixed.innerHTML = `
-                    <td style="width: 40px;" class="bg-excel-cma font-medium">${idx + 1}</td>
-                    <td style="width: 100px;" class="bg-excel-cma font-bold text-left px-2 truncate">${cma}</td>
-                    <td style="width: 60px;" class="font-bold text-blue-900 bg-excel-total-light row-total-all">0</td>
-                    <td style="width: 60px;" class="font-bold text-emerald-800 bg-excel-total-light row-online-all">0</td>
-                    <td style="width: 60px;" class="font-bold text-amber-900 bg-amber-200 border-split-right row-pct-all">0%</td>
+            // Sinh các dòng dữ liệu mẫu
+            units.forEach((unit, index) => {
+                // Dòng cho bảng cố định
+                const fRow = document.createElement('tr');
+                fRow.innerHTML = `
+                    <td class="font-medium text-gray-600">${index + 1}</td>
+                    <td class="text-left px-2 font-semibold text-gray-800">${unit}</td>
                 `;
-                fixedTbody.appendChild(trFixed);
+                fixedBody.appendChild(fRow);
 
-                let trScroll = document.createElement('tr');
-                trScroll.className = `${bgClass} hover:bg-blue-50`;
-                let htmlScroll = '';
+                // Dòng cho bảng số liệu cuộn (Mặc định cho nhập dữ liệu/hiển thị)
+                const sRow = document.createElement('tr');
+                sRow.setAttribute('data-row', index);
+                sRow.innerHTML = `
+                    <td><input type="number" class="val-input" data-col="0" value="${Math.floor(Math.random() * 50) + 10}" oninput="calculateTotals()"></td>
+                    <td><input type="number" class="val-input" data-col="1" value="${Math.floor(Math.random() * 40) + 5}" oninput="calculateTotals()"></td>
+                    <td class="bg-slate-50 font-medium col-ton-1">0</td>
 
-                categories.forEach((_, cIdx) => {
-                    let c = cIdx + 1;
-                    if (filter === "ALL" || filter == c) {
-                        if (isReadOnly) {
-                            htmlScroll += `
-                                <td style="width: 75px;" class="font-semibold cat-tot-${c}">0</td>
-                                <td style="width: 75px;" class="font-semibold text-emerald-700 cat-on-${c}">0</td>
-                                <td style="width: 75px;" class="font-bold text-blue-700 cat-pct-${c}">0%</td>
-                            `;
-                        } else {
-                            htmlScroll += `
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
-                                <td style="width: 75px;" class="font-bold text-blue-700 pct-${c}">0%</td>
-                            `;
-                        }
-                    }
-                });
+                    <td><input type="number" class="val-input" data-col="3" value="${Math.floor(Math.random() * 30) + 5}" oninput="calculateTotals()"></td>
+                    <td><input type="number" class="val-input" data-col="4" value="${Math.floor(Math.random() * 25) + 5}" oninput="calculateTotals()"></td>
+                    <td class="bg-slate-50 font-medium col-ton-2">0</td>
 
-                trScroll.innerHTML = htmlScroll;
-                scrollTbody.appendChild(trScroll);
+                    <td><input type="number" class="val-input" data-col="6" value="${Math.floor(Math.random() * 20) + 5}" oninput="calculateTotals()"></td>
+                    <td><input type="number" class="val-input" data-col="7" value="${Math.floor(Math.random() * 15) + 5}" oninput="calculateTotals()"></td>
+                    <td class="bg-slate-50 font-medium col-ton-3">0</td>
+
+                    <td class="bg-excel-total-light row-sum-rec">0</td>
+                    <td class="bg-excel-total-light row-sum-proc">0</td>
+                    <td class="bg-excel-total-light row-sum-pend text-red-600">0</td>
+                `;
+                scrollBody.appendChild(sRow);
             });
 
-            renderFooters(filter);
-        }
-
-        function renderFooters(filter) {
-            const fixedFoot = document.getElementById('fixedTableFoot');
-            const scrollFoot = document.getElementById('scrollableTableFoot');
-
-            fixedFoot.innerHTML = `
-                <tr class="bg-excel-foot">
-                    <td style="width: 40px;" class="p-1 bg-slate-950 text-white">--</td>
-                    <td style="width: 100px;" class="p-1 text-left px-2 bg-slate-950 text-white truncate">HueWACO</td>
-                    <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footTotalAll">0</td>
-                    <td style="width: 60px;" class="p-1 bg-amber-600 text-white" id="footOnlineAll">0</td>
-                    <td style="width: 60px;" class="p-1 bg-amber-700 text-white border-split-right" id="footPctAll">0%</td>
-                </tr>
+            // Thêm dòng Tổng cộng ở cuối
+            const fFoot = document.createElement('tr');
+            fFoot.className = "bg-excel-foot";
+            fFoot.innerHTML = `
+                <td colspan="2" class="font-bold uppercase text-center py-1">TỔNG CỘNG</td>
             `;
+            fixedBody.appendChild(fFoot);
 
-            let htmlScrollFoot = `<tr class="bg-excel-foot">`;
-            categories.forEach((_, cIdx) => {
-                let c = cIdx + 1;
-                if (filter === "ALL" || filter == c) {
-                    htmlScrollFoot += `
-                        <td style="width: 75px;" id="footCatTot-${c}" class="p-1 text-slate-800 bg-slate-200">0</td>
-                        <td style="width: 75px;" id="footCatOn-${c}" class="p-1 text-emerald-800 bg-slate-200">0</td>
-                        <td style="width: 75px;" id="footCatPct-${c}" class="p-1 text-blue-900 bg-slate-200">0%</td>
-                    `;
-                }
-            });
-            htmlScrollFoot += `</tr>`;
-            scrollFoot.innerHTML = htmlScrollFoot;
+            const sFoot = document.createElement('tr');
+            sFoot.id = "totalFooterRow";
+            sFoot.className = "bg-excel-foot";
+            sFoot.innerHTML = `
+                <td id="tot-0">0</td><td id="tot-1">0</td><td id="tot-2">0</td>
+                <td id="tot-3">0</td><td id="tot-4">0</td><td id="tot-5">0</td>
+                <td id="tot-6">0</td><td id="tot-7">0</td><td id="tot-8">0</td>
+                <td id="tot-all-rec">0</td><td id="tot-all-proc">0</td><td id="tot-all-pend" class="text-yellow-300">0</td>
+            `;
+            scrollBody.appendChild(sFoot);
+
+            calculateTotals();
         }
 
-        function calculateRow(rowIndex, element) {
-            let fixedRow = document.querySelectorAll('#fixedTableBody tr')[rowIndex];
-            let scrollRow = document.querySelectorAll('#scrollableTableBody tr')[rowIndex];
+        // Hàm tính toán tự động Tổng tồn, Tổng ngang, Tổng dọc
+        function calculateTotals() {
+            const rows = document.querySelectorAll('#scrollableTableBody tr:not(#totalFooterRow)');
+            let colSums = new Array(9).fill(0);
+            let grandRec = 0, grandProc = 0, grandPend = 0;
 
-            let grandTotal = 0, grandOnline = 0;
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                
+                // Lấy giá trị đầu vào
+                const c0 = parseInt(inputs[0].value) || 0; // Tiếp nhận 1
+                const c1 = parseInt(inputs[1].value) || 0; // Đã xử lý 1
+                const c2 = Math.max(0, c0 - c1);           // Tồn 1
+                row.querySelector('.col-ton-1').textContent = c2;
 
-            categories.forEach((_, cIdx) => {
-                let c = cIdx + 1;
-                let totElem = scrollRow.querySelector(`.tot-${c}`);
-                let onElem = scrollRow.querySelector(`.on-${c}`);
-                let pctElem = scrollRow.querySelector(`.pct-${c}`);
+                const c3 = parseInt(inputs[2].value) || 0; // Tiếp nhận 2
+                const c4 = parseInt(inputs[3].value) || 0; // Đã xử lý 2
+                const c5 = Math.max(0, c3 - c4);           // Tồn 2
+                row.querySelector('.col-ton-2').textContent = c5;
 
-                let tot = totElem ? (parseInt(totElem.value, 10) || 0) : 0;
-                let on = onElem ? (parseInt(onElem.value, 10) || 0) : 0;
+                const c6 = parseInt(inputs[4].value) || 0; // Tiếp nhận 3
+                const c7 = parseInt(inputs[5].value) || 0; // Đã xử lý 3
+                const c8 = Math.max(0, c6 - c7);           // Tồn 3
+                row.querySelector('.col-ton-3').textContent = c8;
 
-                if (pctElem) {
-                    pctElem.textContent = tot > 0 ? Math.round((on / tot) * 100) + '%' : '0%';
-                }
+                // Tổng hàng ngang
+                const sumRec = c0 + c3 + c6;
+                const sumProc = c1 + c4 + c7;
+                const sumPend = c2 + c5 + c8;
 
-                grandTotal += tot;
-                grandOnline += on;
+                row.querySelector('.row-sum-rec').textContent = sumRec;
+                row.querySelector('.row-sum-proc').textContent = sumProc;
+                row.querySelector('.row-sum-pend').textContent = sumPend;
+
+                // Cộng dồn cột
+                colSums[0] += c0; colSums[1] += c1; colSums[2] += c2;
+                colSums[3] += c3; colSums[4] += c4; colSums[5] += c5;
+                colSums[6] += c6; colSums[7] += c7; colSums[8] += c8;
+
+                grandRec += sumRec;
+                grandProc += sumProc;
+                grandPend += sumPend;
             });
 
-            fixedRow.querySelector('.row-total-all').textContent = grandTotal;
-            fixedRow.querySelector('.row-online-all').textContent = grandOnline;
-            fixedRow.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
-
-            calculateTableTotals();
-        }
-
-        function calculateTableTotals() {
-            let period = document.getElementById('selectPeriod').value;
-            let filter = document.getElementById('selectCategoryFilter').value;
-            let fixedRows = document.querySelectorAll('#fixedTableBody tr');
-            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-
-            let footTotAll = 0, footOnAll = 0;
-            let catTotals = Array(categories.length + 1).fill(0);
-            let catOnlines = Array(categories.length + 1).fill(0);
-
-            let isReadOnly = period === 'MONTH' || period.startsWith('Q') || period === 'YEAR';
-
-            fixedRows.forEach((fixedRow, idx) => {
-                let scrollRow = scrollRows[idx];
-
-                footTotAll += parseInt(fixedRow.querySelector('.row-total-all').textContent, 10) || 0;
-                footOnAll += parseInt(fixedRow.querySelector('.row-online-all').textContent, 10) || 0;
-
-                categories.forEach((_, cIdx) => {
-                    let c = cIdx + 1;
-                    if (filter === "ALL" || filter == c) {
-                        let tot = isReadOnly 
-                            ? (parseInt(scrollRow.querySelector(`.cat-tot-${c}`)?.textContent, 10) || 0)
-                            : (parseInt(scrollRow.querySelector(`.tot-${c}`)?.value, 10) || 0);
-                        let on = isReadOnly
-                            ? (parseInt(scrollRow.querySelector(`.cat-on-${c}`)?.textContent, 10) || 0)
-                            : (parseInt(scrollRow.querySelector(`.on-${c}`)?.value, 10) || 0);
-
-                        catTotals[c] += tot;
-                        catOnlines[c] += on;
-                    }
-                });
-            });
-
-            document.getElementById('footTotalAll').textContent = footTotAll;
-            document.getElementById('footOnlineAll').textContent = footOnAll;
-            document.getElementById('footPctAll').textContent = footTotAll > 0 ? Math.round((footOnAll / footTotAll) * 100) + '%' : '0%';
-
-            categories.forEach((_, cIdx) => {
-                let c = cIdx + 1;
-                if (filter === "ALL" || filter == c) {
-                    let totCell = document.getElementById(`footCatTot-${c}`);
-                    let onCell = document.getElementById(`footCatOn-${c}`);
-                    let pctCell = document.getElementById(`footCatPct-${c}`);
-
-                    if (totCell) totCell.textContent = catTotals[c];
-                    if (onCell) onCell.textContent = catOnlines[c];
-                    if (pctCell) pctCell.textContent = catTotals[c] > 0 ? Math.round((catOnlines[c] / catTotals[c]) * 100) + '%' : '0%';
-                }
-            });
-        }
-
-        function saveData() {
-            let year = document.getElementById('selectYear').value;
-            let month = document.getElementById('selectMonth').value;
-            let period = document.getElementById('selectPeriod').value;
-
-            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-                alert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
-                return;
+            // Ghi dữ liệu dòng tổng dọc
+            for (let i = 0; i < 9; i++) {
+                document.getElementById(`tot-${i}`).textContent = colSums[i];
             }
-
-            let key = `HUEWACO_${year}_${month}_${period}`;
-            let data = [];
-            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-
-            cmaList.forEach((cma, idx) => {
-                let row = scrollRows[idx];
-                let rowData = { cma: cma, categories: [] };
-                categories.forEach((_, cIdx) => {
-                    let c = cIdx + 1;
-                    let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
-                    let onVal = row.querySelector(`.on-${c}`)?.value || "0";
-                    rowData.categories.push({ tot: totVal, on: onVal });
-                });
-                data.push(rowData);
-            });
-
-            localStorage.setItem(key, JSON.stringify(data));
-            let displayPeriod = weekNames[period] || period;
-            alert(`Đã lưu thành công dữ liệu ${displayPeriod} - Tháng ${month.replace('M','')} - Năm ${year}!`);
+            document.getElementById('tot-all-rec').textContent = grandRec;
+            document.getElementById('tot-all-proc').textContent = grandProc;
+            document.getElementById('tot-all-pend').textContent = grandPend;
         }
 
-        function loadData() {
-            let year = document.getElementById('selectYear').value;
-            let month = document.getElementById('selectMonth').value;
-            let period = document.getElementById('selectPeriod').value;
-            let filter = document.getElementById('selectCategoryFilter').value;
-
-            const btnSave = document.getElementById('btnSave');
-            const notice = document.getElementById('readOnlyNotice');
-
-            let displayPeriod = weekNames[period] || period;
-
-            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-                btnSave.classList.add('hidden');
-                notice.classList.remove('hidden');
-
-                let monthsToAggregate = [];
-                if (period === 'MONTH') {
-                    monthsToAggregate = [month];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ THÁNG ${month.replace('M','')} - NĂM ${year}`;
-                } else if (period === 'Q1') {
-                    monthsToAggregate = ['M1', 'M2', 'M3'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ I - NĂM ${year}`;
-                } else if (period === 'Q2') {
-                    monthsToAggregate = ['M4', 'M5', 'M6'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ II - NĂM ${year}`;
-                } else if (period === 'Q3') {
-                    monthsToAggregate = ['M7', 'M8', 'M9'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ III - NĂM ${year}`;
-                } else if (period === 'Q4') {
-                    monthsToAggregate = ['M10', 'M11', 'M12'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ IV - NĂM ${year}`;
-                } else if (period === 'YEAR') {
-                    monthsToAggregate = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ NĂM ${year}`;
-                }
-
-                renderTables(true);
-
-                let aggregated = cmaList.map(cma => ({
-                    cma: cma,
-                    categories: Array.from({length: categories.length}, () => ({tot: 0, on: 0}))
-                }));
-
-                monthsToAggregate.forEach(m => {
-                    ['W1','W2','W3','W4','W5'].forEach(w => {
-                        let weekData = localStorage.getItem(`HUEWACO_${year}_${m}_${w}`);
-                        if (weekData) {
-                            let parsed = JSON.parse(weekData);
-                            parsed.forEach((r, rIdx) => {
-                                r.categories.forEach((cat, cIdx) => {
-                                    if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                        aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                        aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
-
-                let fixedRows = document.querySelectorAll('#fixedTableBody tr');
-                let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-
-                aggregated.forEach((rData, rIdx) => {
-                    let fixedRow = fixedRows[rIdx];
-                    let scrollRow = scrollRows[rIdx];
-                    let rTotAll = 0, rOnAll = 0;
-
-                    rData.categories.forEach((cat, cIdx) => {
-                        let c = cIdx + 1;
-                        if (filter === "ALL" || filter == c) {
-                            let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
-                            let onElem = scrollRow.querySelector(`.cat-on-${c}`);
-                            let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
-
-                            if (totElem) totElem.textContent = cat.tot;
-                            if (onElem) onElem.textContent = cat.on;
-                            if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
-                        }
-                        rTotAll += cat.tot;
-                        rOnAll += cat.on;
-                    });
-
-                    fixedRow.querySelector('.row-total-all').textContent = rTotAll;
-                    fixedRow.querySelector('.row-online-all').textContent = rOnAll;
-                    fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
-                });
-
-                calculateTableTotals();
-
-            } else {
-                btnSave.classList.remove('hidden');
-                notice.classList.add('hidden');
-                document.getElementById('tableTitle').textContent = `NHẬP LIỆU ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
-
-                renderTables(false);
-
-                let saved = localStorage.getItem(`HUEWACO_${year}_${month}_${period}`);
-                if (saved) {
-                    let data = JSON.parse(saved);
-                    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-                    data.forEach((rData, rIdx) => {
-                        let scrollRow = scrollRows[rIdx];
-                        if (scrollRow) {
-                            rData.categories.forEach((cat, cIdx) => {
-                                let c = cIdx + 1;
-                                if (scrollRow.querySelector(`.tot-${c}`)) scrollRow.querySelector(`.tot-${c}`).value = cat.tot;
-                                if (scrollRow.querySelector(`.on-${c}`)) scrollRow.querySelector(`.on-${c}`).value = cat.on;
-                            });
-                            calculateRow(rIdx, scrollRow.querySelector('input'));
-                        }
-                    });
-                }
-            }
+        // Xuất Excel nhanh
+        function exportExcel() {
+            alert("Tính năng đã sẵn sàng để tích hợp xuất file Excel (.xlsx)!");
         }
 
-        initTime();
-        loadData();
+        // Tự động chạy khi tải trang
+        window.onload = function() {
+            renderTable();
+        };
     </script>
+
 </body>
 </html>
