@@ -216,8 +216,35 @@
             </div>
         </div>
     </div>
-
+<!-- POPUP THÔNG BÁO TÙY CHỈNH THAY THẾ CHO ALERT -->
+    <div id="customAlertModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 w-full max-w-sm overflow-hidden transform transition-all scale-100">
+            <!-- Tiêu đề Pop-up -->
+            <div class="bg-blue-900 text-white font-bold text-sm px-4 py-2.5 flex items-center justify-between border-b border-yellow-500">
+                <span class="flex items-center gap-1.5">📢 THÔNG BÁO:</span>
+            </div>
+            <!-- Nội dung thông báo -->
+            <div class="p-5 text-center text-xs sm:text-sm font-semibold text-slate-800" id="customAlertMessage">
+                Nội dung thông báo
+            </div>
+            <!-- Nút OK -->
+            <div class="bg-slate-50 px-4 py-3 flex justify-center border-t border-slate-100">
+                <button onclick="closeCustomAlert()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-1.5 rounded-lg text-xs transition-colors shadow">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
+        /* Hàm hiển thị và đóng Pop-up thông báo tùy chỉnh */
+        function showAlert(message) {
+            document.getElementById('customAlertMessage').textContent = message;
+            document.getElementById('customAlertModal').classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            document.getElementById('customAlertModal').classList.add('hidden');
+        }
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
         const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
