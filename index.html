@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo Cáo Tổng Hợp Đơn Online - HueWACO</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <style>
         * {
             box-sizing: border-box !important;
@@ -150,12 +151,15 @@
                     <option value="9">9. Kiểm tra ĐH</option>
                 </select>
             </div>
-            <div>
+            <div class="flex gap-2">
                 <button id="btnSave" onclick="saveData()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 rounded shadow-sm text-xs">
-                    💾 Lưu Số Liệu Tuần
+                💾 Lưu Số Liệu Tuần
+                </button>
+                <button id="btnExport" onclick="exportToExcel()" class="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs flex items-center justify-center gap-1">
+                📊 Xuất Excel
                 </button>
             </div>
-        </div>
+            </div>
 
         <!-- Khung Bảng Dữ Liệu Excel -->
         <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
@@ -642,7 +646,223 @@
                 }
             }
         }
+        // Chức năng Xuất Báo Cáo ra File Excel có định dạng chuẩn
+        function exportToExcel() {
+    const year = document.getElementById('selectYear').value;
+    const month = document.getElementById('selectMonth').value;
+    const period = document.getElementById('selectPeriod').value;
+    const filter = document.getElementById('selectCategoryFilter').value;
+    const tableTitleText = document.getElementById('tableTitle').textContent.trim();
 
+    // 1. Xác định các hạng mục cần xuất
+    let selectedCats = [];
+    categories.forEach((cat, idx) => {
+        let catId = idx + 1;
+        if (filter === "ALL" || filter == catId) {
+            selectedCats.push({ name: cat, id: catId });
+        }
+    });
+
+    // 2. Định nghĩa màu sắc & Style chuẩn Excel
+    const borderStyle = {
+        top: { style: "thin", color: { rgb: "D1D5DB" } },
+        bottom: { style: "thin", color: { rgb: "D1D5DB" } },
+        left: { style: "thin", color: { rgb: "D1D5DB" } },
+        right: { style: "thin", color: { rgb: "D1D5DB" } }
+    };
+
+    const styleTitle = {
+        font: { bold: true, size: 14, color: { rgb: "1E3A8A" } },
+        alignment: { horizontal: "center", vertical: "center" }
+    };
+
+    const styleHeaderTop = {
+        fill: { fgColor: { rgb: "1E3A8A" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, size: 10 },
+        alignment: { horizontal: "center", vertical: "center", wrapText: true },
+        border: borderStyle
+    };
+
+    const styleHeaderSub = {
+        fill: { fgColor: { rgb: "1E293B" } },
+        font: { bold: true, color: { rgb: "FDE047" }, size: 9 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleHeaderTotalTop = {
+        fill: { fgColor: { rgb: "D97706" } },
+        font: { bold: true, color: { rgb: "FEF3C7" }, size: 10 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleHeaderTotalSub = {
+        fill: { fgColor: { rgb: "B45309" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, size: 9 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleCma = {
+        fill: { fgColor: { rgb: "0F172A" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, size: 9 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleTotalLight = {
+        fill: { fgColor: { rgb: "FEF3C7" } },
+        font: { bold: true, color: { rgb: "1E3A8A" }, size: 9 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleFoot = {
+        fill: { fgColor: { rgb: "1E293B" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, size: 10 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    const styleDataNum = {
+        font: { size: 9 },
+        alignment: { horizontal: "center", vertical: "center" },
+        border: borderStyle
+    };
+
+    // 3. Xây dựng mảng Dữ liệu (wsData) & Mảng Merge
+    let wsData = [];
+    let merges = [];
+
+    // Dòng 1: Tiêu đề
+    wsData.push([tableTitleText]);
+    const totalCols = 5 + (selectedCats.length * 3);
+    merges.push({ s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } });
+    wsData.push([]); // Dòng trống
+
+    // Dòng 3 & 4: Tiêu đề Cột (Headers)
+    let rowHeader1 = ["STT", "KHU VỰC", "TỔNG HỢP", "", ""];
+    let rowHeader2 = ["", "", "TỔNG", "ONLINE", "%"];
+
+    merges.push({ s: { r: 2, c: 0 }, e: { r: 3, c: 0 } }); // Merge STT
+    merges.push({ s: { r: 2, c: 1 }, e: { r: 3, c: 1 } }); // Merge KHU VỰC
+    merges.push({ s: { r: 2, c: 2 }, e: { r: 2, c: 4 } }); // Merge TỔNG HỢP
+
+    selectedCats.forEach((cat, idx) => {
+        let startCol = 5 + (idx * 3);
+        rowHeader1.push(cat.name, "", "");
+        rowHeader2.push("TỔNG", "ONLINE", "%");
+        merges.push({ s: { r: 2, c: startCol }, e: { r: 2, c: startCol + 2 } });
+    });
+
+    wsData.push(rowHeader1);
+    wsData.push(rowHeader2);
+
+    // 4. Lấy dữ liệu dòng (Data Rows)
+    const fixedRows = document.querySelectorAll('#fixedTableBody tr');
+    const scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+
+    fixedRows.forEach((fixedRow, rIdx) => {
+        const scrollRow = scrollRows[rIdx];
+        let rowData = [];
+
+        rowData.push(rIdx + 1);
+        rowData.push(cmaList[rIdx]);
+        rowData.push(parseInt(fixedRow.querySelector('.row-total-all').textContent) || 0);
+        rowData.push(parseInt(fixedRow.querySelector('.row-online-all').textContent) || 0);
+        rowData.push(fixedRow.querySelector('.row-pct-all').textContent);
+
+        selectedCats.forEach(cat => {
+            let c = cat.id;
+            let tot = scrollRow.querySelector(`.tot-${c}`) ? 
+                (parseInt(scrollRow.querySelector(`.tot-${c}`).value) || 0) : 
+                (parseInt(scrollRow.querySelector(`.cat-tot-${c}`)?.textContent) || 0);
+
+            let on = scrollRow.querySelector(`.on-${c}`) ? 
+                (parseInt(scrollRow.querySelector(`.on-${c}`).value) || 0) : 
+                (parseInt(scrollRow.querySelector(`.cat-on-${c}`)?.textContent) || 0);
+
+            let pct = scrollRow.querySelector(`.pct-${c}`) ? 
+                scrollRow.querySelector(`.pct-${c}`).textContent : 
+                (scrollRow.querySelector(`.cat-pct-${c}`)?.textContent || "0%");
+
+            rowData.push(tot, on, pct);
+        });
+
+        wsData.push(rowData);
+    });
+
+    // 5. Lấy dữ liệu Dòng Tổng (Footer)
+    let footRow = ["--", "HueWACO"];
+    footRow.push(parseInt(document.getElementById('footTotalAll').textContent) || 0);
+    footRow.push(parseInt(document.getElementById('footOnlineAll').textContent) || 0);
+    footRow.push(document.getElementById('footPctAll').textContent);
+
+    selectedCats.forEach(cat => {
+        let c = cat.id;
+        let tot = parseInt(document.getElementById(`footCatTot-${c}`)?.textContent) || 0;
+        let on = parseInt(document.getElementById(`footCatOn-${c}`)?.textContent) || 0;
+        let pct = document.getElementById(`footCatPct-${c}`)?.textContent || "0%";
+        footRow.push(tot, on, pct);
+    });
+
+    wsData.push(footRow);
+
+    // 6. Tạo Worksheet và áp dụng Style
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    ws['!merges'] = merges;
+
+    // Thiết lập độ rộng cột
+    let colWidths = [{ wch: 6 }, { wch: 15 }, { wch: 10 }, { wch: 10 }, { wch: 8 }];
+    selectedCats.forEach(() => {
+        colWidths.push({ wch: 10 }, { wch: 10 }, { wch: 8 });
+    });
+    ws['!cols'] = colWidths;
+
+    // Tô màu & Định dạng từng Ô
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; ++R) {
+        for (let C = range.s.c; C <= range.e.c; ++C) {
+            const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+            if (!ws[cell_address]) continue;
+
+            // Dòng Tiêu đề Báo cáo
+            if (R === 0) {
+                ws[cell_address].s = styleTitle;
+            }
+            // Dòng Tiêu đề Cột 1
+            else if (R === 2) {
+                if (C < 2) ws[cell_address].s = styleHeaderTop;
+                else if (C >= 2 && C <= 4) ws[cell_address].s = styleHeaderTotalTop;
+                else ws[cell_address].s = styleHeaderTop;
+            }
+            // Dòng Tiêu đề Cột 2
+            else if (R === 3) {
+                if (C < 2) ws[cell_address].s = styleHeaderTop;
+                else if (C >= 2 && C <= 4) ws[cell_address].s = styleHeaderTotalSub;
+                else ws[cell_address].s = styleHeaderSub;
+            }
+            // Dòng Chân bảng (Footer)
+            else if (R === range.e.r) {
+                ws[cell_address].s = styleFoot;
+            }
+            // Các Dòng Dữ liệu
+            else {
+                if (C === 0 || C === 1) ws[cell_address].s = styleCma;
+                else if (C >= 2 && C <= 4) ws[cell_address].s = styleTotalLight;
+                else ws[cell_address].s = styleDataNum;
+            }
+        }
+    }
+
+    // 7. Tạo Workbook và Tải về File .xlsx
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "TongHopOnline");
+    
+    let fileName = `BaoCao_Online_HueWACO_${year}_${month}_${period}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+}
         initTime();
         loadData();
     </script>
