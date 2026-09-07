@@ -245,6 +245,7 @@
         function closeCustomAlert() {
             document.getElementById('customAlertModal').classList.add('hidden');
         }
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTguAJVvYc2l5BmMthqW6tMPA1FxmoiMIah2XC7WCd-vZZgZdx7mKmpIUJs4X2bUvY/exec";
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
         const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
@@ -539,35 +540,52 @@
 
         function saveData() {
             let year = document.getElementById('selectYear').value;
-            let month = document.getElementById('selectMonth').value;
-            let period = document.getElementById('selectPeriod').value;
+    let month = document.getElementById('selectMonth').value;
+    let period = document.getElementById('selectPeriod').value;
 
-            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-                alert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
-                return;
-            }
+    if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
+        showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
+        return;
+    }
 
-            let key = `HUEWACO_${year}_${month}_${period}`;
-            let data = [];
-            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+    let key = `HUEWACO_${year}_${month}_${period}`;
+    let data = [];
+    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
 
-            cmaList.forEach((cma, idx) => {
-                let row = scrollRows[idx];
-                let rowData = { cma: cma, categories: [] };
-                categories.forEach((_, cIdx) => {
-                    let c = cIdx + 1;
-                    let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
-                    let onVal = row.querySelector(`.on-${c}`)?.value || "0";
-                    rowData.categories.push({ tot: totVal, on: onVal });
-                });
-                data.push(rowData);
-            });
+    cmaList.forEach((cma, idx) => {
+        let row = scrollRows[idx];
+        let rowData = { cma: cma, categories: [] };
+        categories.forEach((_, cIdx) => {
+            let c = cIdx + 1;
+            let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
+            let onVal = row.querySelector(`.on-${c}`)?.value || "0";
+            rowData.categories.push({ tot: totVal, on: onVal });
+        });
+        data.push(rowData);
+    });
 
-            localStorage.setItem(key, JSON.stringify(data));
-            let displayPeriod = weekNames[period] || period;
-            showAlert(`Đã lưu thành công dữ liệu ${displayPeriod} - Tháng ${month.replace('M','')} - Năm ${year}!`);
-        }
+    // 1. Lưu tạm vào máy hiện tại
+    localStorage.setItem(key, JSON.stringify(data));
+    let displayPeriod = weekNames[period] || period;
 
+    // 2. Đồng bộ lên Google Sheet
+    if (GOOGLE_SCRIPT_URL) {
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: key, value: data })
+        })
+        .then(() => {
+            showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod} lên Google Sheet!`);
+        })
+        .catch(err => {
+            showAlert(`Đã lưu trên máy nhưng lỗi đồng bộ Google Sheet: ${err}`);
+        });
+    } else {
+        showAlert(`Đã lưu thành công dữ liệu ${displayPeriod} - Tháng ${month.replace('M','')} - Năm ${year}!`);
+    }
+}
         function loadData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
