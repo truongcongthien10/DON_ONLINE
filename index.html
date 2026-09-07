@@ -565,7 +565,7 @@
 
             localStorage.setItem(key, JSON.stringify(data));
             let displayPeriod = weekNames[period] || period;
-            alert(`Đã lưu thành công dữ liệu ${displayPeriod} - Tháng ${month.replace('M','')} - Năm ${year}!`);
+            showAlert(`Đã lưu thành công dữ liệu ${displayPeriod} - Tháng ${month.replace('M','')} - Năm ${year}!`);
         }
 
         function loadData() {
