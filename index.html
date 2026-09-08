@@ -687,7 +687,7 @@ function calculateRow(rowIndex, element) {
             }
         }
 
-        function loadData() {
+function loadData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
@@ -832,40 +832,40 @@ function calculateRow(rowIndex, element) {
                 });
 
             } else {
-            btnSave.classList.remove('hidden');
-            notice.classList.add('hidden');
-            document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
+                btnSave.classList.remove('hidden');
+                notice.classList.add('hidden');
+                document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
 
-            renderTables(false);
+                renderTables(false);
 
-            let primaryKey = `HUEWACO_${year}_${period}`;
+                let primaryKey = `HUEWACO_${year}_${period}`;
 
-    // 1. HIỂN THỊ NGAY TỪ LOCALSTORAGE (0 GIÂY - Không phải chờ 2s)
-            let saved = localStorage.getItem(primaryKey);
-            if (saved) {
-                try { applyDataToTable(JSON.parse(saved)); } catch(e) {}
-            }
+                // 1. HIỂN THỊ NGAY TỪ LOCALSTORAGE (0 GIÂY)
+                let saved = localStorage.getItem(primaryKey);
+                if (saved) {
+                    try { applyDataToTable(JSON.parse(saved)); } catch(e) {}
+                }
 
-            // 2. CHẠY NGẦM FETCH TỪ GOOGLE SHEET ĐỂ CẬP NHẬT ĐỒNG BỘ
-            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-                let timestamp = new Date().getTime();
-                fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        let cloudData = data;
-                        if (typeof cloudData === 'string') {
-                            try { cloudData = JSON.parse(cloudData); } catch(e) {}
-                        }
+                // 2. CHẠY NGẦM FETCH TỪ GOOGLE SHEET ĐỂ CẬP NHẬT ĐỒNG BỘ
+                if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+                    let timestamp = new Date().getTime();
+                    fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            let cloudData = data;
+                            if (typeof cloudData === 'string') {
+                                try { cloudData = JSON.parse(cloudData); } catch(e) {}
+                            }
 
-                        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-                            applyDataToTable(cloudData);
-                            localStorage.setItem(primaryKey, JSON.stringify(cloudData));
-                        }
-                    })
-                    .catch(err => console.log("Không thể kết nối Cloud, giữ nguyên dữ liệu máy:", err));
+                            if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+                                applyDataToTable(cloudData);
+                                localStorage.setItem(primaryKey, JSON.stringify(cloudData));
+                            }
+                        })
+                        .catch(err => console.log("Không thể kết nối Cloud, giữ nguyên dữ liệu máy:", err));
+                }
             }
         }
-    }
 
         function exportToExcel() {
             const year = document.getElementById('selectYear').value;
