@@ -357,8 +357,8 @@
         function filterCategoryView() {
             let period = document.getElementById('selectPeriod').value;
             if (period !== 'MONTH' && !period.startsWith('Q') && period !== 'YEAR') {
-                saveDataSilent();
-            }
+            saveDataSilent(); // Lưu tạm dữ liệu hạng mục hiện tại trước khi ẩn đi
+        }
             loadData();
         }
 
@@ -526,36 +526,40 @@
             });
         }
 
-        function calculateRow(rowIndex, element) {
-            let fixedRow = document.querySelectorAll('#fixedTableBody tr')[rowIndex];
-            let scrollRow = document.querySelectorAll('#scrollableTableBody tr')[rowIndex];
+function calculateRow(rowIndex, element) {
+    let fixedRow = document.querySelectorAll('#fixedTableBody tr')[rowIndex];
+    let scrollRow = document.querySelectorAll('#scrollableTableBody tr')[rowIndex];
 
-            if (!fixedRow || !scrollRow) return;
+    if (!fixedRow || !scrollRow) return;
 
-            let grandTotal = 0, grandOnline = 0;
+    let grandTotal = 0, grandOnline = 0;
 
-            categories.forEach((_, cIdx) => {
-                let c = cIdx + 1;
-                let totElem = scrollRow.querySelector(`.tot-${c}`);
-                let onElem = scrollRow.querySelector(`.on-${c}`);
-                let pctElem = scrollRow.querySelector(`.pct-${c}`);
+    categories.forEach((_, cIdx) => {
+        let c = cIdx + 1;
+        let totElem = scrollRow.querySelector(`.tot-${c}`);
+        let onElem = scrollRow.querySelector(`.on-${c}`);
+        let pctElem = scrollRow.querySelector(`.pct-${c}`);
 
-                let tot = totElem ? (parseInt(totElem.value, 10) || 0) : 0;
-                let on = onElem ? (parseInt(onElem.value, 10) || 0) : 0;
+        let tot = totElem ? (parseInt(totElem.value, 10) || 0) : 0;
+        let on = onElem ? (parseInt(onElem.value, 10) || 0) : 0;
 
-                if (pctElem) {
-                    pctElem.textContent = tot > 0 ? Math.round((on / tot) * 100) + '%' : '0%';
-                }
+        if (pctElem) {
+            pctElem.textContent = tot > 0 ? Math.round((on / tot) * 100) + '%' : '0%';
+        }
 
-                grandTotal += tot;
-                grandOnline += on;
-            });
+        grandTotal += tot;
+        grandOnline += on;
+    });
 
-            fixedRow.querySelector('.row-total-all').textContent = grandTotal;
-            fixedRow.querySelector('.row-online-all').textContent = grandOnline;
-            fixedRow.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
+    fixedRow.querySelector('.row-total-all').textContent = grandTotal;
+    fixedRow.querySelector('.row-online-all').textContent = grandOnline;
+    fixedRow.querySelector('.row-pct-all').textContent = grandTotal > 0 ? Math.round((grandOnline / grandTotal) * 100) + '%' : '0%';
 
-            calculateTableTotals();
+    calculateTableTotals();
+    
+    // TỰ ĐỘNG LƯU TẠM VÀO BỘ NHỚ MÁY NGAY KHI GÕ SỐ
+    saveDataSilent();
+    
         }
 
         function calculateTableTotals() {
@@ -836,37 +840,29 @@
 
             let primaryKey = `HUEWACO_${year}_${period}`;
 
-            // 1. ƯU TIÊN TẢI DỮ LIỆU MỚI NHẤT TỪ GOOGLE SHEET VỀ
+    // 1. HIỂN THỊ NGAY TỪ LOCALSTORAGE (0 GIÂY - Không phải chờ 2s)
+            let saved = localStorage.getItem(primaryKey);
+            if (saved) {
+                try { applyDataToTable(JSON.parse(saved)); } catch(e) {}
+            }
+
+            // 2. CHẠY NGẦM FETCH TỪ GOOGLE SHEET ĐỂ CẬP NHẬT ĐỒNG BỘ
             if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
                 let timestamp = new Date().getTime();
                 fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
                     .then(res => res.json())
                     .then(data => {
-                        // Xử lý ép kiểu nếu Google Sheet trả về dạng Chuỗi String
                         let cloudData = data;
                         if (typeof cloudData === 'string') {
                             try { cloudData = JSON.parse(cloudData); } catch(e) {}
                         }
 
-                        // Nếu có dữ liệu trên Cloud thì hiển thị và cập nhật lại LocalStorage
                         if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
                             applyDataToTable(cloudData);
                             localStorage.setItem(primaryKey, JSON.stringify(cloudData));
-                        } else {
-                            // Nếu Cloud chưa có dữ liệu mới dùng LocalStorage
-                            let saved = localStorage.getItem(primaryKey);
-                            if (saved) applyDataToTable(JSON.parse(saved));
                         }
                     })
-                    .catch(err => {
-                        console.log("Lỗi tải Cloud, dùng tạm LocalStorage:", err);
-                        let saved = localStorage.getItem(primaryKey);
-                        if (saved) applyDataToTable(JSON.parse(saved));
-                    });
-            } else {
-                let saved = localStorage.getItem(primaryKey);
-                if (saved) applyDataToTable(JSON.parse(saved));
-            }
+                    .catch(err => console.log("Không thể kết nối Cloud, giữ nguyên dữ liệu máy:", err));
             }
         }
 
