@@ -234,57 +234,80 @@ function updateWeekDropdown() {
     const currentSelected = selectPeriod.value;
     selectPeriod.innerHTML = '';
 
-    // Danh sách 52 tuần theo đúng dữ liệu lịch năm 2026
+    // Mảng dữ liệu 52 tuần chuẩn hóa chính xác theo yêu cầu phân bổ tháng
     const weeks2026 = [
+        // Tháng 1: Tuần 1 - 5
         { week: 1,  month: 1,  start: "29/12/2025", end: "04/01/2026" },
         { week: 2,  month: 1,  start: "05/01", end: "11/01" },
         { week: 3,  month: 1,  start: "12/01", end: "18/01" },
         { week: 4,  month: 1,  start: "19/01", end: "25/01" },
         { week: 5,  month: 1,  start: "26/01", end: "01/02" },
+
+        // Tháng 2: Tuần 6 - 9
         { week: 6,  month: 2,  start: "02/02", end: "08/02" },
         { week: 7,  month: 2,  start: "09/02", end: "15/02" },
         { week: 8,  month: 2,  start: "16/02", end: "22/02" },
         { week: 9,  month: 2,  start: "23/02", end: "01/03" },
+
+        // Tháng 3: Tuần 10 - 14
         { week: 10, month: 3,  start: "02/03", end: "08/03" },
         { week: 11, month: 3,  start: "09/03", end: "15/03" },
         { week: 12, month: 3,  start: "16/03", end: "22/03" },
         { week: 13, month: 3,  start: "23/03", end: "29/03" },
         { week: 14, month: 3,  start: "30/03", end: "05/04" },
+
+        // Tháng 4: Tuần 15 - 18
         { week: 15, month: 4,  start: "06/04", end: "12/04" },
         { week: 16, month: 4,  start: "13/04", end: "19/04" },
         { week: 17, month: 4,  start: "20/04", end: "26/04" },
         { week: 18, month: 4,  start: "27/04", end: "03/05" },
+
+        // Tháng 5: Tuần 19 - 22
         { week: 19, month: 5,  start: "04/05", end: "10/05" },
         { week: 20, month: 5,  start: "11/05", end: "17/05" },
         { week: 21, month: 5,  start: "18/05", end: "24/05" },
         { week: 22, month: 5,  start: "25/05", end: "31/05" },
+
+        // Tháng 6: Tuần 23 - 27
         { week: 23, month: 6,  start: "01/06", end: "07/06" },
         { week: 24, month: 6,  start: "08/06", end: "14/06" },
         { week: 25, month: 6,  start: "15/06", end: "21/06" },
         { week: 26, month: 6,  start: "22/06", end: "28/06" },
         { week: 27, month: 6,  start: "29/06", end: "05/07" },
+
+        // Tháng 7: Tuần 28 - 31
         { week: 28, month: 7,  start: "06/07", end: "12/07" },
         { week: 29, month: 7,  start: "13/07", end: "19/07" },
         { week: 30, month: 7,  start: "20/07", end: "26/07" },
         { week: 31, month: 7,  start: "27/07", end: "02/08" },
+
+        // Tháng 8: Tuần 32 - 35
         { week: 32, month: 8,  start: "03/08", end: "09/08" },
         { week: 33, month: 8,  start: "10/08", end: "16/08" },
         { week: 34, month: 8,  start: "17/08", end: "23/08" },
         { week: 35, month: 8,  start: "24/08", end: "30/08" },
-        { week: 36, month: 8,  start: "31/08", end: "06/09" },
+
+        // Tháng 9: Tuần 36 - 39
+        { week: 36, month: 9,  start: "31/08", end: "06/09" },
         { week: 37, month: 9,  start: "07/09", end: "13/09" },
         { week: 38, month: 9,  start: "14/09", end: "20/09" },
         { week: 39, month: 9,  start: "21/09", end: "27/09" },
-        { week: 40, month: 9,  start: "28/09", end: "04/10" },
+
+        // Tháng 10: Tuần 40 - 44
+        { week: 40, month: 10, start: "28/09", end: "04/10" },
         { week: 41, month: 10, start: "05/10", end: "11/10" },
         { week: 42, month: 10, start: "12/10", end: "18/10" },
         { week: 43, month: 10, start: "19/10", end: "25/10" },
         { week: 44, month: 10, start: "26/10", end: "01/11" },
+
+        // Tháng 11: Tuần 45 - 48
         { week: 45, month: 11, start: "02/11", end: "08/11" },
         { week: 46, month: 11, start: "09/11", end: "15/11" },
         { week: 47, month: 11, start: "16/11", end: "22/11" },
         { week: 48, month: 11, start: "23/11", end: "29/11" },
-        { week: 49, month: 11, start: "30/11", end: "06/12" },
+
+        // Tháng 12: Tuần 49 - 52
+        { week: 49, month: 12, start: "30/11", end: "06/12" },
         { week: 50, month: 12, start: "07/12", end: "13/12" },
         { week: 51, month: 12, start: "14/12", end: "20/12" },
         { week: 52, month: 12, start: "21/12", end: "27/12" }
@@ -293,21 +316,21 @@ function updateWeekDropdown() {
     // Lọc các tuần thuộc tháng được chọn
     const filteredWeeks = weeks2026.filter(w => w.month === month);
 
-    filteredWeeks.forEach((wInfo, index) => {
+    filteredWeeks.forEach((wInfo) => {
         let opt = document.createElement('option');
-        // Khóa W1, W2, W3... đại diện cho tuần thứ 1, 2, 3... trong tháng đó
-        opt.value = `W${index + 1}`; 
+        opt.value = `WEEK_${wInfo.week}`; 
         opt.textContent = `Tuần ${wInfo.week} (${wInfo.start} đến ${wInfo.end})`;
         selectPeriod.appendChild(opt);
     });
 
-    // Thêm các lựa chọn tổng hợp Tháng, Quý, Năm
+    // Thêm tùy chọn Tổng hợp Cả Tháng
     let optMonth = document.createElement('option');
     optMonth.value = "MONTH";
     optMonth.className = "font-bold text-emerald-700";
     optMonth.textContent = `-- Tổng Hợp Cả Tháng ${month}/${year} --`;
     selectPeriod.appendChild(optMonth);
 
+    // Thêm tùy chọn Tổng hợp Quý
     const quarters = [
         { id: "Q1", name: "Tổng Hợp Quý I (Tháng 1 - 3)" },
         { id: "Q2", name: "Tổng Hợp Quý II (Tháng 4 - 6)" },
@@ -323,6 +346,7 @@ function updateWeekDropdown() {
         selectPeriod.appendChild(opt);
     });
 
+    // Thêm tùy chọn Tổng hợp Cả Năm
     let optYear = document.createElement('option');
     optYear.value = "YEAR";
     optYear.className = "font-bold text-purple-700";
