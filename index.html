@@ -279,19 +279,28 @@
             selectPeriod.innerHTML = '';
 
             const daysInMonth = new Date(year, month, 0).getDate();
-            const actualWeeksPerMonth = [5, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+            const weeksCountPerMonth = [4, 4, 5, 4, 4, 5, 4, 4, 5, 4, 4, 4];
             let startWeekNum = 1;
                 for (let i = 0; i < month - 1; i++) {
-                startWeekNum += actualWeeksPerMonth[i];
+                startWeekNum += weeksCountPerMonth[i];
             }
+            let currentMonthWeeks = weeksCountPerMonth[month - 1];
 
-            const weeks = [
-                { id: "W1", name: `Tuần ${startWeekNum}`, start: 1, end: 7 },
-                { id: "W2", name: `Tuần ${startWeekNum + 1}`, start: 8, end: 14 },
-                { id: "W3", name: `Tuần ${startWeekNum + 2}`, start: 15, end: 21 },
-                { id: "W4", name: `Tuần ${startWeekNum + 3}`, start: 22, end: 28 },
-                { id: "W5", name: `Tuần ${startWeekNum + 4}`, start: 29, end: daysInMonth }
-            ];
+            const weeks = [];
+                for (let w = 1; w <= currentMonthWeeks; w++) {
+                let startDay = (w - 1) * 7 + 1;
+                let endDay = w * 7;
+                if (w === currentMonthWeeks) {
+                endDay = daysInMonth; // Tuần cuối kết thúc vào ngày cuối tháng
+            }
+                weeks.push({
+                id: `W${w}`,
+                name: `Tuần ${startWeekNum + w - 1}`,
+                start: startDay,
+                end: Math.min(endDay, daysInMonth)
+            });
+                }
+
             weeks.forEach(w => {
                 if (w.start <= daysInMonth) {
                     let opt = document.createElement('option');
