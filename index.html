@@ -279,7 +279,11 @@
             selectPeriod.innerHTML = '';
 
             const daysInMonth = new Date(year, month, 0).getDate();
-            const startWeekNum = (month - 1) * 4 + 1; 
+            const weeksCountPerMonth = [4, 4, 5, 4, 4, 5, 4, 4, 5, 4, 4, 5];
+            let startWeekNum = 1;
+                for (let i = 0; i < month - 1; i++) {
+                    startWeekNum += weeksCountPerMonth[i];
+            }
 
             const weeks = [
                 { id: "W1", name: `Tuần ${startWeekNum}`, start: 1, end: 7 },
