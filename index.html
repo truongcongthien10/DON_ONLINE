@@ -627,7 +627,7 @@ function saveData() {
     // Định dạng Key chuẩn: HUEWACO_2026_WEEK_36
     let key = `HUEWACO_${year}_${period}`;
     
-    // Đọc dữ liệu hiện tại từ localStorage hoặc tạo mảng rỗng
+    // 1. Đọc dữ liệu hiện tại từ localStorage để không bị đè mất các hạng mục đang ẩn khi lọc
     let existingData = localStorage.getItem(key);
     let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
         cma: cma,
@@ -637,7 +637,7 @@ function saveData() {
     let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
     let filter = document.getElementById('selectCategoryFilter').value;
 
-    // Cập nhật dữ liệu hạng mục đang hiển thị
+    // 2. Cập nhật số liệu từ giao diện vào mảng dữ liệu
     cmaList.forEach((cma, idx) => {
         let row = scrollRows[idx];
         if (!row) return;
@@ -657,20 +657,26 @@ function saveData() {
         });
     });
 
+    // 3. Lưu tạm vào bộ nhớ trình duyệt (Tránh mất dữ liệu local)
     localStorage.setItem(key, JSON.stringify(data));
+
     let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
     let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
 
-    // Đồng bộ lên Google Sheet
+    // 4. Đồng bộ lên Google Sheet (Đã chuyển sang định dạng URL-encoded để truyền tin cậy)
     if (GOOGLE_SCRIPT_URL) {
+        let payload = new URLSearchParams();
+        payload.append("key", key);
+        payload.append("value", JSON.stringify(data));
+
         fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: key, value: data })
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: payload.toString()
         })
         .then(() => {
-            showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod} lên Google Sheet!`);
+            showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
         })
         .catch(err => {
             showAlert(`Đã lưu trên máy nhưng lỗi đồng bộ Google Sheet: ${err}`);
