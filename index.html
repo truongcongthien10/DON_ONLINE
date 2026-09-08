@@ -290,7 +290,6 @@
             let endDay = w * 7;
             if (w === currentMonthWeeks) {
             endDay = daysInMonth;
-         }
             weeks.push({
             id: `W${w}`,
             name: `Tuần ${startWeekNum + w - 1}`,
@@ -298,7 +297,6 @@
             end: Math.min(endDay, daysInMonth)
         });
         }
-
             weeks.forEach(w => {
                 if (w.start <= daysInMonth) {
                     let opt = document.createElement('option');
