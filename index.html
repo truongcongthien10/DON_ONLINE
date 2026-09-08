@@ -502,7 +502,6 @@
             scrollFoot.innerHTML = htmlScrollFoot;
         }
 
-        // HÀM HỖ TRỢ ĐỔ DỮ LIỆU LÊN BẢNG
         function applyDataToTable(data) {
             if (!data || !Array.isArray(data)) return;
             let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
@@ -611,77 +610,78 @@
             });
         }
 
-function saveData() {
-    let year = document.getElementById('selectYear').value;
-    let period = document.getElementById('selectPeriod').value;
+        function saveData() {
+            let year = document.getElementById('selectYear').value;
+            let period = document.getElementById('selectPeriod').value;
 
-    if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-        showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
-        return;
-    }
-
-    let key = `HUEWACO_${year}_${period}`;
-    
-    // Đọc dữ liệu cũ để tránh mất các hạng mục đang bị ẩn
-    let existingData = localStorage.getItem(key);
-    let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
-        cma: cma,
-        categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
-    }));
-
-    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-    let filter = document.getElementById('selectCategoryFilter').value;
-
-    cmaList.forEach((cma, idx) => {
-        let row = scrollRows[idx];
-        if (!row) return;
-        
-        categories.forEach((_, cIdx) => {
-            let c = cIdx + 1;
-            if (filter === "ALL" || filter == c) {
-                let totInput = row.querySelector(`.tot-${c}`);
-                let onInput = row.querySelector(`.on-${c}`);
-                
-                let totVal = totInput ? totInput.value : "0";
-                let onVal = onInput ? onInput.value : "0";
-                
-                if (!data[idx].categories[cIdx]) {
-                    data[idx].categories[cIdx] = {};
-                }
-                data[idx].categories[cIdx].tot = totVal;
-                data[idx].categories[cIdx].on = onVal;
+            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
+                showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
+                return;
             }
-        });
-    });
 
-    // 1. Lưu vào bộ nhớ máy (LocalStorage)
-    localStorage.setItem(key, JSON.stringify(data));
+            let key = `HUEWACO_${year}_${period}`;
+            
+            // Đọc dữ liệu cũ từ LocalStorage để không làm mất các hạng mục đang ẩn
+            let existingData = localStorage.getItem(key);
+            let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
+                cma: cma,
+                categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
+            }));
 
-    let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
-    let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
+            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+            let filter = document.getElementById('selectCategoryFilter').value;
 
-    // 2. Gửi dữ liệu lên Google Sheet dạng Form URL Encoded
-    if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-        let payload = new URLSearchParams();
-        payload.append("key", key);
-        payload.append("value", JSON.stringify(data));
+            cmaList.forEach((cma, idx) => {
+                let row = scrollRows[idx];
+                if (!row) return;
+                
+                categories.forEach((_, cIdx) => {
+                    let c = cIdx + 1;
+                    if (filter === "ALL" || filter == c) {
+                        let totInput = row.querySelector(`.tot-${c}`);
+                        let onInput = row.querySelector(`.on-${c}`);
+                        
+                        let totVal = totInput ? totInput.value : "0";
+                        let onVal = onInput ? onInput.value : "0";
+                        
+                        if (!data[idx].categories[cIdx]) {
+                            data[idx].categories[cIdx] = {};
+                        }
+                        data[idx].categories[cIdx].tot = totVal;
+                        data[idx].categories[cIdx].on = onVal;
+                    }
+                });
+            });
 
-        fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: payload.toString()
-        })
-        .then(() => {
-            showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
-        })
-        .catch(err => {
-            showAlert(`Lỗi kết nối Cloud: ${err}`);
-        });
-    } else {
-        showAlert(`Đã lưu thành công dữ liệu ${displayPeriod}!`);
-    }
-}
+            // 1. Lưu bản sao vào LocalStorage
+            localStorage.setItem(key, JSON.stringify(data));
+
+            let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
+            let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
+
+            // 2. Gửi dữ liệu dạng JSON Raw sang Google Apps Script
+            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+                let payload = JSON.stringify({
+                    key: key,
+                    value: data
+                });
+
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: payload
+                })
+                .then(() => {
+                    showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
+                })
+                .catch(err => {
+                    showAlert(`Đã lưu nội bộ nhưng lỗi kết nối Cloud: ${err}`);
+                });
+            } else {
+                showAlert(`Đã lưu thành công dữ liệu ${displayPeriod}!`);
+            }
+        }
 
         function loadData() {
             let year = document.getElementById('selectYear').value;
@@ -745,26 +745,31 @@ function saveData() {
                     let p = fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
                         .then(res => res.json())
                         .then(data => {
-                            if (data && Array.isArray(data) && data.length > 0) {
-                                data.forEach((r, rIdx) => {
-                                    r.categories.forEach((cat, cIdx) => {
-                                        if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                            aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                            aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                        }
-                                    });
-                                });
-                            } else {
-                                let localData = localStorage.getItem(primaryKey);
-                                if (localData) {
-                                    let parsed = JSON.parse(localData);
-                                    parsed.forEach((r, rIdx) => {
+                            let weekData = (typeof data === 'string') ? JSON.parse(data) : data;
+                            if (weekData && Array.isArray(weekData) && weekData.length > 0) {
+                                weekData.forEach((r, rIdx) => {
+                                    if (r.categories) {
                                         r.categories.forEach((cat, cIdx) => {
                                             if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
                                                 aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
                                                 aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
                                             }
                                         });
+                                    }
+                                });
+                            } else {
+                                let localData = localStorage.getItem(primaryKey);
+                                if (localData) {
+                                    let parsed = JSON.parse(localData);
+                                    parsed.forEach((r, rIdx) => {
+                                        if (r.categories) {
+                                            r.categories.forEach((cat, cIdx) => {
+                                                if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
+                                                    aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
+                                                    aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
+                                                }
+                                            });
+                                        }
                                     });
                                 }
                             }
@@ -773,12 +778,14 @@ function saveData() {
                             if (localData) {
                                 let parsed = JSON.parse(localData);
                                 parsed.forEach((r, rIdx) => {
-                                    r.categories.forEach((cat, cIdx) => {
-                                        if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                            aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                            aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                        }
-                                    });
+                                    if (r.categories) {
+                                        r.categories.forEach((cat, cIdx) => {
+                                            if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
+                                                aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
+                                                aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
+                                            }
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -839,9 +846,10 @@ function saveData() {
                         fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
                             .then(res => res.json())
                             .then(data => {
-                                if (data && Array.isArray(data) && data.length > 0) {
-                                    applyDataToTable(data);
-                                    localStorage.setItem(primaryKey, JSON.stringify(data));
+                                let cloudData = (typeof data === 'string') ? JSON.parse(data) : data;
+                                if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+                                    applyDataToTable(cloudData);
+                                    localStorage.setItem(primaryKey, JSON.stringify(cloudData));
                                 }
                             })
                             .catch(err => console.log("Lỗi tải Cloud:", err));
