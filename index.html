@@ -828,33 +828,45 @@
                 });
 
             } else {
-                btnSave.classList.remove('hidden');
-                notice.classList.add('hidden');
-                document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
+            btnSave.classList.remove('hidden');
+            notice.classList.add('hidden');
+            document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
 
-                renderTables(false);
+            renderTables(false);
 
-                let primaryKey = `HUEWACO_${year}_${period}`;
+            let primaryKey = `HUEWACO_${year}_${period}`;
 
+            // 1. ƯU TIÊN TẢI DỮ LIỆU MỚI NHẤT TỪ GOOGLE SHEET VỀ
+            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+                let timestamp = new Date().getTime();
+                fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        // Xử lý ép kiểu nếu Google Sheet trả về dạng Chuỗi String
+                        let cloudData = data;
+                        if (typeof cloudData === 'string') {
+                            try { cloudData = JSON.parse(cloudData); } catch(e) {}
+                        }
+
+                        // Nếu có dữ liệu trên Cloud thì hiển thị và cập nhật lại LocalStorage
+                        if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
+                            applyDataToTable(cloudData);
+                            localStorage.setItem(primaryKey, JSON.stringify(cloudData));
+                        } else {
+                            // Nếu Cloud chưa có dữ liệu mới dùng LocalStorage
+                            let saved = localStorage.getItem(primaryKey);
+                            if (saved) applyDataToTable(JSON.parse(saved));
+                        }
+                    })
+                    .catch(err => {
+                        console.log("Lỗi tải Cloud, dùng tạm LocalStorage:", err);
+                        let saved = localStorage.getItem(primaryKey);
+                        if (saved) applyDataToTable(JSON.parse(saved));
+                    });
+            } else {
                 let saved = localStorage.getItem(primaryKey);
-                if (saved) {
-                    let data = JSON.parse(saved);
-                    applyDataToTable(data);
-                } else {
-                    if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-                        let timestamp = new Date().getTime();
-                        fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                let cloudData = (typeof data === 'string') ? JSON.parse(data) : data;
-                                if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-                                    applyDataToTable(cloudData);
-                                    localStorage.setItem(primaryKey, JSON.stringify(cloudData));
-                                }
-                            })
-                            .catch(err => console.log("Lỗi tải Cloud:", err));
-                    }
-                }
+                if (saved) applyDataToTable(JSON.parse(saved));
+            }
             }
         }
 
