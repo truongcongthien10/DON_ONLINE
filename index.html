@@ -380,10 +380,55 @@ function updateWeekDropdown() {
             updateWeekDropdown();
         }
 
-        function filterCategoryView() {
-            loadData();
-        }
+// 1. TỰ ĐỘNG LƯU TẠM DỮ LIỆU ĐANG NHẬP KHI ĐỔI BỘ LỌC HẠNG MỤC
+function filterCategoryView() {
+    let period = document.getElementById('selectPeriod').value;
+    
+    // Chỉ tự động lưu tạm nếu đang ở chế độ nhập liệu theo tuần
+    if (period !== 'MONTH' && !period.startsWith('Q') && period !== 'YEAR') {
+        saveDataSilent(); // Lưu ngầm không hiện thông báo
+    }
+    loadData();
+}
 
+// 2. HÀM LƯU NGẦM (Dùng cho việc đổi hạng mục lọc)
+function saveDataSilent() {
+    let year = document.getElementById('selectYear').value;
+    let period = document.getElementById('selectPeriod').value;
+
+    if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') return;
+
+    let key = `HUEWACO_${year}_${period}`;
+    let existingData = localStorage.getItem(key);
+    let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
+        cma: cma,
+        categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
+    }));
+
+    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+    let filter = document.getElementById('selectCategoryFilter').value;
+
+    cmaList.forEach((cma, idx) => {
+        let row = scrollRows[idx];
+        if (!row) return;
+        
+        categories.forEach((_, cIdx) => {
+            let c = cIdx + 1;
+            if (filter === "ALL" || filter == c) {
+                let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
+                let onVal = row.querySelector(`.on-${c}`)?.value || "0";
+                
+                if (!data[idx].categories[cIdx]) {
+                    data[idx].categories[cIdx] = {};
+                }
+                data[idx].categories[cIdx].tot = totVal;
+                data[idx].categories[cIdx].on = onVal;
+            }
+        });
+    });
+
+    localStorage.setItem(key, JSON.stringify(data));
+}
         function renderScrollableHeader(filter) {
             const thead = document.getElementById('scrollableTableHead');
             let h1 = `<tr class="bg-excel-header">`;
