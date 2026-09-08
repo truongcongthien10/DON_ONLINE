@@ -589,123 +589,149 @@
             }
         }
 
-        function loadData() {
-            let year = document.getElementById('selectYear').value;
-            let month = document.getElementById('selectMonth').value;
-            let period = document.getElementById('selectPeriod').value;
-            let filter = document.getElementById('selectCategoryFilter').value;
+function loadData() {
+    let year = document.getElementById('selectYear').value;
+    let month = document.getElementById('selectMonth').value;
+    let period = document.getElementById('selectPeriod').value;
+    let filter = document.getElementById('selectCategoryFilter').value;
 
-            const btnSave = document.getElementById('btnSave');
-            const notice = document.getElementById('readOnlyNotice');
+    const btnSave = document.getElementById('btnSave');
+    const notice = document.getElementById('readOnlyNotice');
 
-            let selectedOption = selectPeriod.options[selectPeriod.selectedIndex];
-            let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
+    let selectedOption = selectPeriod.options[selectPeriod.selectedIndex];
+    let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
 
-            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-                btnSave.classList.add('hidden');
-                notice.classList.remove('hidden');
+    if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
+        btnSave.classList.add('hidden');
+        notice.classList.remove('hidden');
 
-                let monthsToAggregate = [];
-                if (period === 'MONTH') {
-                    monthsToAggregate = [month];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ THÁNG ${month.replace('M','')} - NĂM ${year}`;
-                } else if (period === 'Q1') {
-                    monthsToAggregate = ['M1', 'M2', 'M3'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ I - NĂM ${year}`;
-                } else if (period === 'Q2') {
-                    monthsToAggregate = ['M4', 'M5', 'M6'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ II - NĂM ${year}`;
-                } else if (period === 'Q3') {
-                    monthsToAggregate = ['M7', 'M8', 'M9'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ III - NĂM ${year}`;
-                } else if (period === 'Q4') {
-                    monthsToAggregate = ['M10', 'M11', 'M12'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ IV - NĂM ${year}`;
-                } else if (period === 'YEAR') {
-                    monthsToAggregate = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'];
-                    document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ NĂM ${year}`;
-                }
+        let monthsToAggregate = [];
+        if (period === 'MONTH') {
+            monthsToAggregate = [month];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ THÁNG ${month.replace('M','')}`;
+        } else if (period === 'Q1') {
+            monthsToAggregate = ['M1', 'M2', 'M3'];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ I - NĂM ${year}`;
+        } else if (period === 'Q2') {
+            monthsToAggregate = ['M4', 'M5', 'M6'];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ II - NĂM ${year}`;
+        } else if (period === 'Q3') {
+            monthsToAggregate = ['M7', 'M8', 'M9'];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ III - NĂM ${year}`;
+        } else if (period === 'Q4') {
+            monthsToAggregate = ['M10', 'M11', 'M12'];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP QUÝ IV - NĂM ${year}`;
+        } else if (period === 'YEAR') {
+            monthsToAggregate = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'];
+            document.getElementById('tableTitle').textContent = `TỔNG HỢP CẢ NĂM ${year}`;
+        }
 
-                renderTables(true);
+        renderTables(true);
 
-                let aggregated = cmaList.map(cma => ({
-                    cma: cma,
-                    categories: Array.from({length: categories.length}, () => ({tot: 0, on: 0}))
-                }));
+        let aggregated = cmaList.map(cma => ({
+            cma: cma,
+            categories: Array.from({length: categories.length}, () => ({tot: 0, on: 0}))
+        }));
 
-                monthsToAggregate.forEach(m => {
-                    ['W1','W2','W3','W4','W5'].forEach(w => {
-                        let weekData = localStorage.getItem(`HUEWACO_${year}_${m}_${w}`);
-                        if (weekData) {
-                            let parsed = JSON.parse(weekData);
-                            parsed.forEach((r, rIdx) => {
-                                r.categories.forEach((cat, cIdx) => {
-                                    if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                        aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                        aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                    }
-                                });
-                            });
-                        }
-                    });
-                });
-
-                let fixedRows = document.querySelectorAll('#fixedTableBody tr');
-                let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-
-                aggregated.forEach((rData, rIdx) => {
-                    let fixedRow = fixedRows[rIdx];
-                    let scrollRow = scrollRows[rIdx];
-                    let rTotAll = 0, rOnAll = 0;
-
-                    rData.categories.forEach((cat, cIdx) => {
-                        let c = cIdx + 1;
-                        if (filter === "ALL" || filter == c) {
-                            let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
-                            let onElem = scrollRow.querySelector(`.cat-on-${c}`);
-                            let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
-
-                            if (totElem) totElem.textContent = cat.tot;
-                            if (onElem) onElem.textContent = cat.on;
-                            if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
-                        }
-                        rTotAll += cat.tot;
-                        rOnAll += cat.on;
-                    });
-
-                    fixedRow.querySelector('.row-total-all').textContent = rTotAll;
-                    fixedRow.querySelector('.row-online-all').textContent = rOnAll;
-                    fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
-                });
-
-                calculateTableTotals();
-
-            } else {
-                btnSave.classList.remove('hidden');
-                notice.classList.add('hidden');
-                document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
-
-                renderTables(false);
-
-                let key = `HUEWACO_${year}_${month}_${period}`;
-
-                // 1. Đọc dữ liệu tạm từ bộ nhớ máy trước (nếu có)
-                let saved = localStorage.getItem(key);
-                if (saved) {
-                    let data = JSON.parse(saved);
-                    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-                    data.forEach((rData, rIdx) => {
-                        let scrollRow = scrollRows[rIdx];
-                        if (scrollRow && rData.categories) {
-                            rData.categories.forEach((cat, cIdx) => {
-                                let c = cIdx + 1;
-                                if (scrollRow.querySelector(`.tot-${c}`)) scrollRow.querySelector(`.tot-${c}`).value = cat.tot;
-                                if (scrollRow.querySelector(`.on-${c}`)) scrollRow.querySelector(`.on-${c}`).value = cat.on;
-                            });
-                            calculateRow(rIdx, scrollRow.querySelector('input'));
-                        }
+        monthsToAggregate.forEach(m => {
+            ['W1','W2','W3','W4','W5'].forEach(w => {
+                let weekData = localStorage.getItem(`HUEWACO_${year}_${m}_${w}`);
+                if (weekData) {
+                    let parsed = JSON.parse(weekData);
+                    parsed.forEach((r, rIdx) => {
+                        r.categories.forEach((cat, cIdx) => {
+                            if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
+                                aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
+                                aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
+                            }
+                        });
                     });
                 }
+            });
+        });
+
+        let fixedRows = document.querySelectorAll('#fixedTableBody tr');
+        let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+
+        aggregated.forEach((rData, rIdx) => {
+            let fixedRow = fixedRows[rIdx];
+            let scrollRow = scrollRows[rIdx];
+            let rTotAll = 0, rOnAll = 0;
+
+            rData.categories.forEach((cat, cIdx) => {
+                let c = cIdx + 1;
+                if (filter === "ALL" || filter == c) {
+                    let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
+                    let onElem = scrollRow.querySelector(`.cat-on-${c}`);
+                    let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
+
+                    if (totElem) totElem.textContent = cat.tot;
+                    if (onElem) onElem.textContent = cat.on;
+                    if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
+                }
+                rTotAll += cat.tot;
+                rOnAll += cat.on;
+            });
+
+            fixedRow.querySelector('.row-total-all').textContent = rTotAll;
+            fixedRow.querySelector('.row-online-all').textContent = rOnAll;
+            fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
+        });
+
+        calculateTableTotals();
+
+    } else {
+        btnSave.classList.remove('hidden');
+        notice.classList.add('hidden');
+        document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
+
+        renderTables(false);
+
+        let key = `HUEWACO_${year}_${month}_${period}`;
+
+        // 1. Hiển thị tạm dữ liệu trong LocalStorage của máy nếu có
+        let saved = localStorage.getItem(key);
+        if (saved) {
+            let data = JSON.parse(saved);
+            applyDataToTable(data);
+        }
+
+        // 2. Thêm timestamp (?_t=...) vào API để CHỐNG CACHE trên điện thoại
+        if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+            let timestamp = new Date().getTime();
+            fetch(`${GOOGLE_SCRIPT_URL}?key=${key}&_t=${timestamp}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        // Đổ dữ liệu mới nhất từ Google Sheet lên giao diện
+                        applyDataToTable(data);
+                        // Cập nhật lại vào LocalStorage của điện thoại
+                        localStorage.setItem(key, JSON.stringify(data));
+                    }
+                })
+                .catch(err => console.log("Lỗi tải từ Google Sheet:", err));
+        }
+    }
+}
+
+// Hàm hỗ trợ điền dữ liệu vào bảng và tính toán lại các ô
+function applyDataToTable(data) {
+    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+    data.forEach((rData, rIdx) => {
+        let scrollRow = scrollRows[rIdx];
+        if (scrollRow && rData.categories) {
+            rData.categories.forEach((cat, cIdx) => {
+                let c = cIdx + 1;
+                let totElem = scrollRow.querySelector(`.tot-${c}`);
+                let onElem = scrollRow.querySelector(`.on-${c}`);
+                if (totElem) totElem.value = cat.tot || "0";
+                if (onElem) onElem.value = cat.on || "0";
+            });
+            // Gọi tính toán lại cả dòng và tổng cộng
+            calculateRow(rIdx, scrollRow.querySelector('input'));
+        }
+    });
+}
 
                 // 2. Gọi API tải trực tiếp dữ liệu mới nhất từ Google Sheet
                 if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
