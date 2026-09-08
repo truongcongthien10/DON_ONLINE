@@ -279,12 +279,14 @@
             selectPeriod.innerHTML = '';
 
             const daysInMonth = new Date(year, month, 0).getDate();
+            const startWeekNum = (month - 1) * 4 + 1; 
+
             const weeks = [
-                { id: "W1", name: "Tuần 1", start: 1, end: 7 },
-                { id: "W2", name: "Tuần 2", start: 8, end: 14 },
-                { id: "W3", name: "Tuần 3", start: 15, end: 21 },
-                { id: "W4", name: "Tuần 4", start: 22, end: 28 },
-                { id: "W5", name: "Tuần 5", start: 29, end: daysInMonth }
+                { id: "W1", name: `Tuần ${startWeekNum}`, start: 1, end: 7 },
+                { id: "W2", name: `Tuần ${startWeekNum + 1}`, start: 8, end: 14 },
+                { id: "W3", name: `Tuần ${startWeekNum + 2}`, start: 15, end: 21 },
+                { id: "W4", name: `Tuần ${startWeekNum + 3}`, start: 22, end: 28 },
+                { id: "W5", name: `Tuần ${startWeekNum + 4}`, start: 29, end: daysInMonth }
             ];
 
             weeks.forEach(w => {
