@@ -279,27 +279,25 @@
             selectPeriod.innerHTML = '';
 
             const daysInMonth = new Date(year, month, 0).getDate();
-            const weeksCountPerMonth = [4, 4, 5, 4, 4, 5, 4, 4, 5, 4, 4, 5];
-            let startWeekNum = 1;
-                for (let i = 0; i < month - 1; i++) {
-                startWeekNum += weeksCountPerMonth[i];
-            }
-            let currentMonthWeeks = weeksCountPerMonth[month - 1];
-
+            const startWeeksOfYear = [1, 5, 9, 14, 18, 22, 27, 31, 35, 40, 44, 48];
+            let startWeekNum = startWeeksOfYear[month - 1];
+            let currentMonthWeeks = (month === 3 || month === 6 || month === 9 || month === 12) ? 5 : 4;
+            if (month === 2) currentMonthWeeks = 4; // Tháng 2 năm 2026 có 4 tuần
+            
             const weeks = [];
-                for (let w = 1; w <= currentMonthWeeks; w++) {
-                let startDay = (w - 1) * 7 + 1;
-                let endDay = w * 7;
-                if (w === currentMonthWeeks) {
-                endDay = daysInMonth; // Tuần cuối kết thúc vào ngày cuối tháng
-            }
-                weeks.push({
-                id: `W${w}`,
-                name: `Tuần ${startWeekNum + w - 1}`,
-                start: startDay,
-                end: Math.min(endDay, daysInMonth)
-            });
-                }
+            for (let w = 1; w <= currentMonthWeeks; w++) {
+            let startDay = (w - 1) * 7 + 1;
+            let endDay = w * 7;
+            if (w === currentMonthWeeks) {
+            endDay = daysInMonth;
+         }
+            weeks.push({
+            id: `W${w}`,
+            name: `Tuần ${startWeekNum + w - 1}`,
+            start: startDay,
+            end: Math.min(endDay, daysInMonth)
+        });
+        }
 
             weeks.forEach(w => {
                 if (w.start <= daysInMonth) {
