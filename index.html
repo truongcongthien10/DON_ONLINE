@@ -611,70 +611,77 @@
             });
         }
 
-        function saveData() {
-            let year = document.getElementById('selectYear').value;
-            let period = document.getElementById('selectPeriod').value;
+function saveData() {
+    let year = document.getElementById('selectYear').value;
+    let period = document.getElementById('selectPeriod').value;
 
-            if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
-                showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
-                return;
-            }
+    if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
+        showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
+        return;
+    }
 
-            let key = `HUEWACO_${year}_${period}`;
-            let existingData = localStorage.getItem(key);
-            let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
-                cma: cma,
-                categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
-            }));
+    let key = `HUEWACO_${year}_${period}`;
+    
+    // Đọc dữ liệu cũ để tránh mất các hạng mục đang bị ẩn
+    let existingData = localStorage.getItem(key);
+    let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
+        cma: cma,
+        categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
+    }));
 
-            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-            let filter = document.getElementById('selectCategoryFilter').value;
+    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+    let filter = document.getElementById('selectCategoryFilter').value;
 
-            cmaList.forEach((cma, idx) => {
-                let row = scrollRows[idx];
-                if (!row) return;
+    cmaList.forEach((cma, idx) => {
+        let row = scrollRows[idx];
+        if (!row) return;
+        
+        categories.forEach((_, cIdx) => {
+            let c = cIdx + 1;
+            if (filter === "ALL" || filter == c) {
+                let totInput = row.querySelector(`.tot-${c}`);
+                let onInput = row.querySelector(`.on-${c}`);
                 
-                categories.forEach((_, cIdx) => {
-                    let c = cIdx + 1;
-                    if (filter === "ALL" || filter == c) {
-                        let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
-                        let onVal = row.querySelector(`.on-${c}`)?.value || "0";
-                        
-                        if (!data[idx].categories[cIdx]) {
-                            data[idx].categories[cIdx] = {};
-                        }
-                        data[idx].categories[cIdx].tot = totVal;
-                        data[idx].categories[cIdx].on = onVal;
-                    }
-                });
-            });
-
-            localStorage.setItem(key, JSON.stringify(data));
-
-            let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
-            let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
-
-            if (GOOGLE_SCRIPT_URL) {
-                let payload = new URLSearchParams();
-                payload.append("key", key);
-                payload.append("value", JSON.stringify(data));
-
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: payload.toString()
-                })
-                .then(() => {
-                    showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
-                })
-                .catch(err => {
-                    showAlert(`Đã lưu trên máy nhưng lỗi đồng bộ Google Sheet: ${err}`);
-                });
-            } else {
-                showAlert(`Đã lưu thành công dữ liệu ${displayPeriod}!`);
+                let totVal = totInput ? totInput.value : "0";
+                let onVal = onInput ? onInput.value : "0";
+                
+                if (!data[idx].categories[cIdx]) {
+                    data[idx].categories[cIdx] = {};
+                }
+                data[idx].categories[cIdx].tot = totVal;
+                data[idx].categories[cIdx].on = onVal;
             }
-        }
+        });
+    });
+
+    // 1. Lưu vào bộ nhớ máy (LocalStorage)
+    localStorage.setItem(key, JSON.stringify(data));
+
+    let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
+    let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
+
+    // 2. Gửi dữ liệu lên Google Sheet dạng Form URL Encoded
+    if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+        let payload = new URLSearchParams();
+        payload.append("key", key);
+        payload.append("value", JSON.stringify(data));
+
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: payload.toString()
+        })
+        .then(() => {
+            showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
+        })
+        .catch(err => {
+            showAlert(`Lỗi kết nối Cloud: ${err}`);
+        });
+    } else {
+        showAlert(`Đã lưu thành công dữ liệu ${displayPeriod}!`);
+    }
+}
 
         function loadData() {
             let year = document.getElementById('selectYear').value;
