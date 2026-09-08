@@ -698,50 +698,50 @@
 
                 let key = `HUEWACO_${year}_${month}_${period}`;
 
-// 1. Đọc dữ liệu tạm từ bộ nhớ máy trước (nếu có)
-let saved = localStorage.getItem(key);
-if (saved) {
-    let data = JSON.parse(saved);
-    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
-    data.forEach((rData, rIdx) => {
-        let scrollRow = scrollRows[rIdx];
-        if (scrollRow && rData.categories) {
-            rData.categories.forEach((cat, cIdx) => {
-                let c = cIdx + 1;
-                if (scrollRow.querySelector(`.tot-${c}`)) scrollRow.querySelector(`.tot-${c}`).value = cat.tot;
-                if (scrollRow.querySelector(`.on-${c}`)) scrollRow.querySelector(`.on-${c}`).value = cat.on;
-            });
-            calculateRow(rIdx, scrollRow.querySelector('input'));
-        }
-    });
-}
-
-// 2. Gọi API tải trực tiếp dữ liệu mới nhất từ Google Sheet về cho Điện thoại / Web
-if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-    fetch(`${GOOGLE_SCRIPT_URL}?key=${key}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data && Array.isArray(data) && data.length > 0) {
+    // 1. Đọc dữ liệu tạm từ bộ nhớ máy trước (nếu có)
+                let saved = localStorage.getItem(key);
+                if (saved) {
+                let data = JSON.parse(saved);
                 let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
                 data.forEach((rData, rIdx) => {
                     let scrollRow = scrollRows[rIdx];
                     if (scrollRow && rData.categories) {
-                        rData.categories.forEach((cat, cIdx) => {
-                            let c = cIdx + 1;
-                            let totElem = scrollRow.querySelector(`.tot-${c}`);
-                            let onElem = scrollRow.querySelector(`.on-${c}`);
-                            if (totElem) totElem.value = cat.tot || "0";
-                            if (onElem) onElem.value = cat.on || "0";
-                        });
-                        calculateRow(rIdx, scrollRow.querySelector('input'));
-                    }
+                    rData.categories.forEach((cat, cIdx) => {
+                    let c = cIdx + 1;
+                    if (scrollRow.querySelector(`.tot-${c}`)) scrollRow.querySelector(`.tot-${c}`).value = cat.tot;
+                    if (scrollRow.querySelector(`.on-${c}`)) scrollRow.querySelector(`.on-${c}`).value = cat.on;
                 });
-                // Lưu cập nhật lại bộ nhớ đệm
-                localStorage.setItem(key, JSON.stringify(data));
+                calculateRow(rIdx, scrollRow.querySelector('input'));
             }
-        })
-        .catch(err => console.log("Chưa có dữ liệu Cloud hoặc lỗi mạng:", err));
+        });
+    }
+
+    // 2. Gọi API tải trực tiếp dữ liệu mới nhất từ Google Sheet về cho Điện thoại / Web
+    if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+        fetch(`${GOOGLE_SCRIPT_URL}?key=${key}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data && Array.isArray(data) && data.length > 0) {
+                    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+                    data.forEach((rData, rIdx) => {
+                        let scrollRow = scrollRows[rIdx];
+                        if (scrollRow && rData.categories) {
+                            rData.categories.forEach((cat, cIdx) => {
+                                let c = cIdx + 1;
+                                let totElem = scrollRow.querySelector(`.tot-${c}`);
+                                let onElem = scrollRow.querySelector(`.on-${c}`);
+                                if (totElem) totElem.value = cat.tot || "0";
+                                if (onElem) onElem.value = cat.on || "0";
+                            });
+                            calculateRow(rIdx, scrollRow.querySelector('input'));
+                        }
+                    });
+                    localStorage.setItem(key, JSON.stringify(data));
                 }
+            })
+            .catch(err => console.log("Chưa có dữ liệu Cloud hoặc lỗi mạng:", err));
+    }
+}
                 }
             }
         }
