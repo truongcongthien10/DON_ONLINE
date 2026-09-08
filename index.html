@@ -497,7 +497,7 @@
             });
         }
 
-        function saveData() {
+function saveData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
@@ -508,24 +508,43 @@
             }
 
             let key = `HUEWACO_${year}_${month}_${period}`;
-            let data = [];
-            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+            
+            // 1. Đọc dữ liệu cũ đang có trong localStorage (hoặc tạo khung rỗng nếu chưa có)
+            let existingData = localStorage.getItem(key);
+            let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
+                cma: cma,
+                categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
+            }));
 
+            let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+            let filter = document.getElementById('selectCategoryFilter').value;
+
+            // 2. Cập nhật đè dữ liệu của các hạng mục ĐANG HIỂN THỊ trên màn hình vào cấu trúc dữ liệu chuẩn
             cmaList.forEach((cma, idx) => {
                 let row = scrollRows[idx];
-                let rowData = { cma: cma, categories: [] };
+                if (!row) return;
+                
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
-                    let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
-                    let onVal = row.querySelector(`.on-${c}`)?.value || "0";
-                    rowData.categories.push({ tot: totVal, on: onVal });
+                    // Chỉ cập nhật nếu đang ở chế độ xem tất cả hoặc đúng hạng mục đang hiển thị
+                    if (filter === "ALL" || filter == c) {
+                        let totVal = row.querySelector(`.tot-${c}`)?.value || "0";
+                        let onVal = row.querySelector(`.on-${c}`)?.value || "0";
+                        
+                        if (!data[idx].categories[cIdx]) {
+                            data[idx].categories[cIdx] = {};
+                        }
+                        data[idx].categories[cIdx].tot = totVal;
+                        data[idx].categories[cIdx].on = onVal;
+                    }
                 });
-                data.push(rowData);
             });
 
+            // 3. Lưu lại vào localStorage
             localStorage.setItem(key, JSON.stringify(data));
             let displayPeriod = weekNames[period] || period;
 
+            // 4. Đồng bộ lên Google Sheet
             if (GOOGLE_SCRIPT_URL) {
                 fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
