@@ -693,7 +693,9 @@ function loadData() {
     let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
     let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
 
-    // CHẾ ĐỘ TỔNG HỢP (THÁNG / QUÝ / NĂM)
+    // -------------------------------------------------------------
+    // CHẾ ĐỘ 1: TỔNG HỢP (THÁNG / QUÝ / NĂM)
+    // -------------------------------------------------------------
     if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
         btnSave.classList.add('hidden');
         notice.classList.remove('hidden');
@@ -793,7 +795,9 @@ function loadData() {
             calculateTableTotals();
         });
 
-    // CHẾ ĐỘ NHẬP LIỆU / XEM TUẦN CỤ THỂ
+    // -------------------------------------------------------------
+    // CHẾ ĐỘ 2: NHẬP LIỆU / XEM THEO TUẦN CỤ THỂ (ĐÃ ĐIỀU CHỈNH ƯU TIÊN)
+    // -------------------------------------------------------------
     } else {
         btnSave.classList.remove('hidden');
         notice.classList.add('hidden');
@@ -803,28 +807,25 @@ function loadData() {
 
         let primaryKey = `HUEWACO_${year}_${period}`;
 
-        // Tải trực tiếp từ Google Sheet về làm chuẩn
-        if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-            let timestamp = new Date().getTime();
-
-            fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data && Array.isArray(data) && data.length > 0) {
-                        applyDataToTable(data);
-                        localStorage.setItem(primaryKey, JSON.stringify(data));
-                    } else {
-                        // Nếu chưa có trên cloud mới đọc local
-                        let saved = localStorage.getItem(primaryKey);
-                        if (saved) {
-                            applyDataToTable(JSON.parse(saved));
+        // 1. Ưu tiên đọc và hiển thị dữ liệu mới nhất đang có trong bộ nhớ máy trước
+        let saved = localStorage.getItem(primaryKey);
+        if (saved) {
+            let data = JSON.parse(saved);
+            applyDataToTable(data);
+        } else {
+            // 2. Nếu trong máy chưa từng lưu gì thì mới tải từ Google Sheet
+            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
+                let timestamp = new Date().getTime();
+                fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && Array.isArray(data) && data.length > 0) {
+                            applyDataToTable(data);
+                            localStorage.setItem(primaryKey, JSON.stringify(data));
                         }
-                    }
-                })
-                .catch(err => {
-                    let saved = localStorage.getItem(primaryKey);
-                    if (saved) applyDataToTable(JSON.parse(saved));
-                });
+                    })
+                    .catch(err => console.log("Lỗi tải Cloud:", err));
+            }
         }
     }
 }
