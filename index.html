@@ -711,16 +711,12 @@ function calculateRow(rowIndex, element) {
                 return;
             }
             
-            // Ép Safari iOS bỏ BFCache bằng chuỗi định danh ngẫu nhiên theo thời gian thực
+            // Dùng đúng tham số _t để tương thích với Google Apps Script
             let cacheBuster = Date.now() + "_" + Math.floor(Math.random() * 1000000);
             
-            fetch(`${GOOGLE_SCRIPT_URL}?all=true&v=${cacheBuster}`, {
+            fetch(`${GOOGLE_SCRIPT_URL}?all=true&_t=${cacheBuster}`, {
                 method: 'GET',
-                cache: 'no-cache',
-                headers: {
-                    'Pragma': 'no-cache',
-                    'Cache-Control': 'no-cache, no-store, must-revalidate'
-                }
+                cache: 'no-store'
             })
                 .then(res => res.json())
                 .then(data => {
@@ -733,7 +729,7 @@ function calculateRow(rowIndex, element) {
                     if (callback) callback();
                 })
                 .catch(err => {
-                    console.log("Lỗi tải Cloud trên iOS:", err);
+                    console.log("Lỗi tải Cloud:", err);
                     if (callback) callback();
                 });
         }
