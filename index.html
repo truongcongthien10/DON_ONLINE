@@ -711,17 +711,21 @@ function calculateRow(rowIndex, element) {
                 return;
             }
             
-            // Tạo chuỗi timestamp ngẫu nhiên ép trình duyệt mobile không dùng cache cũ
-            let timestamp = new Date().getTime() + "_" + Math.random().toString(36).substring(7);
+            // Ép Safari iOS bỏ BFCache bằng chuỗi định danh ngẫu nhiên theo thời gian thực
+            let cacheBuster = Date.now() + "_" + Math.floor(Math.random() * 1000000);
             
-            fetch(`${GOOGLE_SCRIPT_URL}?all=true&_t=${timestamp}`, {
-                cache: 'no-store' // Ép trình duyệt iOS/Android tải trực tiếp từ Server
+            fetch(`${GOOGLE_SCRIPT_URL}?all=true&v=${cacheBuster}`, {
+                method: 'GET',
+                cache: 'no-cache',
+                headers: {
+                    'Pragma': 'no-cache',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate'
+                }
             })
                 .then(res => res.json())
                 .then(data => {
                     if (data && typeof data === 'object' && Object.keys(data).length > 0) {
                         cloudCache = data;
-                        // Cập nhật đồng thời vào LocalStorage trên điện thoại
                         Object.keys(data).forEach(k => {
                             localStorage.setItem(k, JSON.stringify(data[k]));
                         });
@@ -729,11 +733,10 @@ function calculateRow(rowIndex, element) {
                     if (callback) callback();
                 })
                 .catch(err => {
-                    console.log("Không thể tải toàn bộ Cloud:", err);
+                    console.log("Lỗi tải Cloud trên iOS:", err);
                     if (callback) callback();
                 });
         }
-
         function loadData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
