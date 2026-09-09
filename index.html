@@ -738,10 +738,14 @@ function calculateRow(rowIndex, element) {
                 });
         }
         function loadData() {
-            let year = document.getElementById('selectYear').value;
-            let month = document.getElementById('selectMonth').value;
+            let yearElem = document.getElementById('selectYear');
+            let year = (yearElem && yearElem.value) ? yearElem.value : "2026";
+            
             let period = document.getElementById('selectPeriod').value;
             let filter = document.getElementById('selectCategoryFilter').value;
+
+            // Ép Key tìm kiếm luôn đúng định dạng như trên Google Sheet
+            let primaryKey = `HUEWACO_${year}_WEEK_${period}`;
 
             const btnSave = document.getElementById('btnSave');
             const notice = document.getElementById('readOnlyNotice');
@@ -1179,8 +1183,17 @@ function calculateRow(rowIndex, element) {
 
             calculateTableTotals();
         }
-
-        // 3. Khối lệnh chạy ban đầu
+        // 4. Hàm tải lại toàn bộ dữ liệu mới nhất
+        function forceRefreshData() {
+            cloudCache = null;
+            localStorage.clear(); 
+            
+            preloadAllCloudData(() => {
+                loadData();
+                showAlert("Đã tải thành công dữ liệu mới nhất từ Google Sheet!");
+            });
+        }
+        // 5. Khối lệnh chạy ban đầu
         initTime();
         initWeekRangeDropdowns();
         preloadAllCloudData(() => {
