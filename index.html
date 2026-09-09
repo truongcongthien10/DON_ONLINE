@@ -741,6 +741,7 @@ function calculateRow(rowIndex, element) {
             let yearElem = document.getElementById('selectYear');
             let year = (yearElem && yearElem.value) ? yearElem.value : "2026";
             
+            let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
             let filter = document.getElementById('selectCategoryFilter').value;
 
