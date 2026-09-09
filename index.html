@@ -643,7 +643,9 @@ function saveData() {
                 return;
             }
 
-            let primaryKey = `HUEWACO_${year}_WEEK_${period}`;
+            // Loại bỏ chữ WEEK_ nếu giá trị trong ô chọn đã có sẵn chữ WEEK
+            let cleanPeriod = period.replace(/^WEEK_/, '');
+            let primaryKey = `HUEWACO_${year}_WEEK_${cleanPeriod}`;
 
             // Read existing data
             let existingData = localStorage.getItem(primaryKey);
@@ -688,7 +690,7 @@ function saveData() {
             if (cloudCache) cloudCache[primaryKey] = data;
             localStorage.setItem(primaryKey, JSON.stringify(data));
 
-            // Package as URLSearchParams to guarantee delivery from iOS/Mobile to Google Apps Script
+            // Package as URLSearchParams
             let payloadData = new URLSearchParams();
             payloadData.append("key", primaryKey);
             payloadData.append("value", JSON.stringify(data));
@@ -699,7 +701,7 @@ function saveData() {
                 body: payloadData
             })
             .then(() => {
-                showAlert(`✅ Đã ghi thành công dữ liệu Tuần ${period} lên Google Sheet!`);
+                showAlert(`✅ Đã ghi thành công dữ liệu Tuần ${cleanPeriod} lên Google Sheet!`);
             })
             .catch(err => {
                 console.error("Lỗi lưu Cloud:", err);
