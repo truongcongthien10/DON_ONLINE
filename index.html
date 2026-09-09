@@ -68,6 +68,28 @@
         .scrollable-table-container::-webkit-scrollbar-track { background: #f1f5f9; }
         .scrollable-table-container::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
         .scrollable-table-container::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    /* Ẩn cột TỔNG HỢP khi xem trên điện thoại (màn hình dưới 768px) */
+        @media (max-width: 767px) {
+            /* Ẩn tiêu đề khối Tổng Hợp */
+            #fixedTable th.bg-amber-600,
+            #fixedTable tr:nth-child(2) th:nth-child(1),
+            #fixedTable tr:nth-child(2) th:nth-child(2),
+            #fixedTable tr:nth-child(2) th:nth-child(3) {
+                display: none !important;
+            }
+
+            /* Ẩn các ô số liệu của cột Tổng Hợp */
+            #fixedTable td:nth-child(3),
+            #fixedTable td:nth-child(4),
+            #fixedTable td:nth-child(5) {
+                display: none !important;
+            }
+
+            /* Thu gọn chiều rộng bảng cố định bên trái */
+            #fixedTable {
+                width: 140px !important;
+            }
+        }    
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
