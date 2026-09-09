@@ -131,13 +131,13 @@
             </div>
 
                 <div class="md:col-span-3 flex gap-1.5">
-                <button id="btnSave" onclick="saveData()" class="w-1/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap">
+                <button type="button" id="btnSave" onclick="saveData()" class="w-1/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap">
                     💾 Lưu Tuần
                 </button>
-                <button onclick="forceRefreshData()" class="w-1/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                <button type="button" onclick="forceRefreshData()" class="w-1/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     🔄 Tải lại
                 </button>
-                <button id="btnExport" onclick="exportToExcel()" class="w-1/3 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                <button type="button" id="btnExport" onclick="exportToExcel()" class="w-1/3 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     📊 Xuất Excel
                 </button>
             </div>
@@ -628,19 +628,25 @@ function calculateRow(rowIndex, element) {
             });
         }
 
-        function saveData() {
-            let year = document.getElementById('selectYear').value;
-            let period = document.getElementById('selectPeriod').value;
+function saveData() {
+            if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
+                showAlert("Chưa cấu hình Google Script URL!");
+                return;
+            }
 
+            let yearElem = document.getElementById('selectYear');
+            let year = (yearElem && yearElem.value) ? yearElem.value : "2026";
+            let period = document.getElementById('selectPeriod').value;
+            
             if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
                 showAlert('Không thể lưu ở chế độ Tổng hợp! Vui lòng chọn tuần cụ thể.');
                 return;
             }
 
-            let key = `HUEWACO_${year}_${period}`;
-            
-            // Đọc dữ liệu cũ từ LocalStorage để không làm mất các hạng mục đang ẩn
-            let existingData = localStorage.getItem(key);
+            let primaryKey = `HUEWACO_${year}_WEEK_${period}`;
+
+            // 1. Đọc dữ liệu cũ để tránh mất các hạng mục ẩn
+            let existingData = localStorage.getItem(primaryKey);
             let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
                 cma: cma,
                 categories: Array.from({length: categories.length}, () => ({tot: "0", on: "0"}))
@@ -652,16 +658,16 @@ function calculateRow(rowIndex, element) {
             cmaList.forEach((cma, idx) => {
                 let row = scrollRows[idx];
                 if (!row) return;
-                
+
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     if (filter === "ALL" || filter == c) {
                         let totInput = row.querySelector(`.tot-${c}`);
                         let onInput = row.querySelector(`.on-${c}`);
-                        
+
                         let totVal = totInput ? totInput.value : "0";
                         let onVal = onInput ? onInput.value : "0";
-                        
+
                         if (!data[idx].categories[cIdx]) {
                             data[idx].categories[cIdx] = {};
                         }
@@ -671,34 +677,47 @@ function calculateRow(rowIndex, element) {
                 });
             });
 
-            // 1. Lưu bản sao vào LocalStorage
-            localStorage.setItem(key, JSON.stringify(data));
-
-            let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
-            let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
-
-            // 2. Gửi dữ liệu dạng JSON Raw sang Google Apps Script
-            if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-                let payload = JSON.stringify({
-                    key: key,
-                    value: data
-                });
-
-                fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: payload
-                })
-                .then(() => {
-                    showAlert(`Đã lưu & đồng bộ thành công dữ liệu ${displayPeriod}!`);
-                })
-                .catch(err => {
-                    showAlert(`Đã lưu nội bộ nhưng lỗi kết nối Cloud: ${err}`);
-                });
-            } else {
-                showAlert(`Đã lưu thành công dữ liệu ${displayPeriod}!`);
+            // Hiển thị trạng thái chờ phản hồi cho di động
+            let btnSave = document.getElementById('btnSave');
+            let originalText = btnSave ? btnSave.innerHTML : "";
+            if (btnSave) {
+                btnSave.disabled = true;
+                btnSave.innerHTML = "⏳ Đang lưu...";
             }
+
+            // 2. Gửi dữ liệu đồng bộ lên Google Sheet (có keepalive hỗ trợ Safari iOS)
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    key: primaryKey,
+                    value: data
+                }),
+                keepalive: true
+            })
+            .then(res => res.json())
+            .then(resData => {
+                // Cập nhật bộ nhớ đệm
+                if (cloudCache) cloudCache[primaryKey] = data;
+                localStorage.setItem(primaryKey, JSON.stringify(data));
+
+                showAlert("✅ Đã lưu dữ liệu lên Google Sheet thành công!");
+            })
+            .catch(err => {
+                console.error("Lỗi lưu Cloud:", err);
+                // Vẫn lưu tạm LocalStorage đề phòng mất mạng
+                localStorage.setItem(primaryKey, JSON.stringify(data));
+                showAlert("⚠️ Đã lưu tạm vào máy! Kiểm tra lại kết nối Cloud.");
+            })
+            .finally(() => {
+                if (btnSave) {
+                    btnSave.disabled = false;
+                    btnSave.innerHTML = originalText;
+                }
+            });
         }
 
 // BIẾN LƯU BỘ NHỚ TẠM TOÀN BỘ DỮ LIỆU ĐÃ TẢI TỪ SHEET
