@@ -210,7 +210,7 @@
             document.getElementById('customAlertModal').classList.add('hidden');
         }
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxJV7bXjJgxfGTrjxfKyBPYb1Ei4Qg1t-hCEP4nzbSYgMNZzHpbRrKdh0UBdH1TuNem/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYL-GnPJvCIMEuLvQuG2FMecbAKEkxskdDcJJQX_qzfBlEVxS6p6efs4RHNxMcZlCd/exec";
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
         const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
@@ -688,7 +688,7 @@ function saveData() {
             if (cloudCache) cloudCache[primaryKey] = data;
             localStorage.setItem(primaryKey, JSON.stringify(data));
 
-            // Package as URLSearchParams to guarantee delivery from iOS Safari to Google Apps Script
+            // Package as URLSearchParams to guarantee delivery from iOS/Mobile to Google Apps Script
             let payloadData = new URLSearchParams();
             payloadData.append("key", primaryKey);
             payloadData.append("value", JSON.stringify(data));
