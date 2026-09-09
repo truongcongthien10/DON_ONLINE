@@ -677,7 +677,7 @@ function calculateRow(rowIndex, element) {
                 });
             });
 
-            // Hiển thị trạng thái chờ phản hồi cho di động
+            // Hiển thị trạng thái chờ phản hồi
             let btnSave = document.getElementById('btnSave');
             let originalText = btnSave ? btnSave.innerHTML : "";
             if (btnSave) {
@@ -685,24 +685,26 @@ function calculateRow(rowIndex, element) {
                 btnSave.innerHTML = "⏳ Đang lưu...";
             }
 
-            // 2. Lưu ngay vào Cache cục bộ để trải nghiệm mượt mà
+            // 2. Lưu ngay vào Cache cục bộ
             if (cloudCache) cloudCache[primaryKey] = data;
             localStorage.setItem(primaryKey, JSON.stringify(data));
 
-            // 3. Gửi dữ liệu lên Google Sheet với mode 'no-cors' để vượt rào bảo mật Safari iOS
+            // 3. Đóng gói dữ liệu dạng Form Data để tương thích 100% với Safari iOS
+            let payload = JSON.stringify({
+                key: primaryKey,
+                value: data
+            });
+
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: {
                     'Content-Type': 'text/plain;charset=utf-8'
                 },
-                body: JSON.stringify({
-                    key: primaryKey,
-                    value: data
-                })
+                body: payload
             })
             .then(() => {
-                showAlert("✅ Đã lưu dữ liệu lên Google Sheet thành công!");
+                showAlert(`✅ Đã gửi lưu thành công dữ liệu Tuần ${period}!`);
             })
             .catch(err => {
                 console.error("Lỗi lưu Cloud:", err);
