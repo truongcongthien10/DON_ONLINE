@@ -130,11 +130,14 @@
                 </select>
             </div>
 
-            <div class="md:col-span-3 flex gap-2">
-                <button id="btnSave" onclick="saveData()" class="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-2 rounded shadow-sm text-xs whitespace-nowrap">
-                    💾 Lưu Số Liệu Tuần
+                <div class="md:col-span-3 flex gap-1.5">
+                <button id="btnSave" onclick="saveData()" class="w-1/3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap">
+                    💾 Lưu Tuần
                 </button>
-                <button id="btnExport" onclick="exportToExcel()" class="w-1/2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                <button onclick="forceRefreshData()" class="w-1/3 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    🔄 Tải lại
+                </button>
+                <button id="btnExport" onclick="exportToExcel()" class="w-1/3 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     📊 Xuất Excel
                 </button>
             </div>
@@ -702,18 +705,23 @@ function calculateRow(rowIndex, element) {
         let cloudCache = null;
 
         // TẢI TRƯỚC TOÀN BỘ DỮ LIỆU TỪ GOOGLE SHEET VỀ CACHE (Chạy 1 lần duy nhất)
-        function preloadAllCloudData(callback) {
+            function preloadAllCloudData(callback) {
             if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
                 if (callback) callback();
                 return;
             }
-            let timestamp = new Date().getTime();
-            fetch(`${GOOGLE_SCRIPT_URL}?all=true&_t=${timestamp}`)
+            
+            // Tạo chuỗi timestamp ngẫu nhiên ép trình duyệt mobile không dùng cache cũ
+            let timestamp = new Date().getTime() + "_" + Math.random().toString(36).substring(7);
+            
+            fetch(`${GOOGLE_SCRIPT_URL}?all=true&_t=${timestamp}`, {
+                cache: 'no-store' // Ép trình duyệt iOS/Android tải trực tiếp từ Server
+            })
                 .then(res => res.json())
                 .then(data => {
-                    if (data && typeof data === 'object') {
+                    if (data && typeof data === 'object' && Object.keys(data).length > 0) {
                         cloudCache = data;
-                        // Lưu đồng thời từng tuần vào LocalStorage để xem offline
+                        // Cập nhật đồng thời vào LocalStorage trên điện thoại
                         Object.keys(data).forEach(k => {
                             localStorage.setItem(k, JSON.stringify(data[k]));
                         });
