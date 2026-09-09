@@ -687,7 +687,35 @@ function calculateRow(rowIndex, element) {
             }
         }
 
-function loadData() {
+// BIẾN LƯU BỘ NHỚ TẠM TOÀN BỘ DỮ LIỆU ĐÃ TẢI TỪ SHEET
+        let cloudCache = null;
+
+        // TẢI TRƯỚC TOÀN BỘ DỮ LIỆU TỪ GOOGLE SHEET VỀ CACHE (Chạy 1 lần duy nhất)
+        function preloadAllCloudData(callback) {
+            if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
+                if (callback) callback();
+                return;
+            }
+            let timestamp = new Date().getTime();
+            fetch(`${GOOGLE_SCRIPT_URL}?all=true&_t=${timestamp}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && typeof data === 'object') {
+                        cloudCache = data;
+                        // Lưu đồng thời từng tuần vào LocalStorage để xem offline
+                        Object.keys(data).forEach(k => {
+                            localStorage.setItem(k, JSON.stringify(data[k]));
+                        });
+                    }
+                    if (callback) callback();
+                })
+                .catch(err => {
+                    console.log("Không thể tải toàn bộ Cloud:", err);
+                    if (callback) callback();
+                });
+        }
+
+        function loadData() {
             let year = document.getElementById('selectYear').value;
             let month = document.getElementById('selectMonth').value;
             let period = document.getElementById('selectPeriod').value;
@@ -699,6 +727,7 @@ function loadData() {
             let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
             let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
 
+            // XỬ LÝ CHẾ ĐỘ TỔNG HỢP (THÁNG / QUÝ / NĂM)
             if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
                 btnSave.classList.add('hidden');
                 notice.classList.remove('hidden');
@@ -740,98 +769,67 @@ function loadData() {
                     categories: Array.from({length: categories.length}, () => ({tot: 0, on: 0}))
                 }));
 
-                let fetchPromises = [];
-
+                // TÍNH TỔNG HỢP TỨC THÌ TỪ BỘ NHỚ CACHE/LOCALSTORAGE (0 GIÂY)
                 weeksToAggregate.forEach(wNum => {
                     let primaryKey = `HUEWACO_${year}_WEEK_${wNum}`;
-                    let timestamp = new Date().getTime();
+                    let weekData = (cloudCache && cloudCache[primaryKey]) ? cloudCache[primaryKey] : null;
 
-                    let p = fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            let weekData = (typeof data === 'string') ? JSON.parse(data) : data;
-                            if (weekData && Array.isArray(weekData) && weekData.length > 0) {
-                                weekData.forEach((r, rIdx) => {
-                                    if (r.categories) {
-                                        r.categories.forEach((cat, cIdx) => {
-                                            if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                                aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                                aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                            }
-                                        });
-                                    }
-                                });
-                            } else {
-                                let localData = localStorage.getItem(primaryKey);
-                                if (localData) {
-                                    let parsed = JSON.parse(localData);
-                                    parsed.forEach((r, rIdx) => {
-                                        if (r.categories) {
-                                            r.categories.forEach((cat, cIdx) => {
-                                                if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                                    aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                                    aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            }
-                        }).catch(err => {
-                            let localData = localStorage.getItem(primaryKey);
-                            if (localData) {
-                                let parsed = JSON.parse(localData);
-                                parsed.forEach((r, rIdx) => {
-                                    if (r.categories) {
-                                        r.categories.forEach((cat, cIdx) => {
-                                            if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
-                                                aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
-                                                aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
-                                            }
-                                        });
+                    if (!weekData) {
+                        let localData = localStorage.getItem(primaryKey);
+                        if (localData) {
+                            try { weekData = JSON.parse(localData); } catch(e) {}
+                        }
+                    }
+
+                    if (weekData && Array.isArray(weekData)) {
+                        weekData.forEach((r, rIdx) => {
+                            if (r.categories) {
+                                r.categories.forEach((cat, cIdx) => {
+                                    if (aggregated[rIdx] && aggregated[rIdx].categories[cIdx]) {
+                                        aggregated[rIdx].categories[cIdx].tot += parseInt(cat.tot, 10) || 0;
+                                        aggregated[rIdx].categories[cIdx].on += parseInt(cat.on, 10) || 0;
                                     }
                                 });
                             }
                         });
-
-                    fetchPromises.push(p);
+                    }
                 });
 
-                Promise.all(fetchPromises).then(() => {
-                    let fixedRows = document.querySelectorAll('#fixedTableBody tr');
-                    let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
+                // ĐỔ DỮ LIỆU TỔNG HỢP RA BẢNG
+                let fixedRows = document.querySelectorAll('#fixedTableBody tr');
+                let scrollRows = document.querySelectorAll('#scrollableTableBody tr');
 
-                    aggregated.forEach((rData, rIdx) => {
-                        let fixedRow = fixedRows[rIdx];
-                        let scrollRow = scrollRows[rIdx];
-                        let rTotAll = 0, rOnAll = 0;
+                aggregated.forEach((rData, rIdx) => {
+                    let fixedRow = fixedRows[rIdx];
+                    let scrollRow = scrollRows[rIdx];
+                    let rTotAll = 0, rOnAll = 0;
 
-                        if (fixedRow && scrollRow) {
-                            rData.categories.forEach((cat, cIdx) => {
-                                let c = cIdx + 1;
-                                if (filter === "ALL" || filter == c) {
-                                    let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
-                                    let onElem = scrollRow.querySelector(`.cat-on-${c}`);
-                                    let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
+                    if (fixedRow && scrollRow) {
+                        rData.categories.forEach((cat, cIdx) => {
+                            let c = cIdx + 1;
+                            if (filter === "ALL" || filter == c) {
+                                let totElem = scrollRow.querySelector(`.cat-tot-${c}`);
+                                let onElem = scrollRow.querySelector(`.cat-on-${c}`);
+                                let pctElem = scrollRow.querySelector(`.cat-pct-${c}`);
 
-                                    if (totElem) totElem.textContent = cat.tot;
-                                    if (onElem) onElem.textContent = cat.on;
-                                    if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
-                                }
-                                rTotAll += cat.tot;
-                                rOnAll += cat.on;
-                            });
+                                if (totElem) totElem.textContent = cat.tot;
+                                if (onElem) onElem.textContent = cat.on;
+                                if (pctElem) pctElem.textContent = cat.tot > 0 ? Math.round((cat.on / cat.tot) * 100) + '%' : '0%';
+                            }
+                            rTotAll += cat.tot;
+                            rOnAll += cat.on;
+                        });
 
-                            fixedRow.querySelector('.row-total-all').textContent = rTotAll;
-                            fixedRow.querySelector('.row-online-all').textContent = rOnAll;
-                            fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
-                        }
-                    });
-
-                    calculateTableTotals();
+                        fixedRow.querySelector('.row-total-all').textContent = rTotAll;
+                        fixedRow.querySelector('.row-online-all').textContent = rOnAll;
+                        fixedRow.querySelector('.row-pct-all').textContent = rTotAll > 0 ? Math.round((rOnAll / rTotAll) * 100) + '%' : '0%';
+                    }
                 });
+
+                calculateTableTotals();
 
             } else {
+                // CHẾ ĐỘ NHẬP LIỆU TUẦN CỤ THỂ
                 btnSave.classList.remove('hidden');
                 notice.classList.add('hidden');
                 document.getElementById('tableTitle').textContent = `NHẬP LIỆU: ${displayPeriod.toUpperCase()} - THÁNG ${month.replace('M','')} - NĂM ${year}`;
@@ -840,29 +838,17 @@ function loadData() {
 
                 let primaryKey = `HUEWACO_${year}_${period}`;
 
-                // 1. HIỂN THỊ NGAY TỪ LOCALSTORAGE (0 GIÂY)
-                let saved = localStorage.getItem(primaryKey);
-                if (saved) {
-                    try { applyDataToTable(JSON.parse(saved)); } catch(e) {}
+                // LẤY DỮ LIỆU TỪ BỘ NHỚ CACHE/LOCALSTORAGE HIỂN THỊ TỨC THÌ (0s)
+                let weekData = (cloudCache && cloudCache[primaryKey]) ? cloudCache[primaryKey] : null;
+                if (!weekData) {
+                    let saved = localStorage.getItem(primaryKey);
+                    if (saved) {
+                        try { weekData = JSON.parse(saved); } catch(e) {}
+                    }
                 }
 
-                // 2. CHẠY NGẦM FETCH TỪ GOOGLE SHEET ĐỂ CẬP NHẬT ĐỒNG BỘ
-                if (typeof GOOGLE_SCRIPT_URL !== 'undefined' && GOOGLE_SCRIPT_URL) {
-                    let timestamp = new Date().getTime();
-                    fetch(`${GOOGLE_SCRIPT_URL}?key=${primaryKey}&_t=${timestamp}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            let cloudData = data;
-                            if (typeof cloudData === 'string') {
-                                try { cloudData = JSON.parse(cloudData); } catch(e) {}
-                            }
-
-                            if (cloudData && Array.isArray(cloudData) && cloudData.length > 0) {
-                                applyDataToTable(cloudData);
-                                localStorage.setItem(primaryKey, JSON.stringify(cloudData));
-                            }
-                        })
-                        .catch(err => console.log("Không thể kết nối Cloud, giữ nguyên dữ liệu máy:", err));
+                if (weekData && Array.isArray(weekData)) {
+                    applyDataToTable(weekData);
                 }
             }
         }
@@ -1064,8 +1050,11 @@ function loadData() {
             XLSX.writeFile(wb, fileName);
         }
 
-        initTime();
-        loadData();
+initTime();
+// Tải trước toàn bộ dữ liệu Cloud 1 lần duy nhất khi vừa mở trang web
+preloadAllCloudData(() => {
+    loadData();
+});
     </script>
 </body>
 </html>
