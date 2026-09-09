@@ -628,7 +628,7 @@ function calculateRow(rowIndex, element) {
             });
         }
 
-function saveData() {
+    function saveData() {
             if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
                 showAlert("Chưa cấu hình Google Script URL!");
                 return;
@@ -685,31 +685,27 @@ function saveData() {
                 btnSave.innerHTML = "⏳ Đang lưu...";
             }
 
-            // 2. Gửi dữ liệu đồng bộ lên Google Sheet (có keepalive hỗ trợ Safari iOS)
+            // 2. Lưu ngay vào Cache cục bộ để trải nghiệm mượt mà
+            if (cloudCache) cloudCache[primaryKey] = data;
+            localStorage.setItem(primaryKey, JSON.stringify(data));
+
+            // 3. Gửi dữ liệu lên Google Sheet với mode 'no-cors' để vượt rào bảo mật Safari iOS
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
-                mode: 'cors',
+                mode: 'no-cors',
                 headers: {
                     'Content-Type': 'text/plain;charset=utf-8'
                 },
                 body: JSON.stringify({
                     key: primaryKey,
                     value: data
-                }),
-                keepalive: true
+                })
             })
-            .then(res => res.json())
-            .then(resData => {
-                // Cập nhật bộ nhớ đệm
-                if (cloudCache) cloudCache[primaryKey] = data;
-                localStorage.setItem(primaryKey, JSON.stringify(data));
-
+            .then(() => {
                 showAlert("✅ Đã lưu dữ liệu lên Google Sheet thành công!");
             })
             .catch(err => {
                 console.error("Lỗi lưu Cloud:", err);
-                // Vẫn lưu tạm LocalStorage đề phòng mất mạng
-                localStorage.setItem(primaryKey, JSON.stringify(data));
                 showAlert("⚠️ Đã lưu tạm vào máy! Kiểm tra lại kết nối Cloud.");
             })
             .finally(() => {
