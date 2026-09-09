@@ -662,6 +662,18 @@ function calculateRow(rowIndex, element) {
                 }
             });
         }
+        function toggleSummaryColumn() {
+            let fixedTable = document.getElementById('fixedTable');
+            if (fixedTable) {
+                // Thêm/Xóa class hide-summary trực tiếp trên bảng
+                fixedTable.classList.toggle('hide-summary');
+                
+                // Đồng thời Thêm/Xóa class hide-summary trên thẻ cha chứa bảng
+                if (fixedTable.parentElement) {
+                    fixedTable.parentElement.classList.toggle('hide-summary');
+                }
+            }
+        }
 
 function saveData() {
             if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
