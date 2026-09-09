@@ -210,7 +210,7 @@
             document.getElementById('customAlertModal').classList.add('hidden');
         }
 
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx3b1BIMK0nWuThdUk3FoqSTJdqFllN2-Sq_rz8Mqy25o4mkLgUZdSmGBOQC7xdvAxq/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwYG-N9BTaqKdVIPAIHAOvLfswxr7gJMsk2hBXqu4W_AvMuPBVOWwdP_wOaWqzwhx8O/exec";
         const cmaList = ["Phú Xuân", "Thuận Hóa", "A Lưới", "Kim Long", "Hương Trà", "Phong Điền", "Hương Thủy", "Phú Vang", "Phú Lộc"];
         const categories = ["Lắp đặt", "Cải tạo", "Nâng dời hạ", "Dò tìm", "Kiểm định ĐH", "Tạm ngừng", "Cắt hủy", "Mở nước", "Kiểm tra ĐH"];
 
@@ -628,7 +628,7 @@ function calculateRow(rowIndex, element) {
             });
         }
 
-    function saveData() {
+function saveData() {
             if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
                 showAlert("Chưa cấu hình Google Script URL!");
                 return;
@@ -645,7 +645,7 @@ function calculateRow(rowIndex, element) {
 
             let primaryKey = `HUEWACO_${year}_WEEK_${period}`;
 
-            // 1. Đọc dữ liệu cũ để tránh mất các hạng mục ẩn
+            // Read existing data
             let existingData = localStorage.getItem(primaryKey);
             let data = existingData ? JSON.parse(existingData) : cmaList.map(cma => ({
                 cma: cma,
@@ -677,7 +677,6 @@ function calculateRow(rowIndex, element) {
                 });
             });
 
-            // Hiển thị trạng thái chờ phản hồi
             let btnSave = document.getElementById('btnSave');
             let originalText = btnSave ? btnSave.innerHTML : "";
             if (btnSave) {
@@ -685,26 +684,22 @@ function calculateRow(rowIndex, element) {
                 btnSave.innerHTML = "⏳ Đang lưu...";
             }
 
-            // 2. Lưu ngay vào Cache cục bộ
+            // Save locally immediately
             if (cloudCache) cloudCache[primaryKey] = data;
             localStorage.setItem(primaryKey, JSON.stringify(data));
 
-            // 3. Đóng gói dữ liệu dạng Form Data để tương thích 100% với Safari iOS
-            let payload = JSON.stringify({
-                key: primaryKey,
-                value: data
-            });
+            // Package as URLSearchParams to guarantee delivery from iOS Safari to Google Apps Script
+            let payloadData = new URLSearchParams();
+            payloadData.append("key", primaryKey);
+            payloadData.append("value", JSON.stringify(data));
 
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                },
-                body: payload
+                body: payloadData
             })
             .then(() => {
-                showAlert(`✅ Đã gửi lưu thành công dữ liệu Tuần ${period}!`);
+                showAlert(`✅ Đã ghi thành công dữ liệu Tuần ${period} lên Google Sheet!`);
             })
             .catch(err => {
                 console.error("Lỗi lưu Cloud:", err);
