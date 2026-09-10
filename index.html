@@ -1256,9 +1256,15 @@ function saveData() {
             });
         }
         // 5. Khối lệnh chạy ban đầu
-        initTime();
-        initWeekRangeDropdowns();
-        preloadAllCloudData(() => {
+            initTime();
+            initWeekRangeDropdowns();
+
+        // Dựng ngay khung tiêu đề và bảng chỉ trong 0.01 giây (Tránh trắng/trống bảng khi chờ)
+            if (typeof renderHeader === 'function') renderHeader();
+            if (typeof renderTable === 'function') renderTable();
+
+        // Gọi tải số liệu từ Cloud sau
+            preloadAllCloudData(() => {
             loadData();
         });
     </script>
