@@ -810,7 +810,11 @@ function saveData() {
 
             let selectedOption = document.getElementById('selectPeriod').options[document.getElementById('selectPeriod').selectedIndex];
             let displayPeriod = selectedOption ? selectedOption.textContent.split(' (')[0] : period;
-
+            
+            // Luôn dựng trước tiêu đề các hạng mục để tránh trống bảng khi chờ tải
+            if (typeof renderHeader === 'function') {
+            renderHeader();
+        }      
             // XỬ LÝ CHẾ ĐỘ TỔNG HỢP (THÁNG / QUÝ / NĂM)
             if (period === 'MONTH' || period.startsWith('Q') || period === 'YEAR') {
                 btnSave.classList.add('hidden');
