@@ -71,16 +71,15 @@
         
 /* CSS Ẩn/Hiện cột TỔNG HỢP linh hoạt trên điện thoại */
         @media (max-width: 767px) {
-            /* Khi có class hide-summary thì mới ẩn các phần tử cột Tổng Hợp */
-        #fixedTable th.bg-amber-600,
-        #fixedTable tr:nth-child(2) th:nth-child(1),
-        #fixedTable tr:nth-child(2) th:nth-child(2),
-        #fixedTable tr:nth-child(2) th:nth-child(3),
-        #fixedTable td:nth-child(3),
-        #fixedTable td:nth-child(4),
-        #fixedTable td:nth-child(5) {
-            display: none !important;
+        body.hide-summary .bg-amber-600,
+        body.hide-summary .bg-amber-50,
+        body.hide-summary th[colspan="3"],
+        body.hide-summary td .cat-tot-1,
+        body.hide-summary td .cat-on-1,
+        body.hide-summary td .cat-pct-1 {
+        display: none !important;
         }
+    }
 
             /* Thu gọn bảng khi ẩn cột */
         #fixedTable {
@@ -162,21 +161,21 @@
                 </select>
             </div>
 
-            <!-- Cụm nút chức năng trên 1 hàng ngang -->
-            <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto mt-2 md:mt-0">
-                <button type="button" id="btnSave" onclick="saveData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+        <!-- Cụm nút bấm: 1 hàng ngang trên Desktop (md:flex-row), tự co gọn trên Mobile -->
+            <div class="flex flex-wrap md:flex-nowrap items-center justify-start md:justify-end gap-1.5 w-full md:w-auto mt-2 md:mt-0">
+                <button type="button" id="btnSave" onclick="saveData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
             💾 Lưu Báo cáo
             </button>
-                <button type="button" onclick="forceRefreshData()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                <button type="button" onclick="forceRefreshData()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
             🔄 Tải lại
             </button>
-                <button type="button" onclick="exportToExcel()" class="bg-green-700 hover:bg-green-800 text-white font-bold py-1 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                <button type="button" onclick="exportToExcel()" class="bg-green-700 hover:bg-green-800 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
             📊 Xuất Excel
             </button>
-               <button type="button" onclick="toggleSummaryColumn()" class="md:hidden bg-slate-600 hover:bg-slate-700 text-white font-bold py-1 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
-            👁️ Ẩn/Hiện
+                <button type="button" onclick="toggleSummaryColumn()" class="md:hidden bg-slate-600 hover:bg-slate-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+            👁️ Ẩn/Hiện TH
             </button>
-                <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1 px-2 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+            <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
             🔒 Đăng nhập
             </button>
             </div>
