@@ -71,21 +71,21 @@
         
 /* CSS Ẩn/Hiện cột TỔNG HỢP linh hoạt trên điện thoại */
         @media (max-width: 767px) {
-            /* Khi có class hide-summary thì mới ẩn các phần tử cột Tổng Hợp */
-            .hide-summary #fixedTable th.bg-amber-600,
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(1),
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(2),
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(3),
-            .hide-summary #fixedTable td:nth-child(3),
-            .hide-summary #fixedTable td:nth-child(4),
-            .hide-summary #fixedTable td:nth-child(5) {
+            body.hide-summary #fixedTable th:nth-child(3),
+            body.hide-summary #fixedTable tr:nth-child(2) th:nth-child(1),
+            body.hide-summary #fixedTable tr:nth-child(2) th:nth-child(2),
+            body.hide-summary #fixedTable tr:nth-child(2) th:nth-child(3),
+            body.hide-summary #fixedTable td:nth-child(3),
+            body.hide-summary #fixedTable td:nth-child(4),
+            body.hide-summary #fixedTable td:nth-child(5) {
                 display: none !important;
             }
+        }
 
             /* Thu gọn bảng khi ẩn cột */
-            .hide-summary #fixedTable {
-                width: 140px !important;
-            }
+        #fixedTable {
+            width: 140px !important;
+        }
 
             /* Đồng bộ độ cao hàng tiêu đề */
             #fixedTable thead tr:first-child th,
@@ -117,67 +117,74 @@
     </header>
 
     <div class="container mx-auto p-3 space-y-3">
-        <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-12 gap-2.5 items-end">
-            <div class="md:col-span-2">
-                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
-                <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
-                </select>
+<!-- KHỐI BỘ LỌC VÀ CỤM NÚT BẤM CÂN BẰNG HOÀN HẢO -->
+    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 space-y-3">
+        <!-- Hàng 1: Năm, Tháng, Kỳ báo cáo và Từ/Đến Tuần nằm chung 1 hàng ngang -->
+        <div class="flex flex-wrap items-end justify-between gap-2 pb-2 border-b border-gray-100">
+            <div class="flex flex-wrap items-end gap-2 flex-grow">
+                <div class="w-28 sm:w-32">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
+                    <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+                        <option value="2026">Năm 2026</option>
+                    </select>
+                </div>
+                <div class="w-28 sm:w-32">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
+                    <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
+                        <option value="M9">Tháng 9</option>
+                    </select>
+                </div>
+                <div class="w-48 sm:w-56">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO:</label>
+                    <select id="selectPeriod" onchange="loadData()" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-bold text-blue-800 focus:ring-2 focus:ring-blue-600">
+                        <option value="36">Tuần 36 (31/08 đến 06/09)</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="md:col-span-2">
-                <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
-                <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
-                </select>
-            </div>
-
-            <div class="md:col-span-2">
-                <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO:</label>
-                <select id="selectPeriod" onchange="loadData()" class="w-full border border-slate-300 rounded p-1.5 text-xs font-bold text-blue-800 focus:ring-2 focus:ring-blue-600">
-                </select>
-            </div>
-
-            <!-- DÁN ĐOẠN BƯỚC 1 VÀO ĐÂY (NGAY DƯỚI DÒNG 105) -->
-            <div id="customWeekRangeGroup" class="md:col-span-4 flex items-center gap-1.5 bg-blue-50 p-1.5 rounded border border-blue-200">
+            <div id="customWeekRangeGroup" class="flex items-center gap-1.5 bg-blue-50 p-1.5 rounded border border-blue-200 mt-2 lg:mt-0">
                 <span class="text-[11px] font-bold text-blue-900 whitespace-nowrap">TỪ:</span>
-                <select id="selectFromWeek" class="w-full border border-slate-300 rounded p-1 text-xs font-bold text-blue-900"></select>
-                <span class="text-[11px] font-bold text-blue-900 whitespace-nowrap">ĐẾN:</span>
-                <select id="selectToWeek" class="w-full border border-slate-300 rounded p-1 text-xs font-bold text-blue-900"></select>
-                <button onclick="aggregateCustomWeekRange()" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded text-xs whitespace-nowrap shadow-sm">
-                    🔍 Xem
-                </button>
-            </div>
-            <div class="md:col-span-3">
-                <label class="block text-xs font-bold text-blue-900 mb-1">HẠNG MỤC CÔNG VIỆC:</label>
-                <select id="selectCategoryFilter" onchange="filterCategoryView()" class="w-full border-2 border-blue-600 rounded p-1.5 text-xs font-bold text-blue-900 bg-blue-50 focus:ring-2 focus:ring-blue-600">
-                    <option value="ALL">-- Hiển thị Tất Cả --</option>
-                    <option value="1">1. Lắp đặt</option>
-                    <option value="2">2. Cải tạo</option>
-                    <option value="3">3. Nâng dời hạ</option>
-                    <option value="4">4. Dò tìm</option>
-                    <option value="5">5. Kiểm định ĐH</option>
-                    <option value="6">6. Tạm ngừng</option>
-                    <option value="7">7. Cắt hủy</option>
-                    <option value="8">8. Mở nước</option>
-                    <option value="9">9. Kiểm tra ĐH</option>
+                <select id="selectFromWeek" class="border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
+                    <option>Tuần 1</option>
                 </select>
-            </div>
-
-                <div class="md:col-span-3 flex gap-1.5 flex-wrap">
-                <button type="button" id="btnSave" onclick="saveData()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap">
-                    💾 Lưu Báo cáo
-                </button>
-                <button type="button" onclick="forceRefreshData()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
-                    🔄 Tải lại
-                </button>
-                <button type="button" onclick="toggleSummaryColumn()" class="md:hidden flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
-                    👁️ Ẩn/Hiện TH
-                </button>
-                <button type="button" id="btnExport" onclick="exportToExcel()" class="flex-1 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
-                    📊 Xuất Excel
+                <span class="text-[11px] font-bold text-blue-900 whitespace-nowrap">ĐẾN:</span>
+                <select id="selectToWeek" class="border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
+                    <option>Tuần 10</option>
+                </select>
+                <button onclick="aggregateCustomWeekRange()" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2.5 py-1 rounded text-xs whitespace-nowrap shadow-sm">
+                    🔍 Xem
                 </button>
             </div>
         </div>
 
+        <!-- Hàng 2: Hạng mục công việc (Trái) & Cụm nút bấm (Phải) -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 pt-1">
+            <div class="w-full md:w-80">
+                <label class="block text-xs font-bold text-gray-700 mb-1">HẠNG MỤC CÔNG VIỆC:</label>
+                <select id="selectCategoryFilter" onchange="loadData()" class="w-full bg-white border border-blue-600 rounded px-2 py-1.5 text-xs font-bold text-blue-900 focus:outline-none">
+                    <option value="ALL">-- Hiển thị Tất Cả --</option>
+                </select>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-end gap-1.5 w-full md:w-auto mt-2 md:mt-0">
+                <button type="button" id="btnSave" onclick="saveData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    💾 Lưu Báo cáo
+                </button>
+                <button type="button" onclick="forceRefreshData()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    🔄 Tải lại
+                </button>
+                <button type="button" onclick="exportToExcel()" class="bg-green-700 hover:bg-green-800 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    📊 Xuất Excel
+                </button>
+                <button type="button" onclick="toggleSummaryColumn()" class="md:hidden bg-slate-600 hover:bg-slate-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    👁️ Ẩn/Hiện TH
+                </button>
+                <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    🔒 Đăng nhập
+                </button>
+            </div>
+        </div>
+    </div>
         <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-2">
                 <h2 id="tableTitle" class="text-sm font-bold text-blue-900 uppercase tracking-wide">
@@ -662,18 +669,9 @@ function calculateRow(rowIndex, element) {
                 }
             });
         }
-        function toggleSummaryColumn() {
-            let fixedTable = document.getElementById('fixedTable');
-            if (fixedTable) {
-                // Thêm/Xóa class hide-summary trực tiếp trên bảng
-                fixedTable.classList.toggle('hide-summary');
-                
-                // Đồng thời Thêm/Xóa class hide-summary trên thẻ cha chứa bảng
-                if (fixedTable.parentElement) {
-                    fixedTable.parentElement.classList.toggle('hide-summary');
-                }
-            }
-        }
+            window.toggleSummaryColumn = function() {
+            document.body.classList.toggle('hide-summary');
+        };
 
 function saveData() {
             if (typeof GOOGLE_SCRIPT_URL === 'undefined' || !GOOGLE_SCRIPT_URL) {
@@ -938,6 +936,10 @@ function saveData() {
                 if (weekData && Array.isArray(weekData)) {
                     applyDataToTable(weekData);
                 }
+            }
+            // Ép phân quyền khóa/mở ô nhập liệu đúng theo tài khoản ngay sau khi nạp xong dữ liệu
+                if (typeof window.applyPermissions === 'function') {
+                window.applyPermissions();
             }
         }
 
@@ -1255,18 +1257,167 @@ function saveData() {
                 showAlert("Đã tải thành công dữ liệu mới nhất từ Google Sheet!");
             });
         }
-        // 5. Khối lệnh chạy ban đầu
-            initTime();
-            initWeekRangeDropdowns();
+// ==========================================
+// 📋 1. DANH SÁCH TÀI KHOẢN & PHÂN QUYỀN KHU VỰC
+// ==========================================
+const USER_ACCOUNTS = {
+    "admin": { password: "12345", role: "ADMIN", name: "Quản trị viên", allowAll: true },
+    "phuxuan": { password: "12345", role: "USER", name: "CMA Phú Xuân", allowedCma: "Phú Xuân" },
+    "thuanhoa": { password: "12345", role: "USER", name: "CMA Thuận Hóa", allowedCma: "Thuận Hóa" },
+    "aluoi": { password: "12345", role: "USER", name: "CMA A Lưới", allowedCma: "A Lưới" },
+    "kimlong": { password: "12345", role: "USER", name: "CMA Kim Long", allowedCma: "Kim Long" },
+    "phuvang": { password: "12345", role: "USER", name: "CMA Phú Vang", allowedCma: "Phú Vang" }
+};
 
-        // Dựng ngay khung tiêu đề và bảng chỉ trong 0.01 giây (Tránh trắng/trống bảng khi chờ)
-            if (typeof renderHeader === 'function') renderHeader();
-            if (typeof renderTable === 'function') renderTable();
+let currentUser = null; // Mặc định chưa đăng nhập
 
-        // Gọi tải số liệu từ Cloud sau
-            preloadAllCloudData(() => {
-            loadData();
+// ==========================================
+// 🔑 2. CÁC HÀM XỬ LÝ ĐĂNG NHẬP (GÁN GLOBAL WINDOW)
+// ==========================================
+
+// 1. Hàm Bật/Tắt Modal Đăng nhập (Chỉ xử lý Ẩn/Hiện giao diện Modal)
+window.toggleLoginModal = function() {
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.classList.toggle('hidden');
+        if (!modal.classList.contains('hidden')) {
+            const uElem = document.getElementById('inputUsername');
+            const pElem = document.getElementById('inputPassword');
+            if (uElem) { uElem.value = ''; uElem.focus(); }
+            if (pElem) { pElem.value = ''; }
+        }
+    }
+};
+
+// 2. Hàm Xử lý Đăng xuất riêng biệt
+window.logout = function() {
+    currentUser = null;
+    window.applyPermissions();
+    if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
+};
+
+// 3. Hàm Xử lý Đăng nhập khi bấm nút Xác nhận
+window.performLogin = function() {
+    const uElem = document.getElementById('inputUsername');
+    const pElem = document.getElementById('inputPassword');
+    if (!uElem || !pElem) return;
+
+    const username = uElem.value.trim().toLowerCase();
+    const password = pElem.value;
+
+    if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
+        currentUser = USER_ACCOUNTS[username];
+        
+        // Ẩn bảng Modal Đăng nhập
+        const modal = document.getElementById('loginModal');
+        if (modal) modal.classList.add('hidden');
+
+        // Cập nhật lại giao diện và quyền Chỉnh sửa
+        window.applyPermissions();
+        if (typeof showAlert === 'function') showAlert(`Xin chào ${currentUser.name}! Đăng nhập thành công.`);
+    } else {
+        alert("Tên tài khoản hoặc mật khẩu không chính xác!");
+    }
+};
+
+// 4. Cập nhật nút Đăng nhập / Đăng xuất trong applyPermissions
+window.applyPermissions = function() {
+    try {
+        const btnSave = document.getElementById('btnSave');
+        const btnLogin = document.getElementById('btnLogin');
+
+        if (btnLogin) {
+            if (currentUser) {
+                btnLogin.innerHTML = `👤 ${currentUser.name} (Đăng xuất)`;
+                btnLogin.onclick = window.logout; // Đã đăng nhập -> Click để Đăng xuất
+                btnLogin.className = 'flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
+            } else {
+                btnLogin.innerHTML = '🔒 Đăng nhập';
+                btnLogin.onclick = window.toggleLoginModal; // Chưa đăng nhập -> Click để Mở Modal
+                btnLogin.className = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
+            }
+        }
+
+        if (btnSave) {
+            if (currentUser) {
+                btnSave.classList.remove('hidden');
+            } else {
+                btnSave.classList.add('hidden');
+            }
+        }
+
+        const rows = document.querySelectorAll('#scrollableTableBody tr');
+        const fixedRows = document.querySelectorAll('#fixedTableBody tr');
+
+        if (rows && rows.length > 0) {
+            rows.forEach((row, idx) => {
+                const fixedRow = fixedRows[idx];
+                const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
+                const inputs = row.querySelectorAll('input');
+
+                let canEditThisRow = false;
+                if (currentUser) {
+                    if (currentUser.allowAll || currentUser.allowedCma === areaName) {
+                        canEditThisRow = true;
+                    }
+                }
+
+                inputs.forEach(input => {
+                    if (canEditThisRow) {
+                        input.removeAttribute('readonly');
+                        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    } else {
+                        input.setAttribute('readonly', 'true');
+                        input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    }
+                });
+            });
+        }
+    } catch (e) {
+        console.log("Đang chờ bảng vẽ xong...");
+    }
+};
+
+// ==========================================
+// 🚀 3. KHỐI LỆNH KHỞI CHẠY DUY NHẤT (SINGLE ENTRY POINT)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Khởi tạo dropdown gian hàng / thời gian
+    if (typeof initTime === 'function') initTime();
+    if (typeof initWeekRangeDropdowns === 'function') initWeekRangeDropdowns();
+
+    // 2. Dựng ngay lập tức khung bảng cố định (0.01 giây)
+    if (typeof renderHeader === 'function') renderHeader();
+    if (typeof renderTable === 'function') renderTable();
+
+    // 3. Tải dữ liệu đè lên và áp dụng phân quyền
+    if (typeof preloadAllCloudData === 'function') {
+        preloadAllCloudData(() => {
+            if (typeof loadData === 'function') loadData();
+            window.applyPermissions();
         });
+    } else if (typeof loadData === 'function') {
+        loadData();
+        window.applyPermissions();
+    }
+});
     </script>
+        <!-- Modal Đăng nhập Tài khoản -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+        <h3 class="text-md font-bold text-gray-800 mb-3 text-center">🔑 Đăng nhập Hệ thống</h3>
+        
+        <label class="block text-xs font-bold text-gray-700 mb-1">Tài khoản:</label>
+        <input type="text" id="inputUsername" placeholder="Nhập tên tài khoản..." class="w-full border border-gray-300 rounded p-2 text-sm mb-3 focus:outline-none focus:border-blue-500">
+        
+        <label class="block text-xs font-bold text-gray-700 mb-1">Mật khẩu:</label>
+        <input type="password" id="inputPassword" placeholder="Nhập mật khẩu..." class="w-full border border-gray-300 rounded p-2 text-sm mb-4 focus:outline-none focus:border-blue-500" onkeyup="if(event.key==='Enter') performLogin()">
+        
+        <div class="flex justify-end gap-2">
+            <button onclick="toggleLoginModal()" class="px-3 py-1.5 bg-gray-300 hover:bg-gray-400 text-gray-800 text-xs font-bold rounded">Hủy</button>
+            <button onclick="performLogin()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded">Đăng nhập</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
