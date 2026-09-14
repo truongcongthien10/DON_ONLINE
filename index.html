@@ -82,9 +82,15 @@
             }
         }
 
-            /* Thu gọn bảng khi ẩn cột */
-        #fixedTable {
-            width: 140px !important;
+/* Cố định cứng kích thước cột Khu Vực không cho co dãn khi Ẩn/Hiện TH */
+        #fixedTable th:nth-child(2),
+        #fixedTable td:nth-child(2) {
+            width: 110px !important;
+            min-width: 110px !important;
+            max-width: 110px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
             /* Đồng bộ độ cao hàng tiêu đề */
