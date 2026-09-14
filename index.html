@@ -1491,5 +1491,13 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+    <!-- Tự động chạy applyPermissions khi trang web mở lên -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.applyPermissions === 'function') {
+                window.applyPermissions();
+            }
+        });
+    </script>
 </body>
 </html>
