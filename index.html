@@ -72,20 +72,20 @@
 /* CSS Ẩn/Hiện cột TỔNG HỢP linh hoạt trên điện thoại */
         @media (max-width: 767px) {
             /* Khi có class hide-summary thì mới ẩn các phần tử cột Tổng Hợp */
-            .hide-summary #fixedTable th.bg-amber-600,
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(1),
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(2),
-            .hide-summary #fixedTable tr:nth-child(2) th:nth-child(3),
-            .hide-summary #fixedTable td:nth-child(3),
-            .hide-summary #fixedTable td:nth-child(4),
-            .hide-summary #fixedTable td:nth-child(5) {
-                display: none !important;
-            }
+        #fixedTable th.bg-amber-600,
+        #fixedTable tr:nth-child(2) th:nth-child(1),
+        #fixedTable tr:nth-child(2) th:nth-child(2),
+        #fixedTable tr:nth-child(2) th:nth-child(3),
+        #fixedTable td:nth-child(3),
+        #fixedTable td:nth-child(4),
+        #fixedTable td:nth-child(5) {
+            display: none !important;
+        }
 
             /* Thu gọn bảng khi ẩn cột */
-            .hide-summary #fixedTable {
-                width: 140px !important;
-            }
+        #fixedTable {
+            width: 140px !important;
+        }
 
             /* Đồng bộ độ cao hàng tiêu đề */
             #fixedTable thead tr:first-child th,
