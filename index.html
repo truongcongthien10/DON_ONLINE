@@ -117,24 +117,24 @@
     </header>
 
     <div class="container mx-auto p-3 space-y-3">
-<!-- KHỐI BỘ LỌC VÀ CỤM NÚT BẤM HOÀN CHỈNH -->
+<!-- KHỐI BỘ LỌC VÀ CỤM NÚT BẤM CÂN BẰNG HOÀN HẢO -->
     <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 space-y-3">
-        <!-- Hàng 1: Bộ lọc thời gian & Từ/Đến Tuần -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3 border-b border-gray-100">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 w-full lg:w-auto">
-                <div>
+        <!-- Hàng 1: Năm, Tháng, Kỳ báo cáo và Từ/Đến Tuần nằm chung 1 hàng ngang -->
+        <div class="flex flex-wrap items-end justify-between gap-2 pb-2 border-b border-gray-100">
+            <div class="flex flex-wrap items-end gap-2 flex-grow">
+                <div class="w-28 sm:w-32">
                     <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN NĂM:</label>
                     <select id="selectYear" onchange="updateWeekDropdown(); loadData();" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
                         <option value="2026">Năm 2026</option>
                     </select>
                 </div>
-                <div>
+                <div class="w-28 sm:w-32">
                     <label class="block text-xs font-bold text-slate-700 mb-1">CHỌN THÁNG:</label>
                     <select id="selectMonth" onchange="updateWeekDropdown(); loadData();" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-semibold focus:ring-2 focus:ring-blue-600">
                         <option value="M9">Tháng 9</option>
                     </select>
                 </div>
-                <div>
+                <div class="w-48 sm:w-56">
                     <label class="block text-xs font-bold text-slate-700 mb-1">KỲ BÁO CÁO:</label>
                     <select id="selectPeriod" onchange="loadData()" class="w-full bg-gray-100 border border-slate-300 rounded p-1.5 text-xs font-bold text-blue-800 focus:ring-2 focus:ring-blue-600">
                         <option value="36">Tuần 36 (31/08 đến 06/09)</option>
@@ -142,16 +142,16 @@
                 </div>
             </div>
 
-            <div id="customWeekRangeGroup" class="flex items-center gap-1.5 bg-blue-50 p-1.5 rounded border border-blue-200 self-start lg:self-auto">
+            <div id="customWeekRangeGroup" class="flex items-center gap-1.5 bg-blue-50 p-1.5 rounded border border-blue-200 mt-2 lg:mt-0">
                 <span class="text-[11px] font-bold text-blue-900 whitespace-nowrap">TỪ:</span>
-                <select id="selectFromWeek" class="w-full border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
+                <select id="selectFromWeek" class="border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
                     <option>Tuần 1</option>
                 </select>
                 <span class="text-[11px] font-bold text-blue-900 whitespace-nowrap">ĐẾN:</span>
-                <select id="selectToWeek" class="w-full border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
+                <select id="selectToWeek" class="border border-slate-300 rounded p-1 text-xs font-bold text-blue-900">
                     <option>Tuần 10</option>
                 </select>
-                <button onclick="aggregateCustomWeekRange()" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2 py-1 rounded text-xs whitespace-nowrap shadow-sm">
+                <button onclick="aggregateCustomWeekRange()" class="bg-blue-800 hover:bg-blue-900 text-white font-bold px-2.5 py-1 rounded text-xs whitespace-nowrap shadow-sm">
                     🔍 Xem
                 </button>
             </div>
@@ -159,14 +159,14 @@
 
         <!-- Hàng 2: Hạng mục công việc (Trái) & Cụm nút bấm (Phải) -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 pt-1">
-            <div class="w-full md:w-72">
+            <div class="w-full md:w-80">
                 <label class="block text-xs font-bold text-gray-700 mb-1">HẠNG MỤC CÔNG VIỆC:</label>
                 <select id="selectCategoryFilter" onchange="loadData()" class="w-full bg-white border border-blue-600 rounded px-2 py-1.5 text-xs font-bold text-blue-900 focus:outline-none">
                     <option value="ALL">-- Hiển thị Tất Cả --</option>
                 </select>
             </div>
 
-            <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto mt-2 md:mt-0">
+            <div class="flex flex-wrap items-center justify-end gap-1.5 w-full md:w-auto mt-2 md:mt-0">
                 <button type="button" id="btnSave" onclick="saveData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     💾 Lưu Báo cáo
                 </button>
