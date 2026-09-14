@@ -940,6 +940,10 @@ function saveData() {
                     applyDataToTable(weekData);
                 }
             }
+            // Ép phân quyền khóa/mở ô nhập liệu đúng theo tài khoản ngay sau khi nạp xong dữ liệu
+                if (typeof window.applyPermissions === 'function') {
+                window.applyPermissions();
+            }
         }
 
         function exportToExcel() {
