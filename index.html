@@ -169,6 +169,9 @@
                 <button type="button" onclick="forceRefreshData()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     🔄 Tải lại
                 </button>
+                 <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    🔒 Đăng nhập
+                </button>
                 <button type="button" onclick="toggleSummaryColumn()" class="md:hidden flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     👁️ Ẩn/Hiện TH
                 </button>
@@ -1258,7 +1261,105 @@ function saveData() {
         // 5. Khối lệnh chạy ban đầu
             initTime();
             initWeekRangeDropdowns();
+        // 📋 DANH SÁCH TÀI KHOẢN & PHÂN QUYỀN KHU VỰC
+            const USER_ACCOUNTS = {
+                "admin": { password: "123456789", role: "ADMIN", name: "Quản trị viên", allowAll: true },
+                "phuxuan": { password: "12345", role: "USER", name: "CMA Phú Xuân", allowedCma: "Phú Xuân" },
+                "thuanhoa": { password: "12345", role: "USER", name: "CMA Thuận Hóa", allowedCma: "Thuận Hóa" },
+                "aluoi": { password: "12345", role: "USER", name: "CMA A Lưới", allowedCma: "A Lưới" },
+                "kimlong": { password: "12345", role: "USER", name: "CMA Kim Long", allowedCma: "Kim Long" }
+                "phuvang": { password: "12345", role: "USER", name: "CMA Phú Vang", allowedCma: "Phú Vang" }
+};
 
+let currentUser = null; // Trạng thái tài khoản đang đăng nhập
+
+// Bật / Tắt Modal Đăng nhập
+function toggleLoginModal() {
+    if (currentUser) {
+        currentUser = null;
+        applyPermissions();
+        if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
+    } else {
+        const modal = document.getElementById('loginModal');
+        if (modal) {
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                document.getElementById('inputUsername').value = '';
+                document.getElementById('inputPassword').value = '';
+                document.getElementById('inputUsername').focus();
+            }
+        }
+    }
+}
+
+// Xử lý nút Đăng nhập
+function performLogin() {
+    const username = document.getElementById('inputUsername').value.trim().toLowerCase();
+    const password = document.getElementById('inputPassword').value;
+
+    if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
+        currentUser = USER_ACCOUNTS[username];
+        toggleLoginModal();
+        applyPermissions();
+        if (typeof showAlert === 'function') showAlert(`Xin chào ${currentUser.name}! Đăng nhập thành công.`);
+    } else {
+        alert("Tên tài khoản hoặc mật khẩu không chính xác!");
+    }
+}
+
+// Hàm Phân quyền Chỉnh sửa theo Dòng
+function applyPermissions() {
+    const btnSave = document.getElementById('btnSave');
+    const btnLogin = document.getElementById('btnLogin');
+
+    // Nút Đăng nhập
+    if (btnLogin) {
+        if (currentUser) {
+            btnLogin.innerHTML = `👤 ${currentUser.name} (Đăng xuất)`;
+            btnLogin.className = 'flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
+        } else {
+            btnLogin.innerHTML = '🔒 Đăng nhập';
+            btnLogin.className = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
+        }
+    }
+
+    // Nút Lưu Báo cáo
+    if (btnSave) {
+        if (currentUser) {
+            btnSave.classList.remove('hidden');
+        } else {
+            btnSave.classList.add('hidden');
+        }
+    }
+
+    // Khóa / Mở khóa từng dòng tương ứng
+    const rows = document.querySelectorAll('#scrollableTableBody tr');
+    const fixedRows = document.querySelectorAll('#fixedTableBody tr');
+
+    rows.forEach((row, idx) => {
+        const fixedRow = fixedRows[idx];
+        const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
+        const inputs = row.querySelectorAll('input');
+
+        let canEditThisRow = false;
+        if (currentUser) {
+            if (currentUser.allowAll || currentUser.allowedCma === areaName) {
+                canEditThisRow = true;
+            }
+        }
+
+        inputs.forEach(input => {
+            if (canEditThisRow) {
+                input.removeAttribute('readonly');
+                input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+            } else {
+                input.setAttribute('readonly', 'true');
+                input.classList.add('bg-gray-100', 'cursor-not-allowed');
+            }
+        });
+    });
+}
+        
         // Dựng ngay khung tiêu đề và bảng chỉ trong 0.01 giây (Tránh trắng/trống bảng khi chờ)
             if (typeof renderHeader === 'function') renderHeader();
             if (typeof renderTable === 'function') renderTable();
@@ -1268,5 +1369,22 @@ function saveData() {
             loadData();
         });
     </script>
+        <!-- Modal Đăng nhập Tài khoản -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+        <h3 class="text-md font-bold text-gray-800 mb-3 text-center">🔑 Đăng nhập Hệ thống</h3>
+        
+        <label class="block text-xs font-bold text-gray-700 mb-1">Tài khoản:</label>
+        <input type="text" id="inputUsername" placeholder="Nhập tên tài khoản..." class="w-full border border-gray-300 rounded p-2 text-sm mb-3 focus:outline-none focus:border-blue-500">
+        
+        <label class="block text-xs font-bold text-gray-700 mb-1">Mật khẩu:</label>
+        <input type="password" id="inputPassword" placeholder="Nhập mật khẩu..." class="w-full border border-gray-300 rounded p-2 text-sm mb-4 focus:outline-none focus:border-blue-500" onkeyup="if(event.key==='Enter') performLogin()">
+        
+        <div class="flex justify-end gap-2">
+            <button onclick="toggleLoginModal()" class="px-3 py-1.5 bg-gray-300 hover:bg-gray-400 text-gray-800 text-xs font-bold rounded">Hủy</button>
+            <button onclick="performLogin()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded">Đăng nhập</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
