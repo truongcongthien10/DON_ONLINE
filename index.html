@@ -168,9 +168,9 @@
                 </button>
             </div>
         <!-- Thẻ hiển thị thông tin User ở góc phải Hàng 1 -->
-                <div id="userInfoDisplay" class="hidden text-right pl-3 border-l-2 border-blue-500 ml-auto self-center">
-                <div id="displayUserName" class="text-xs font-bold text-blue-900 leading-tight"></div>
-                <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium leading-tight"></div>
+            <div id="userInfoDisplay" class="flex flex-col items-end pl-3 border-l-2 border-blue-500 ml-auto self-center" style="display: none;">
+            <div id="displayUserName" class="text-xs font-bold text-blue-900 leading-tight"></div>
+           <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium leading-tight"></div>
             </div>
         </div>
 
@@ -1327,10 +1327,13 @@ window.applyPermissions = function() {
     const btnLogin = document.getElementById('btnLogin');
 
     if (currentUser) {
-        // 1. Hiển thị thông tin tên & bộ phận
+        // 1. Gán dữ liệu tên & bộ phận
         if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
         if (deptElem) deptElem.textContent = currentUser.department || '';
-        if (userBox) userBox.classList.remove('hidden');
+        if (userBox) {
+            userBox.classList.remove('hidden');
+            userBox.style.display = 'flex'; // Ép kiểu flex hiển thị góc phải
+        }
 
         // 2. Cập nhật nút Đăng xuất
         if (btnLogin) {
@@ -1343,10 +1346,13 @@ window.applyPermissions = function() {
         if (btnSave) btnSave.classList.remove('hidden');
 
     } else {
-        // 1. Xóa chữ và ẩn khối thông tin khi đã đăng xuất
+        // 1. Xóa thông tin & Ẩn hoàn toàn khi đăng xuất
         if (nameElem) nameElem.textContent = '';
         if (deptElem) deptElem.textContent = '';
-        if (userBox) userBox.classList.add('hidden');
+        if (userBox) {
+            userBox.classList.add('hidden');
+            userBox.style.display = 'none';
+        }
 
         // 2. Trả lại nút Đăng nhập
         if (btnLogin) {
