@@ -168,15 +168,9 @@
                 </button>
             </div>
         <!-- Thẻ hiển thị thông tin User ở góc phải Hàng 1 -->
-            <div id="userInfoDisplay" class="hidden text-right pl-3 border-l-2 border-blue-500 ml-auto self-center">
-            <div id="displayUserName" class="text-xs font-bold text-blue-900"></div>
-            <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium"></div>
-        </div>
-            
-            <!-- Thẻ hiển thị thông tin User tự động đẩy về sát góc phải màn hình -->
-            <div id="userInfoDisplay" class="hidden text-right pl-3 border-l-2 border-blue-500 ml-auto self-center">
-                <div id="displayUserName" class="text-xs font-bold text-blue-900"></div>
-                <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium"></div>
+            <div id="userInfoDisplay" class="flex flex-col items-end pl-3 border-l-2 border-blue-500 ml-auto self-center">
+                <div id="displayUserName" class="text-xs font-bold text-blue-900 leading-tight">Hồ Xuân Quỳnh Thanh</div>
+                <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium leading-tight">Trung tâm Kinh doanh</div>
             </div>
         </div>
 
@@ -1323,11 +1317,11 @@ window.applyPermissions = function() {
     const btnSave = document.getElementById('btnSave');
     const btnLogin = document.getElementById('btnLogin');
 
-    if (currentUser) {
+if (currentUser) {
         // 1. Hiển thị thông tin tên & bộ phận ở góc trên bên phải
-        if (nameElem) nameElem.textContent = currentUser.name || '';
+        if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
         if (deptElem) deptElem.textContent = currentUser.department || '';
-        if (userBox) userBox.classList.remove('hidden');
+        if (userBox) userBox.style.display = 'flex';
 
         // 2. Cập nhật nút Đăng nhập thành Đăng xuất
         if (btnLogin) {
@@ -1341,7 +1335,7 @@ window.applyPermissions = function() {
 
     } else {
         // 1. Ẩn khối thông tin khi đăng xuất
-        if (userBox) userBox.classList.add('hidden');
+        if (userBox) userBox.style.display = 'none';
 
         // 2. Trả lại nút Đăng nhập ban đầu
         if (btnLogin) {
