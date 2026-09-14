@@ -1275,29 +1275,28 @@ let currentUser = null; // Mặc định chưa đăng nhập
 // 🔑 2. CÁC HÀM XỬ LÝ ĐĂNG NHẬP (GÁN GLOBAL WINDOW)
 // ==========================================
 
-// Bật / Tắt Modal Đăng nhập hoặc Đăng xuất
+// 1. Hàm Bật/Tắt Modal Đăng nhập (Chỉ xử lý Ẩn/Hiện giao diện Modal)
 window.toggleLoginModal = function() {
-    if (currentUser) {
-        currentUser = null;
-        window.applyPermissions();
-        if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
-    } else {
-        const modal = document.getElementById('loginModal');
-        if (modal) {
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                const uElem = document.getElementById('inputUsername');
-                const pElem = document.getElementById('inputPassword');
-                if (uElem) { uElem.value = ''; uElem.focus(); }
-                if (pElem) { pElem.value = ''; }
-            }
-        } else {
-            alert("Lỗi: Chưa thêm HTML Modal Đăng nhập ở cuối file!");
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.classList.toggle('hidden');
+        if (!modal.classList.contains('hidden')) {
+            const uElem = document.getElementById('inputUsername');
+            const pElem = document.getElementById('inputPassword');
+            if (uElem) { uElem.value = ''; uElem.focus(); }
+            if (pElem) { pElem.value = ''; }
         }
     }
 };
 
-// Xử lý khi nhấn nút Đăng nhập trong Modal
+// 2. Hàm Xử lý Đăng xuất riêng biệt
+window.logout = function() {
+    currentUser = null;
+    window.applyPermissions();
+    if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
+};
+
+// 3. Hàm Xử lý Đăng nhập khi bấm nút Xác nhận
 window.performLogin = function() {
     const uElem = document.getElementById('inputUsername');
     const pElem = document.getElementById('inputPassword');
@@ -1308,7 +1307,12 @@ window.performLogin = function() {
 
     if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
         currentUser = USER_ACCOUNTS[username];
-        window.toggleLoginModal();
+        
+        // Ẩn bảng Modal Đăng nhập
+        const modal = document.getElementById('loginModal');
+        if (modal) modal.classList.add('hidden');
+
+        // Cập nhật lại giao diện và quyền Chỉnh sửa
         window.applyPermissions();
         if (typeof showAlert === 'function') showAlert(`Xin chào ${currentUser.name}! Đăng nhập thành công.`);
     } else {
@@ -1316,24 +1320,24 @@ window.performLogin = function() {
     }
 };
 
-// Hàm Phân quyền Chỉnh sửa an toàn (Không làm treo trang)
+// 4. Cập nhật nút Đăng nhập / Đăng xuất trong applyPermissions
 window.applyPermissions = function() {
     try {
         const btnSave = document.getElementById('btnSave');
         const btnLogin = document.getElementById('btnLogin');
 
-        // Cập nhật hiển thị nút Đăng nhập / Đăng xuất
         if (btnLogin) {
             if (currentUser) {
                 btnLogin.innerHTML = `👤 ${currentUser.name} (Đăng xuất)`;
+                btnLogin.onclick = window.logout; // Đã đăng nhập -> Click để Đăng xuất
                 btnLogin.className = 'flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
             } else {
                 btnLogin.innerHTML = '🔒 Đăng nhập';
+                btnLogin.onclick = window.toggleLoginModal; // Chưa đăng nhập -> Click để Mở Modal
                 btnLogin.className = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
             }
         }
 
-        // Cập nhật ẩn/hiện nút Lưu Báo cáo
         if (btnSave) {
             if (currentUser) {
                 btnSave.classList.remove('hidden');
@@ -1342,7 +1346,6 @@ window.applyPermissions = function() {
             }
         }
 
-        // Khóa hoặc Mở khóa từng dòng dữ liệu trong bảng
         const rows = document.querySelectorAll('#scrollableTableBody tr');
         const fixedRows = document.querySelectorAll('#fixedTableBody tr');
 
@@ -1371,7 +1374,7 @@ window.applyPermissions = function() {
             });
         }
     } catch (e) {
-        console.log("Đang chờ bảng vẽ xong để phân quyền...");
+        console.log("Đang chờ bảng vẽ xong...");
     }
 };
 
