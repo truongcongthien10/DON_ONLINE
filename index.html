@@ -162,43 +162,6 @@
                 </select>
             </div>
 
-<!-- KHỐI BỘ LỌC VÀ CỤM NÚT BẤM CHUẨN ĐỊNH DẠNG -->
-<div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
-    <!-- Hàng 1: Bộ lọc Thời gian -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-        <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">CHỌN NĂM:</label>
-            <select id="selectYear" onchange="loadData()" class="w-full bg-gray-100 border border-gray-300 rounded px-2 py-1.5 text-xs font-bold text-gray-800 focus:outline-none">
-                <option value="2026">Năm 2026</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">CHỌN THÁNG:</label>
-            <select id="selectMonth" onchange="loadData()" class="w-full bg-gray-100 border border-gray-300 rounded px-2 py-1.5 text-xs font-bold text-gray-800 focus:outline-none">
-                <option value="M9">Tháng 9</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-gray-700 mb-1">KỲ BÁO CÁO:</label>
-            <select id="selectPeriod" onchange="loadData()" class="w-full bg-gray-100 border border-gray-300 rounded px-2 py-1.5 text-xs font-bold text-blue-900 focus:outline-none">
-                <option value="36">Tuần 36 (31/08 đến 06/09)</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Hàng 2: Chọn Từ/Đến Tuần (nếu có) -->
-    <div class="flex flex-wrap items-center gap-2 mb-3 bg-blue-50 p-2 rounded border border-blue-200">
-        <span class="text-xs font-bold text-blue-900">TỪ:</span>
-        <select class="bg-white border border-gray-300 rounded px-2 py-1 text-xs">
-            <option>Tuần 1</option>
-        </select>
-        <span class="text-xs font-bold text-blue-900">ĐẾN:</span>
-        <select class="bg-white border border-gray-300 rounded px-2 py-1 text-xs">
-            <option>Tuần 10</option>
-        </select>
-        <button type="button" onclick="loadData()" class="bg-blue-800 text-white font-bold py-1 px-3 rounded text-xs">🔍 Xem</button>
-    </div>
-
 <!-- Hàng 3: Hạng mục công việc & Cụm nút bấm -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mt-3 pt-3 border-t border-gray-100">
             <!-- Khối chọn Hạng mục công việc -->
@@ -209,7 +172,7 @@
                 </select>
             </div>
 
-            <!-- Khối nút bấm (Giữ 1 hàng trên Desktop, co gọn trên Mobile) -->
+            <!-- Khối nút bấm -->
             <div class="flex flex-wrap items-center gap-1.5 w-full md:w-auto mt-2 md:mt-0">
                 <button type="button" id="btnSave" onclick="saveData()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                     💾 Lưu Báo cáo
@@ -228,6 +191,7 @@
                 </button>
             </div>
         </div>
+    </div>
 
         <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
             <div class="flex justify-between items-center mb-2">
