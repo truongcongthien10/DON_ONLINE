@@ -1258,116 +1258,146 @@ function saveData() {
                 showAlert("Đã tải thành công dữ liệu mới nhất từ Google Sheet!");
             });
         }
-        // 5. Khối lệnh chạy ban đầu
-            initTime();
-            initWeekRangeDropdowns();
-        // 📋 DANH SÁCH TÀI KHOẢN & PHÂN QUYỀN KHU VỰC
-            const USER_ACCOUNTS = {
-                "admin": { password: "123456789", role: "ADMIN", name: "Quản trị viên", allowAll: true },
-                "phuxuan": { password: "12345", role: "USER", name: "CMA Phú Xuân", allowedCma: "Phú Xuân" },
-                "thuanhoa": { password: "12345", role: "USER", name: "CMA Thuận Hóa", allowedCma: "Thuận Hóa" },
-                "aluoi": { password: "12345", role: "USER", name: "CMA A Lưới", allowedCma: "A Lưới" },
-                "kimlong": { password: "12345", role: "USER", name: "CMA Kim Long", allowedCma: "Kim Long" }
-                "phuvang": { password: "12345", role: "USER", name: "CMA Phú Vang", allowedCma: "Phú Vang" }
+// ==========================================
+// 📋 1. DANH SÁCH TÀI KHOẢN & PHÂN QUYỀN KHU VỰC
+// ==========================================
+const USER_ACCOUNTS = {
+    "admin": { password: "123", role: "ADMIN", name: "Quản trị viên", allowAll: true },
+    "phuxuan": { password: "123", role: "USER", name: "Chi nhánh Phú Xuân", allowedCma: "Phú Xuân" },
+    "thuanhoa": { password: "123", role: "USER", name: "Chi nhánh Thuận Hóa", allowedCma: "Thuận Hóa" },
+    "aluoi": { password: "123", role: "USER", name: "Chi nhánh A Lưới", allowedCma: "A Lưới" },
+    "kimlong": { password: "123", role: "USER", name: "Chi nhánh Kim Long", allowedCma: "Kim Long" }
 };
 
-let currentUser = null; // Trạng thái tài khoản đang đăng nhập
+let currentUser = null; // Mặc định chưa đăng nhập
 
-// Bật / Tắt Modal Đăng nhập
-function toggleLoginModal() {
+// ==========================================
+// 🔑 2. CÁC HÀM XỬ LÝ ĐĂNG NHẬP (GÁN GLOBAL WINDOW)
+// ==========================================
+
+// Bật / Tắt Modal Đăng nhập hoặc Đăng xuất
+window.toggleLoginModal = function() {
     if (currentUser) {
         currentUser = null;
-        applyPermissions();
+        window.applyPermissions();
         if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
     } else {
         const modal = document.getElementById('loginModal');
         if (modal) {
             modal.classList.toggle('hidden');
             if (!modal.classList.contains('hidden')) {
-                document.getElementById('inputUsername').value = '';
-                document.getElementById('inputPassword').value = '';
-                document.getElementById('inputUsername').focus();
+                const uElem = document.getElementById('inputUsername');
+                const pElem = document.getElementById('inputPassword');
+                if (uElem) { uElem.value = ''; uElem.focus(); }
+                if (pElem) { pElem.value = ''; }
             }
+        } else {
+            alert("Lỗi: Chưa thêm HTML Modal Đăng nhập ở cuối file!");
         }
     }
-}
+};
 
-// Xử lý nút Đăng nhập
-function performLogin() {
-    const username = document.getElementById('inputUsername').value.trim().toLowerCase();
-    const password = document.getElementById('inputPassword').value;
+// Xử lý khi nhấn nút Đăng nhập trong Modal
+window.performLogin = function() {
+    const uElem = document.getElementById('inputUsername');
+    const pElem = document.getElementById('inputPassword');
+    if (!uElem || !pElem) return;
+
+    const username = uElem.value.trim().toLowerCase();
+    const password = pElem.value;
 
     if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
         currentUser = USER_ACCOUNTS[username];
-        toggleLoginModal();
-        applyPermissions();
+        window.toggleLoginModal();
+        window.applyPermissions();
         if (typeof showAlert === 'function') showAlert(`Xin chào ${currentUser.name}! Đăng nhập thành công.`);
     } else {
         alert("Tên tài khoản hoặc mật khẩu không chính xác!");
     }
-}
+};
 
-// Hàm Phân quyền Chỉnh sửa theo Dòng
-function applyPermissions() {
-    const btnSave = document.getElementById('btnSave');
-    const btnLogin = document.getElementById('btnLogin');
+// Hàm Phân quyền Chỉnh sửa an toàn (Không làm treo trang)
+window.applyPermissions = function() {
+    try {
+        const btnSave = document.getElementById('btnSave');
+        const btnLogin = document.getElementById('btnLogin');
 
-    // Nút Đăng nhập
-    if (btnLogin) {
-        if (currentUser) {
-            btnLogin.innerHTML = `👤 ${currentUser.name} (Đăng xuất)`;
-            btnLogin.className = 'flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
-        } else {
-            btnLogin.innerHTML = '🔒 Đăng nhập';
-            btnLogin.className = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
-        }
-    }
-
-    // Nút Lưu Báo cáo
-    if (btnSave) {
-        if (currentUser) {
-            btnSave.classList.remove('hidden');
-        } else {
-            btnSave.classList.add('hidden');
-        }
-    }
-
-    // Khóa / Mở khóa từng dòng tương ứng
-    const rows = document.querySelectorAll('#scrollableTableBody tr');
-    const fixedRows = document.querySelectorAll('#fixedTableBody tr');
-
-    rows.forEach((row, idx) => {
-        const fixedRow = fixedRows[idx];
-        const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
-        const inputs = row.querySelectorAll('input');
-
-        let canEditThisRow = false;
-        if (currentUser) {
-            if (currentUser.allowAll || currentUser.allowedCma === areaName) {
-                canEditThisRow = true;
-            }
-        }
-
-        inputs.forEach(input => {
-            if (canEditThisRow) {
-                input.removeAttribute('readonly');
-                input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+        // Cập nhật hiển thị nút Đăng nhập / Đăng xuất
+        if (btnLogin) {
+            if (currentUser) {
+                btnLogin.innerHTML = `👤 ${currentUser.name} (Đăng xuất)`;
+                btnLogin.className = 'flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
             } else {
-                input.setAttribute('readonly', 'true');
-                input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                btnLogin.innerHTML = '🔒 Đăng nhập';
+                btnLogin.className = 'flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-1 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1';
             }
-        });
-    });
-}
-        
-        // Dựng ngay khung tiêu đề và bảng chỉ trong 0.01 giây (Tránh trắng/trống bảng khi chờ)
-            if (typeof renderHeader === 'function') renderHeader();
-            if (typeof renderTable === 'function') renderTable();
+        }
 
-        // Gọi tải số liệu từ Cloud sau
-            preloadAllCloudData(() => {
-            loadData();
+        // Cập nhật ẩn/hiện nút Lưu Báo cáo
+        if (btnSave) {
+            if (currentUser) {
+                btnSave.classList.remove('hidden');
+            } else {
+                btnSave.classList.add('hidden');
+            }
+        }
+
+        // Khóa hoặc Mở khóa từng dòng dữ liệu trong bảng
+        const rows = document.querySelectorAll('#scrollableTableBody tr');
+        const fixedRows = document.querySelectorAll('#fixedTableBody tr');
+
+        if (rows && rows.length > 0) {
+            rows.forEach((row, idx) => {
+                const fixedRow = fixedRows[idx];
+                const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
+                const inputs = row.querySelectorAll('input');
+
+                let canEditThisRow = false;
+                if (currentUser) {
+                    if (currentUser.allowAll || currentUser.allowedCma === areaName) {
+                        canEditThisRow = true;
+                    }
+                }
+
+                inputs.forEach(input => {
+                    if (canEditThisRow) {
+                        input.removeAttribute('readonly');
+                        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    } else {
+                        input.setAttribute('readonly', 'true');
+                        input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    }
+                });
+            });
+        }
+    } catch (e) {
+        console.log("Đang chờ bảng vẽ xong để phân quyền...");
+    }
+};
+
+// ==========================================
+// 🚀 3. KHỐI LỆNH KHỞI CHẠY DUY NHẤT (SINGLE ENTRY POINT)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Khởi tạo dropdown gian hàng / thời gian
+    if (typeof initTime === 'function') initTime();
+    if (typeof initWeekRangeDropdowns === 'function') initWeekRangeDropdowns();
+
+    // 2. Dựng ngay lập tức khung bảng cố định (0.01 giây)
+    if (typeof renderHeader === 'function') renderHeader();
+    if (typeof renderTable === 'function') renderTable();
+
+    // 3. Tải dữ liệu đè lên và áp dụng phân quyền
+    if (typeof preloadAllCloudData === 'function') {
+        preloadAllCloudData(() => {
+            if (typeof loadData === 'function') loadData();
+            window.applyPermissions();
         });
+    } else if (typeof loadData === 'function') {
+        loadData();
+        window.applyPermissions();
+    }
+});
     </script>
         <!-- Modal Đăng nhập Tài khoản -->
     <div id="loginModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
