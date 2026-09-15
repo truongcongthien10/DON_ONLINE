@@ -1312,13 +1312,6 @@ window.toggleLoginModal = function() {
     }
 };
 
-// 2. Hàm Xử lý Đăng xuất riêng biệt
-window.logout = function() {
-    currentUser = null;
-    window.applyPermissions();
-    if (typeof showAlert === 'function') showAlert("Đã đăng xuất tài khoản!");
-};
-
 // 2. Hàm Xử lý Đăng xuất
 window.logout = function() {
     currentUser = null;
@@ -1434,38 +1427,6 @@ window.applyPermissions = function() {
     }
 
     if (typeof loadData === 'function') loadData();
-};
-
-        const rows = document.querySelectorAll('#scrollableTableBody tr');
-        const fixedRows = document.querySelectorAll('#fixedTableBody tr');
-
-        if (rows && rows.length > 0) {
-            rows.forEach((row, idx) => {
-                const fixedRow = fixedRows[idx];
-                const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
-                const inputs = row.querySelectorAll('input');
-
-                let canEditThisRow = false;
-                if (currentUser) {
-                    if (currentUser.allowAll || currentUser.allowedCma === areaName) {
-                        canEditThisRow = true;
-                    }
-                }
-
-                inputs.forEach(input => {
-                    if (canEditThisRow) {
-                        input.removeAttribute('readonly');
-                        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
-                    } else {
-                        input.setAttribute('readonly', 'true');
-                        input.classList.add('bg-gray-100', 'cursor-not-allowed');
-                    }
-                });
-            });
-        }
-    } catch (e) {
-        console.log("Đang chờ bảng vẽ xong...");
-    }
 };
 
 // ==========================================
