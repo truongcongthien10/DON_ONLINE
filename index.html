@@ -1338,30 +1338,6 @@ window.performLogin = function() {
     if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
         currentUser = USER_ACCOUNTS[username];
 
-        // Ẩn Modal Đăng nhập
-        const modal = document.getElementById('loginModal');
-        if (modal) modal.classList.add('hidden');
-
-        // Cập nhật giao diện
-        window.applyPermissions();
-        if (typeof showAlert === 'function') showAlert(`Xin chào ${currentUser.name}! Đăng nhập thành công.`);
-    } else {
-        alert("Tên tài khoản hoặc mật khẩu không chính xác!");
-    }
-};
-     
-// 3. Hàm Xử lý Đăng nhập khi bấm nút Xác nhận
-window.performLogin = function() {
-    const uElem = document.getElementById('inputUsername');
-    const pElem = document.getElementById('inputPassword');
-    if (!uElem || !pElem) return;
-
-    const username = uElem.value.trim().toLowerCase();
-    const password = pElem.value;
-
-    if (USER_ACCOUNTS[username] && USER_ACCOUNTS[username].password === password) {
-        currentUser = USER_ACCOUNTS[username];
-        
         // Ẩn bảng Modal Đăng nhập
         const modal = document.getElementById('loginModal');
         if (modal) modal.classList.add('hidden');
@@ -1374,54 +1350,87 @@ window.performLogin = function() {
     }
 };
 
-// 4. Cập nhật nút Đăng nhập / Đăng xuất trong applyPermissions
-    window.applyPermissions = function() {
-    const userBox = document.getElementById('userInfoDisplay');
-    const nameElem = document.getElementById('displayUserName');
-    const deptElem = document.getElementById('displayUserDept');
-    const btnSave = document.getElementById('btnSave');
-    const btnLogin = document.getElementById('btnLogin');
+// 4. Cập nhật giao diện & Phân quyền trong applyPermissions
+window.applyPermissions = function() {
+    try {
+        const userBox = document.getElementById('userInfoDisplay');
+        const nameElem = document.getElementById('displayUserName');
+        const deptElem = document.getElementById('displayUserDept');
+        const btnSave = document.getElementById('btnSave');
+        const btnLogin = document.getElementById('btnLogin');
 
-    // Chỉ xác nhận ĐÃ ĐĂNG NHẬP khi biến currentUser tồn tại
-    if (currentUser) {
-        // 1. Gán dữ liệu tên & bộ phận thực tế từ tài khoản đăng nhập
-        if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
-        if (deptElem) deptElem.textContent = currentUser.department || '';
-        
-        // 2. Hiện khối góc phải
-        if (userBox) {
-            userBox.classList.remove('hidden');
-            userBox.style.setProperty('display', 'flex', 'important');
+        // Chỉ xác nhận ĐÃ ĐĂNG NHẬP khi biến currentUser tồn tại
+        if (currentUser) {
+            // 1. Gán dữ liệu tên & bộ phận thực tế từ tài khoản đăng nhập
+            if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
+            if (deptElem) deptElem.textContent = currentUser.department || '';
+            
+            // 2. Hiện khối góc phải
+            if (userBox) {
+                userBox.classList.remove('hidden');
+                userBox.style.setProperty('display', 'flex', 'important');
+            }
+
+            // 3. Cập nhật nút Đăng xuất
+            if (btnLogin) {
+                btnLogin.innerHTML = `🔓 ${currentUser.name || currentUser.username} (Đăng xuất)`;
+                btnLogin.onclick = window.logout;
+                btnLogin.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
+            }
+
+            // 4. Hiện nút Lưu báo cáo
+            if (btnSave) btnSave.classList.remove('hidden');
+
+        } else {
+            // 1. Xóa nội dung văn bản & Ẩn hoàn toàn góc bôi vàng khi chưa/thoát đăng nhập
+            if (nameElem) nameElem.textContent = '';
+            if (deptElem) deptElem.textContent = '';
+            if (userBox) {
+                userBox.classList.add('hidden');
+                userBox.style.setProperty('display', 'none', 'important');
+            }
+
+            // 2. Trả lại nút Đăng nhập ban đầu
+            if (btnLogin) {
+                btnLogin.innerHTML = `🔒 Đăng nhập`;
+                btnLogin.onclick = window.toggleLoginModal;
+                btnLogin.className = "bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
+            }
+
+            // 3. Ẩn nút Lưu báo cáo
+            if (btnSave) btnSave.classList.add('hidden');
         }
 
-        // 3. Cập nhật nút Đăng xuất
-        if (btnLogin) {
-            btnLogin.innerHTML = `🔓 ${currentUser.name || currentUser.username} (Đăng xuất)`;
-            btnLogin.onclick = window.logout;
-            btnLogin.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
+        // 5. Khóa/Mở khóa các ô nhập liệu theo quyền user
+        const rows = document.querySelectorAll('#scrollableTableBody tr');
+        const fixedRows = document.querySelectorAll('#fixedTableBody tr');
+
+        if (rows && rows.length > 0) {
+            rows.forEach((row, idx) => {
+                const fixedRow = fixedRows[idx];
+                const areaName = fixedRow ? fixedRow.cells[1].textContent.trim() : '';
+                const inputs = row.querySelectorAll('input');
+
+                let canEditThisRow = false;
+                if (currentUser) {
+                    if (currentUser.allowAll || currentUser.allowedCma === areaName) {
+                        canEditThisRow = true;
+                    }
+                }
+
+                inputs.forEach(input => {
+                    if (canEditThisRow) {
+                        input.removeAttribute('readonly');
+                        input.classList.remove('bg-gray-100', 'cursor-not-allowed');
+                    } else {
+                        input.setAttribute('readonly', 'true');
+                        input.classList.add('bg-gray-100', 'cursor-not-allowed');
+                    }
+                });
+            });
         }
-
-        // 4. Hiện nút Lưu báo cáo
-        if (btnSave) btnSave.classList.remove('hidden');
-
-    } else {
-        // 1. Xóa nội dung văn bản & Ẩn hoàn toàn góc bôi vàng khi chưa/thoát đăng nhập
-        if (nameElem) nameElem.textContent = '';
-        if (deptElem) deptElem.textContent = '';
-        if (userBox) {
-            userBox.classList.add('hidden');
-            userBox.style.setProperty('display', 'none', 'important');
-        }
-
-        // 2. Trả lại nút Đăng nhập ban đầu
-        if (btnLogin) {
-            btnLogin.innerHTML = `🔒 Đăng nhập`;
-            btnLogin.onclick = window.toggleLoginModal;
-            btnLogin.className = "bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
-        }
-
-        // 3. Ẩn nút Lưu báo cáo
-        if (btnSave) btnSave.classList.add('hidden');
+    } catch (e) {
+        console.log("Đang chờ bảng vẽ xong...");
     }
 
     if (typeof loadData === 'function') loadData();
