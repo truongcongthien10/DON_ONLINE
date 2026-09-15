@@ -498,25 +498,24 @@
             localStorage.setItem(key, JSON.stringify(data));
         }
 
-        function renderScrollableHeader(filter) {
-            const thead = document.getElementById('scrollableTableHead');
-            let h1 = `<tr class="bg-excel-header">`;
-            let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">`;
+    function renderScrollableHeader(filter) {
+        const thead = document.getElementById('scrollableTableHead');
+        let h1 = `<tr class="bg-excel-header">`;
+        let h2 = `<tr class="bg-slate-800 text-yellow-300 text-[11px]">`;
 
-            categories.forEach((catName, idx) => {
-                let catId = idx + 1;
-                if (filter === "ALL" || filter == catId) {
-                    h1 += `<th colspan="3" style="width: 225px;" class="h-header-top bg-blue-800 tracking-wider">${catName}</th>`;
-                    h2 += `<th style="width: 75px;" class="h-header-sub bg-slate-800">TỔNG</th>
-                           <th style="width: 75px;" class="h-header-sub bg-slate-800">ONLINE</th>
-                           <th style="width: 75px;" class="h-header-sub bg-slate-800 text-yellow-400">%</th>`;
-                }
-            });
-
-            h1 += `</tr>`; h2 += `</tr>`;
-            thead.innerHTML = h1 + h2;
+        categories.forEach((catName, idx) => {
+        let catId = idx + 1;
+        if (filter === "ALL" || filter == catId) {
+            h1 += `<th colspan="3" style="width: 210px; min-width: 210px;" class="h-header-top bg-blue-800 tracking-wider">${catName}</th>`;
+            h2 += `<th style="width: 70px; min-width: 70px; max-width: 70px;" class="h-header-sub bg-slate-800">TỔNG</th>
+                   <th style="width: 70px; min-width: 70px; max-width: 70px;" class="h-header-sub bg-slate-800">ONLINE</th>
+                   <th style="width: 70px; min-width: 70px; max-width: 70px;" class="h-header-sub bg-slate-800 text-yellow-400">%</th>`;
         }
+    });
 
+    h1 += `</tr>`; h2 += `</tr>`;
+    thead.innerHTML = h1 + h2;
+}
         function renderTables(isReadOnly = false) {
             const filter = document.getElementById('selectCategoryFilter').value;
             renderScrollableHeader(filter);
@@ -548,19 +547,19 @@
                 categories.forEach((_, cIdx) => {
                     let c = cIdx + 1;
                     if (filter === "ALL" || filter == c) {
-                        if (isReadOnly) {
-                            htmlScroll += `
-                                <td style="width: 75px;" class="font-semibold cat-tot-${c}">0</td>
-                                <td style="width: 75px;" class="font-semibold text-emerald-700 cat-on-${c}">0</td>
-                                <td style="width: 75px;" class="font-bold text-blue-700 cat-pct-${c}">0%</td>
-                            `;
-                        } else {
-                            htmlScroll += `
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
-                                <td style="width: 75px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
-                                <td style="width: 75px;" class="font-bold text-blue-700 pct-${c}">0%</td>
-                            `;
-                        }
+                    if (isReadOnly) {
+                        htmlScroll += `
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;" class="font-semibold cat-tot-${c}">0</td>
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;" class="font-semibold text-emerald-700 cat-on-${c}">0</td>
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;" class="font-bold text-blue-700 cat-pct-${c}">0%</td>
+                        `;
+                    } else {
+                        htmlScroll += `
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="tot-${c}" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;"><input type="number" step="1" min="0" pattern="\\d*" onkeydown="return isIntegerKey(event)" oninput="cleanIntegerInput(this)" class="on-${c} text-emerald-700 font-medium" value="0" onfocus="this.select()" onchange="calculateRow(${idx}, this)"></td>
+                            <td style="width: 70px; min-width: 70px; max-width: 70px;" class="font-bold text-blue-700 pct-${c}">0%</td>
+                        `;
+                    }
                     }
                 });
 
