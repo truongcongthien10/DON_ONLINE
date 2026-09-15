@@ -225,22 +225,22 @@
             
             <div class="flex w-full items-start gap-0">
                 <div class="flex-shrink-0 bg-white">
-                    <table class="excel-table w-auto" id="fixedTable">
-                        <thead class="text-white uppercase font-bold">
-                            <tr class="bg-excel-header">
-                                <th rowspan="2" style="width: 40px;" class="h-header-top bg-slate-900">STT</th>
-                                <th rowspan="2" style="width: 100px;" class="h-header-top bg-slate-900">KHU VỰC</th>
-                                <th colspan="3" style="width: 180px;" class="h-header-top bg-amber-600 text-yellow-100 border-split-right">TỔNG HỢP</th>
-                            </tr>
-                            <tr class="bg-slate-800 text-yellow-300 text-[11px]">
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700">TỔNG</th>
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700">ONLINE</th>
-                                <th style="width: 60px;" class="h-header-sub bg-amber-700 border-split-right">%</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fixedTableBody"></tbody>
-                        <tfoot id="fixedTableFoot" class="font-bold"></tfoot>
-                    </table>
+            <table class="excel-table w-auto" id="fixedTable">
+            <thead class="text-white uppercase font-bold">
+            <tr class="bg-excel-header">
+                <th rowspan="2" style="width: 40px; min-width: 40px; max-width: 40px;" class="h-header-top bg-slate-900">STT</th>
+                <th rowspan="2" style="width: 100px; min-width: 100px; max-width: 100px;" class="h-header-top bg-slate-900">KHU VỰC</th>
+                <th colspan="3" style="width: 180px; min-width: 180px; max-width: 180px;" class="h-header-top bg-amber-600 text-yellow-100 border-split-right">TỔNG HỢP</th>
+            </tr>
+            <tr class="bg-slate-800 text-yellow-300 text-[11px]">
+                <th style="width: 60px; min-width: 60px; max-width: 60px;" class="h-header-sub bg-amber-700">TỔNG</th>
+                <th style="width: 60px; min-width: 60px; max-width: 60px;" class="h-header-sub bg-amber-700">ONLINE</th>
+                <th style="width: 60px; min-width: 60px; max-width: 60px;" class="h-header-sub bg-amber-700 border-split-right">%</th>
+            </tr>
+            </thead>
+                <tbody id="fixedTableBody"></tbody>
+                <tfoot id="fixedTableFoot" class="font-bold"></tfoot>
+                </table>
                 </div>
 
                 <div class="flex-grow overflow-x-auto scrollable-table-container bg-white">
