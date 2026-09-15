@@ -170,12 +170,16 @@
                     </button>
                 </div>
                 
-                <!-- Thẻ hiển thị thông tin User ở góc phải Hàng 1 -->
-                <div id="userInfoDisplay" class="hidden flex-col items-end pl-3 border-l-2 border-blue-500 ml-auto self-center text-right">
+                  <!-- Khối thông tin User & Nút Đăng nhập/Đăng xuất ở góc phải Hàng 1 -->
+                    <div id="userAccountSection" class="flex flex-col items-end pl-3 border-l-2 border-blue-500 ml-auto self-center text-right">
+                    <div id="userInfoDisplay" class="hidden flex-col items-end mb-1">
                     <div id="displayUserName" class="text-xs font-bold text-blue-900 leading-tight"></div>
                     <div id="displayUserDept" class="text-[11px] text-gray-600 font-medium leading-tight"></div>
                 </div>
-            </div>
+                    <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1 px-2.5 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
+                    🔒 Đăng nhập
+                    </button>
+                </div>
 
             <!-- Hàng 2: Hạng mục công việc + Cụm nút bấm nằm nối tiếp nhau -->
             <div class="flex flex-wrap items-end gap-3 pt-1">
@@ -208,9 +212,6 @@
                     </button>
                     <button type="button" onclick="toggleSummaryColumn()" class="md:hidden bg-slate-600 hover:bg-slate-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
                         👁️ Ẩn/Hiện TH
-                    </button>
-                    <button type="button" id="btnLogin" onclick="toggleLoginModal()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1">
-                        🔒 Đăng nhập
                     </button>
                 </div>
             </div>
@@ -1361,50 +1362,49 @@
             }
         };
 
-        window.applyPermissions = function() {
-            const userBox = document.getElementById('userInfoDisplay');
-            const nameElem = document.getElementById('displayUserName');
-            const deptElem = document.getElementById('displayUserDept');
-            const btnSave = document.getElementById('btnSave');
-            const btnLogin = document.getElementById('btnLogin');
+    window.applyPermissions = function() {
+    const userBox = document.getElementById('userInfoDisplay');
+    const nameElem = document.getElementById('displayUserName');
+    const deptElem = document.getElementById('displayUserDept');
+    const btnSave = document.getElementById('btnSave');
+    const btnLogin = document.getElementById('btnLogin');
 
-            if (currentUser) {
-                if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
-                if (deptElem) deptElem.textContent = currentUser.department || '';
-                
-                if (userBox) {
-                    userBox.classList.remove('hidden');
-                    userBox.style.setProperty('display', 'flex', 'important');
-                }
+    if (currentUser) {
+        if (nameElem) nameElem.textContent = currentUser.name || currentUser.username || '';
+        if (deptElem) deptElem.textContent = currentUser.department || '';
+        
+        if (userBox) {
+            userBox.classList.remove('hidden');
+            userBox.style.setProperty('display', 'flex', 'important');
+        }
 
-                if (btnLogin) {
-                    btnLogin.innerHTML = `🔓 ${currentUser.name || currentUser.username} (Đăng xuất)`;
-                    btnLogin.onclick = window.logout;
-                    btnLogin.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
-                }
+        if (btnLogin) {
+            btnLogin.innerHTML = `🔓 Đăng xuất`;
+            btnLogin.onclick = window.logout;
+            btnLogin.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold py-0.5 px-2 rounded shadow-sm text-[11px] whitespace-nowrap flex items-center justify-center gap-1 mt-1";
+        }
 
-                if (btnSave) btnSave.classList.remove('hidden');
+        if (btnSave) btnSave.classList.remove('hidden');
 
-            } else {
-                if (nameElem) nameElem.textContent = '';
-                if (deptElem) deptElem.textContent = '';
-                if (userBox) {
-                    userBox.classList.add('hidden');
-                    userBox.style.setProperty('display', 'none', 'important');
-                }
+    } else {
+        if (nameElem) nameElem.textContent = '';
+        if (deptElem) deptElem.textContent = '';
+        if (userBox) {
+            userBox.classList.add('hidden');
+            userBox.style.setProperty('display', 'none', 'important');
+        }
 
-                if (btnLogin) {
-                    btnLogin.innerHTML = `🔒 Đăng nhập`;
-                    btnLogin.onclick = window.toggleLoginModal;
-                    btnLogin.className = "bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 px-3 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
-                }
+        if (btnLogin) {
+            btnLogin.innerHTML = `🔒 Đăng nhập`;
+            btnLogin.onclick = window.toggleLoginModal;
+            btnLogin.className = "bg-amber-600 hover:bg-amber-700 text-white font-bold py-1 px-2.5 rounded shadow-sm text-xs whitespace-nowrap flex items-center justify-center gap-1";
+        }
 
-                if (btnSave) btnSave.classList.add('hidden');
-            }
+        if (btnSave) btnSave.classList.add('hidden');
+    }
 
-            loadData();
-        };
-
+    loadData();
+};
         // ==========================================
         // 🚀 KHỐI LỆNH KHỞI CHẠY DUY NHẤT
         // ==========================================
